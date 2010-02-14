@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: dk/i2m/netbeans/modules/ldapexplorer/Bundle.properties
+OpenIDE-Module-Layer: dk/i2m/netbeans/modules/ldapexplorer/layer.xml
