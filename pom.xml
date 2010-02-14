@@ -10,8 +10,8 @@
         <maven>2.0</maven>
     </prerequisites>
     <inceptionYear>2010</inceptionYear>
-    <url>http://www.i2m.dk/converge</url>
-    <description>Maven-based NetBeans module for exploring LDAP services from within NetBeans. This modules does not replace a professional LDAP client, rather it provides a simple and quick interface for basic interaction with LDAP services.</description>
+    <url>http://code.google.com/p/nb-ldap-explorer/</url>
+    <description>NetBeans module for exploring LDAP services from within NetBeans. This modules does not replace a professional LDAP client, rather it provides a simple and quick interface for basic interaction with LDAP services.</description>
 
     <licenses>
         <license>
