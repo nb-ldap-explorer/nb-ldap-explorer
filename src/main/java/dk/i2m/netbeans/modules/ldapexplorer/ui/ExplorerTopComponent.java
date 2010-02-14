@@ -86,8 +86,17 @@ final class ExplorerTopComponent extends TopComponent {
                     sb.append(txtBaseDN.getText());
                     sb.append(System.getProperty("line.separator"));
 
-                    sb.append(LdapService.getDefault().getAttributes(ldapUrl, dn.
-                            toString()));
+
+                    String auth = (String) cbAuthentication.getSelectedItem();
+                    if (auth.equalsIgnoreCase(LdapService.AUTHENTICATION_SIMPLE)) {
+                        sb.append(LdapService.getDefault().getAttributes(ldapUrl, txtUser.
+                                getText(), new String(txtPassword.getPassword()), dn.
+                                toString()));
+                    } else {
+                        sb.append(LdapService.getDefault().getAttributes(ldapUrl, dn.
+                                toString()));
+                    }
+
                     txtOutput.setText(sb.toString());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -130,7 +139,7 @@ final class ExplorerTopComponent extends TopComponent {
         lblBaseDN = new javax.swing.JLabel();
         txtBaseDN = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        cbAuthentication = new javax.swing.JComboBox();
         lblUser = new javax.swing.JLabel();
         txtUser = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
@@ -157,7 +166,7 @@ final class ExplorerTopComponent extends TopComponent {
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.jLabel1.text")); // NOI18N
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Simple" }));
+        cbAuthentication.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Simple" }));
 
         org.openide.awt.Mnemonics.setLocalizedText(lblUser, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.lblUser.text")); // NOI18N
 
@@ -214,7 +223,7 @@ final class ExplorerTopComponent extends TopComponent {
                     .add(layout.createSequentialGroup()
                         .add(jLabel1)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(cbAuthentication, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(lblUser)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -242,7 +251,7 @@ final class ExplorerTopComponent extends TopComponent {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1)
-                    .add(jComboBox1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(cbAuthentication, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblUser)
                     .add(txtUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblPassword)
@@ -256,7 +265,15 @@ final class ExplorerTopComponent extends TopComponent {
         LdapService ldapService = LdapService.getDefault();
 
         try {
-            String children[] = ldapService.getChildren(url, dn);
+            String children[];
+            String auth = (String) cbAuthentication.getSelectedItem();
+            if (auth.equalsIgnoreCase(LdapService.AUTHENTICATION_SIMPLE)) {
+                children = ldapService.getChildren(url, txtUser.getText(), new String(txtPassword.
+                        getPassword()), dn);
+            } else {
+                children = ldapService.getChildren(url, dn);
+            }
+
 
             for (String child : children) {
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode(child);
@@ -289,7 +306,7 @@ final class ExplorerTopComponent extends TopComponent {
     }//GEN-LAST:event_btnConnectActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
-    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JComboBox cbAuthentication;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

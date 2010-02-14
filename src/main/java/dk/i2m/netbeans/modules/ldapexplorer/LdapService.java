@@ -26,6 +26,52 @@ import org.openide.util.Lookup;
  */
 public abstract class LdapService {
 
+    /** Connection timeout in MS. */
+    public static final String CONNECT_TIMEOUT_IN_MS = "5000";
+    /** Identifier for simple authentication. */
+    public static final String AUTHENTICATION_SIMPLE = "simple";
+    /** Identifier for anonymous connections. */
+    public static final String AUTHENTICATION_NONE = "none";
+
+    /**
+     * Obtains the attributes and values of an object in a given directory.
+     *
+     * @param ldapUrl
+     *          URL of the directory service
+     * @param username
+     *          Username for connecting to the directory service
+     * @param password
+     *          Password for connecting to the directory service
+     * @param dn
+     *          Distinguished name of the object to fetch
+     * @return {@link String} containing LDIF of the specified object
+     * @throws NotFoundException
+     *          If an object could not be found with the given <code>dn</code>
+     */
+    public abstract String getAttributes(final String ldapUrl,
+            final String username, final String password, final String dn)
+            throws NotFoundException;
+
+    /**
+     * Gets the children nodes of an object in a given directory.
+     *
+     * @param ldapUrl
+     *          URL of the directory service
+     * @param username
+     *          Username for connecting to the directory service
+     * @param password
+     *          Password for connecting to the directory service
+     * @param dn
+     *          distinguished name of the childrens parent
+     * @return Array of {@link String}s containing the distinguished names of
+     *         the children
+     * @throws NotFoundException
+     *          If an object could not be found with the given <code>dn</code>
+     */
+    public abstract String[] getChildren(final String ldapUrl,
+            final String username, final String password, final String dn)
+            throws NotFoundException;
+
     /**
      * Obtains the attributes and values of an object in a given directory.
      *
@@ -37,8 +83,8 @@ public abstract class LdapService {
      * @throws NotFoundException
      *          If an object could not be found with the given <code>dn</code>
      */
-    public abstract String getAttributes(final String ldapUrl, final String dn) throws
-            NotFoundException;
+    public abstract String getAttributes(final String ldapUrl, final String dn)
+            throws NotFoundException;
 
     /**
      * Gets the children nodes of an object in a given directory.
@@ -52,8 +98,8 @@ public abstract class LdapService {
      * @throws NotFoundException
      *          If an object could not be found with the given <code>dn</code>
      */
-    public abstract String[] getChildren(final String ldapUrl, final String dn) throws
-            NotFoundException;
+    public abstract String[] getChildren(final String ldapUrl, final String dn)
+            throws NotFoundException;
 
     /**
      * Obtains default implementation of the {@link LdapService}.

@@ -34,17 +34,19 @@ import javax.naming.directory.InitialDirContext;
  */
 public class DefaultLdapService extends LdapService {
 
-    private static final String CONNECT_TIMEOUT_IN_MS = "5000";
-
     /** {@inheritDoc} */
-    public String getAttributes(String ldapUrl, String dn) throws
-            NotFoundException {
+    @Override
+    public String getAttributes(String ldapUrl, String username, String password,
+            String dn) throws NotFoundException {
         StringBuffer sb = new StringBuffer();
-        Hashtable<String, String> env = new Hashtable<String, String>();
-        env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, ldapUrl);
-        env.put("com.sun.jndi.ldap.connect.timeout", CONNECT_TIMEOUT_IN_MS);
+        Hashtable<String, String> env;
+
+        if (username != null && !username.isEmpty()) {
+            env = getEnvironment(ldapUrl, AUTHENTICATION_SIMPLE,
+                    username, password);
+        } else {
+            env = getEnvironment(ldapUrl);
+        }
 
         List<String> children = new ArrayList<String>();
         DirContext ctx = null;
@@ -83,13 +85,24 @@ public class DefaultLdapService extends LdapService {
     }
 
     /** {@inheritDoc} */
-    public String[] getChildren(String ldapUrl, String dn) throws
+    @Override
+    public String getAttributes(String ldapUrl, String dn) throws
             NotFoundException {
-        Hashtable<String, String> env = new Hashtable<String, String>();
-        env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, ldapUrl);
-        env.put("com.sun.jndi.ldap.connect.timeout", CONNECT_TIMEOUT_IN_MS);
+        return getAttributes(ldapUrl, "", "", dn);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String[] getChildren(String ldapUrl, String username, String password,
+            String dn) throws NotFoundException {
+        Hashtable<String, String> env;
+
+        if (username != null && !username.isEmpty()) {
+            env = getEnvironment(ldapUrl, AUTHENTICATION_SIMPLE,
+                    username, password);
+        } else {
+            env = getEnvironment(ldapUrl);
+        }
 
         List<String> children = new ArrayList<String>();
         DirContext ctx = null;
@@ -117,5 +130,55 @@ public class DefaultLdapService extends LdapService {
         }
 
         return children.toArray(new String[]{});
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String[] getChildren(String ldapUrl, String dn) throws
+            NotFoundException {
+        return getChildren(ldapUrl, "", "", dn);
+    }
+
+    /**
+     * Generates a {@link Hashtable} with a configured LDAP environment.
+     *
+     * @param ldapUrl
+     *          URL of the LDAP directory service
+     * @param authentication
+     *          Type of authentication to use. Only <code>simple</code> and
+     *          <code>none</code> are supported
+     * @param username
+     *          If <code>simple</code> authentication is used, a username must
+     *          be provided
+     * @param password
+     *          If <code>simple</code> authentication is used, a password must
+     *          be provided
+     * @return {@link Hashtable} containing a configured LDAP environment
+     */
+    private Hashtable<String, String> getEnvironment(String ldapUrl,
+            String authentication, String username, String password) {
+        Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put(Context.INITIAL_CONTEXT_FACTORY,
+                "com.sun.jndi.ldap.LdapCtxFactory");
+        env.put(Context.PROVIDER_URL, ldapUrl);
+        env.put("com.sun.jndi.ldap.connect.timeout", CONNECT_TIMEOUT_IN_MS);
+
+        if (authentication.equalsIgnoreCase(AUTHENTICATION_SIMPLE)) {
+            env.put(Context.SECURITY_AUTHENTICATION, authentication);
+            env.put(Context.SECURITY_PRINCIPAL, username);
+            env.put(Context.SECURITY_CREDENTIALS, password);
+        }
+        return env;
+    }
+
+    /**
+     * Generates a {@link Hashtable} with a configured LDAP environment.
+     *
+     * @param ldapUrl
+     *          URL of the LDAP directory service
+     * @return {@link Hashtable} containing a configured LDAP environment
+     */
+    private Hashtable<String, String> getEnvironment(String ldapUrl) {
+        return getEnvironment(ldapUrl, "none", "", "");
     }
 }
