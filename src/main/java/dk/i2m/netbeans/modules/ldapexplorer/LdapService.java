@@ -16,6 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer;
 
+import java.util.Map;
 import org.openide.util.Lookup;
 
 /**
@@ -32,6 +33,10 @@ public abstract class LdapService {
     public static final String AUTHENTICATION_SIMPLE = "simple";
     /** Identifier for anonymous connections. */
     public static final String AUTHENTICATION_NONE = "none";
+
+    public abstract Map<String, String> getAttributeMap(String ldapUrl,
+            String username, String password, String dn) throws
+            NotFoundException;
 
     /**
      * Obtains the attributes and values of an object in a given directory.

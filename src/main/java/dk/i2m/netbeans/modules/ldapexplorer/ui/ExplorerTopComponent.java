@@ -18,10 +18,12 @@ package dk.i2m.netbeans.modules.ldapexplorer.ui;
 
 import dk.i2m.netbeans.modules.ldapexplorer.LdapService;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -84,20 +86,38 @@ final class ExplorerTopComponent extends TopComponent {
                     sb.append(dn.toString());
                     sb.append(",");
                     sb.append(txtBaseDN.getText());
+
                     sb.append(System.getProperty("line.separator"));
 
 
                     String auth = (String) cbAuthentication.getSelectedItem();
+                    Map<String, String> attributes;
                     if (auth.equalsIgnoreCase(LdapService.AUTHENTICATION_SIMPLE)) {
                         sb.append(LdapService.getDefault().getAttributes(ldapUrl, txtUser.
                                 getText(), new String(txtPassword.getPassword()), dn.
                                 toString()));
+                        attributes = LdapService.getDefault().getAttributeMap(
+                                ldapUrl, txtUser.getText(), new String(txtPassword.
+                                getPassword()), dn.toString());
                     } else {
                         sb.append(LdapService.getDefault().getAttributes(ldapUrl, dn.
                                 toString()));
+                        attributes = LdapService.getDefault().getAttributeMap(
+                                ldapUrl, "", "", dn.toString());
                     }
 
                     txtOutput.setText(sb.toString());
+
+                    String dnValue = dn.toString() + "," + txtBaseDN.getText();
+                    DefaultTableModel model = (DefaultTableModel) tblAttributes.
+                            getModel();
+                    model.setRowCount(0);
+                    model.addRow(new Object[]{"dn", dnValue});
+                    for (String key : attributes.keySet()) {
+                        String val = attributes.get(key);
+                        model.addRow(new Object[]{key, val});
+                    }
+
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage());
                 }
@@ -146,9 +166,13 @@ final class ExplorerTopComponent extends TopComponent {
         txtPassword = new javax.swing.JPasswordField();
         btnConnect = new javax.swing.JButton();
         treeDetailSplitter = new javax.swing.JSplitPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        overviewTabbedPane = new javax.swing.JTabbedPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         ldapTree = new javax.swing.JTree();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        detailTabbedPane = new javax.swing.JTabbedPane();
+        formPane = new javax.swing.JScrollPane();
+        tblAttributes = new javax.swing.JTable();
+        ldifPane = new javax.swing.JScrollPane();
         txtOutput = new javax.swing.JTextPane();
 
         org.openide.awt.Mnemonics.setLocalizedText(lblHost, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.lblHost.text")); // NOI18N
@@ -167,13 +191,20 @@ final class ExplorerTopComponent extends TopComponent {
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.jLabel1.text")); // NOI18N
 
         cbAuthentication.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Simple" }));
+        cbAuthentication.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbAuthenticationActionPerformed(evt);
+            }
+        });
 
         org.openide.awt.Mnemonics.setLocalizedText(lblUser, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.lblUser.text")); // NOI18N
 
+        txtUser.setEditable(false);
         txtUser.setText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtUser.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblPassword, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.lblPassword.text")); // NOI18N
 
+        txtPassword.setEditable(false);
         txtPassword.setText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtPassword.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(btnConnect, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnConnect.text")); // NOI18N
@@ -186,20 +217,40 @@ final class ExplorerTopComponent extends TopComponent {
         treeDetailSplitter.setDividerLocation(200);
         treeDetailSplitter.setDividerSize(4);
 
-        jScrollPane1.setAutoscrolls(true);
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(200, 23));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(200, 384));
-
         ldapTree.setModel(getNodes());
         ldapTree.setMinimumSize(new java.awt.Dimension(200, 0));
         ldapTree.setPreferredSize(new java.awt.Dimension(200, 76));
-        jScrollPane1.setViewportView(ldapTree);
+        jScrollPane3.setViewportView(ldapTree);
 
-        treeDetailSplitter.setLeftComponent(jScrollPane1);
+        overviewTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.jScrollPane3.TabConstraints.tabTitle"), jScrollPane3); // NOI18N
 
-        jScrollPane2.setViewportView(txtOutput);
+        treeDetailSplitter.setLeftComponent(overviewTabbedPane);
 
-        treeDetailSplitter.setRightComponent(jScrollPane2);
+        tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Attribute", "Value"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        formPane.setViewportView(tblAttributes);
+
+        detailTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.formPane.TabConstraints.tabTitle"), formPane); // NOI18N
+
+        ldifPane.setViewportView(txtOutput);
+
+        detailTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.ldifPane.TabConstraints.tabTitle"), ldifPane); // NOI18N
+
+        treeDetailSplitter.setRightComponent(detailTabbedPane);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -261,6 +312,16 @@ final class ExplorerTopComponent extends TopComponent {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Recurring method for building the LDAP browsing tree.
+     *
+     * @param parent
+     *          Node for which to add the children
+     * @param url
+     *          URL of the LDAP service
+     * @param dn
+     *          Distinguished name of the node to add to the parent
+     */
     private void buildTree(DefaultMutableTreeNode parent, String url, String dn) {
         LdapService ldapService = LdapService.getDefault();
 
@@ -291,6 +352,12 @@ final class ExplorerTopComponent extends TopComponent {
         }
     }
 
+    /**
+     * Event handler for when the "Connect" button is pressed.
+     *
+     * @param evt
+     *          Event that invoked the handler
+     */
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
 
         String ldapUrl = "ldap://" + txtHost.getText() + ":" + txtPort.getText()
@@ -304,18 +371,34 @@ final class ExplorerTopComponent extends TopComponent {
         this.ldapTree.setModel(nodes);
         this.ldapTree.revalidate();
     }//GEN-LAST:event_btnConnectActionPerformed
+
+    private void cbAuthenticationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbAuthenticationActionPerformed
+        String selectedItem = (String) cbAuthentication.getSelectedItem();
+
+        if (selectedItem.equalsIgnoreCase("none")) {
+            txtUser.setEditable(false);
+            txtPassword.setEditable(false);
+        } else {
+            txtUser.setEditable(true);
+            txtPassword.setEditable(true);
+        }
+    }//GEN-LAST:event_cbAuthenticationActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnConnect;
     private javax.swing.JComboBox cbAuthentication;
+    private javax.swing.JTabbedPane detailTabbedPane;
+    private javax.swing.JScrollPane formPane;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblBaseDN;
     private javax.swing.JLabel lblHost;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblPort;
     private javax.swing.JLabel lblUser;
     private javax.swing.JTree ldapTree;
+    private javax.swing.JScrollPane ldifPane;
+    private javax.swing.JTabbedPane overviewTabbedPane;
+    private javax.swing.JTable tblAttributes;
     private javax.swing.JSplitPane treeDetailSplitter;
     private javax.swing.JTextField txtBaseDN;
     private javax.swing.JTextField txtHost;
@@ -367,15 +450,12 @@ final class ExplorerTopComponent extends TopComponent {
 
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
     }
 
     @Override
     public void componentClosed() {
-        // TODO add custom code on component closing
     }
 
-    /** replaces this in object stream */
     @Override
     public Object writeReplace() {
         return new ResolvableHelper();

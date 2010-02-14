@@ -18,7 +18,9 @@ package dk.i2m.netbeans.modules.ldapexplorer;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
@@ -33,6 +35,55 @@ import javax.naming.directory.InitialDirContext;
  * @author Allan Lykke Christensen
  */
 public class DefaultLdapService extends LdapService {
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<String, String> getAttributeMap(String ldapUrl, String username,
+            String password, String dn) throws NotFoundException {
+        Map<String, String> attributeMap = new LinkedHashMap<String, String>();
+
+        StringBuffer sb = new StringBuffer();
+        Hashtable<String, String> env;
+
+        if (username != null && !username.isEmpty()) {
+            env = getEnvironment(ldapUrl, AUTHENTICATION_SIMPLE,
+                    username, password);
+        } else {
+            env = getEnvironment(ldapUrl);
+        }
+
+        List<String> children = new ArrayList<String>();
+        DirContext ctx = null;
+        NotFoundException exception = null;
+        try {
+            ctx = new InitialDirContext(env);
+            Attributes attrs = ctx.getAttributes(dn.toString());
+
+            for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
+                    hasMore();) {
+                Attribute attr = ae.next();
+
+                for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
+                    attributeMap.put(attr.getID(), ne.next().toString());
+                }
+            }
+        } catch (Exception ex) {
+            exception = new NotFoundException(ex);
+        } finally {
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (Exception ex2) {
+                    ex2.printStackTrace();
+                }
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
+
+        return attributeMap;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -55,8 +106,9 @@ public class DefaultLdapService extends LdapService {
             ctx = new InitialDirContext(env);
             Attributes attrs = ctx.getAttributes(dn.toString());
 
-            for (NamingEnumeration ae = attrs.getAll(); ae.hasMore();) {
-                Attribute attr = (Attribute) ae.next();
+            for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
+                    hasMore();) {
+                Attribute attr = ae.next();
 
                 /* Print each value */
                 for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
@@ -109,9 +161,9 @@ public class DefaultLdapService extends LdapService {
         NotFoundException exception = null;
         try {
             ctx = new InitialDirContext(env);
-            NamingEnumeration list = ctx.list(dn);
+            NamingEnumeration<NameClassPair> list = ctx.list(dn);
             while (list.hasMore()) {
-                NameClassPair nc = (NameClassPair) list.next();
+                NameClassPair nc = list.next();
                 children.add(nc.getName());
             }
         } catch (Exception ex) {
