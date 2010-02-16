@@ -35,7 +35,7 @@ public class ExplorerAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent evt) {
-        TopComponent win = ExplorerTopComponent.findInstance();
+        TopComponent win = new ExplorerTopComponent();
         win.open();
         win.requestActive();
     }

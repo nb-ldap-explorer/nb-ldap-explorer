@@ -16,6 +16,9 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer;
 
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import org.openide.util.Lookup;
 
@@ -33,7 +36,25 @@ public abstract class LdapService {
     public static final String AUTHENTICATION_SIMPLE = "simple";
     /** Identifier for anonymous connections. */
     public static final String AUTHENTICATION_NONE = "none";
+    /** Folder, in the NetBeans virtual file system, containing module settings. */
+    public static final String SERVER_FOLDER = "i2m-ldapbrowser/servers";
 
+    /**
+     * Obtains the attributes and values of an object in a given directory.
+     *
+     * @param ldapUrl
+     *          URL of the directory service
+     * @param username
+     *          Username for connecting to the directory service
+     * @param password
+     *          Password for connecting to the directory service
+     * @param dn
+     *          Distinguished name of the object to fetch
+     * @return {@link Map} of attribute name as the key and their value as the
+     *         map value
+     * @throws NotFoundException
+     *          If an object could not be found with the given <code>dn</code>
+     */
     public abstract Map<String, String> getAttributeMap(String ldapUrl,
             String username, String password, String dn) throws
             NotFoundException;
@@ -105,6 +126,34 @@ public abstract class LdapService {
      */
     public abstract String[] getChildren(final String ldapUrl, final String dn)
             throws NotFoundException;
+
+    /**
+     * Gets a {@link List} of registered {@link LdapServer}s.
+     *
+     * @return {@link List} of registered {@link LdapServer}s
+     */
+    public abstract List<LdapServer> getRegisteredServers();
+
+    /**
+     * Saves a new or existing {@link LdapServer}.
+     *
+     * @param ldapServer
+     *          {@link LdapServer} to save
+     * @return Saved {@link LdapServer}
+     * @throws IOException
+     *          If the {@link LdapServer} could not be saved
+     */
+    public abstract LdapServer save(LdapServer ldapServer) throws IOException;
+
+    /**
+     * Deletes an {@link LdapServer} from the registry.
+     *
+     * @param server
+     *          {@link LdapServer} to delete from the registry
+     * @throws IOException
+     *          If the {@link LdapServer} could not be deleted
+     */
+    public abstract void delete(LdapServer server) throws IOException;
 
     /**
      * Obtains default implementation of the {@link LdapService}.

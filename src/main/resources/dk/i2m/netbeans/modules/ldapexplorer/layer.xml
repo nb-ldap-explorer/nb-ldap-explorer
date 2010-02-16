@@ -1,35 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
 <filesystem>
-    <folder name="Actions">
-        <folder name="Window">
-            <file name="dk-i2m-netbeans-modules-ldapexplorer-ui-ExplorerAction.instance"/>
-        </folder>
-    </folder>
-    <folder name="Menu">
-        <folder name="Window">
-            <file name="ExplorerAction.shadow">
-                <attr name="originalFile" stringvalue="Actions/Window/dk-i2m-netbeans-modules-ldapexplorer-ui-ExplorerAction.instance"/>
-            </file>
-        </folder>
-    </folder>
 
     <folder name="Windows2">
         <folder name="Components">
-            <file name="BrowseLdapTopComponent.settings" url="BrowseLdapTopComponentSettings.xml"/>
             <file name="ExplorerTopComponent.settings" url="ExplorerTopComponentSettings.xml"/>
         </folder>
         <folder name="Modes">
             <folder name="editor">
                 <file name="ExplorerTopComponent.wstcref" url="ExplorerTopComponentWstcref.xml"/>
             </folder>
-            <folder name="output">
-                <file name="BrowseLdapTopComponent.wstcref" url="BrowseLdapTopComponentWstcref.xml"/>
-            </folder>
         </folder>
     </folder>
 
     <folder name="i2m-ldapbrowser">
-        <folder name="servers"></folder>
+        <folder name="servers">
+        </folder>
+    </folder>
+
+    <folder name="UI">
+        <folder name="Runtime">
+            <file name="dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServersNode.instance">
+                <attr name="position" intvalue="20"/>
+            </file>
+        </folder>
     </folder>
 </filesystem>

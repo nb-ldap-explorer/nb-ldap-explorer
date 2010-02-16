@@ -17,7 +17,9 @@
 package dk.i2m.netbeans.modules.ldapexplorer.ui;
 
 import dk.i2m.netbeans.modules.ldapexplorer.LdapService;
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -28,26 +30,33 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import org.openide.util.Lookup;
+import org.openide.util.Lookup.Result;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.Lookups;
 
 /**
  * {@link TopComponent} implementing an explorer view of an LDAP service.
  */
-final class ExplorerTopComponent extends TopComponent {
+public final class ExplorerTopComponent extends TopComponent {
 
-    private static ExplorerTopComponent instance;
+    //private static ExplorerTopComponent instance;
     /** path to the icon used by the component and its open action */
     static final String ICON_PATH =
             "dk/i2m/netbeans/modules/ldapexplorer/resources/address_book_32.png";
-    private static final String PREFERRED_ID = "ExplorerTopComponent";
+    //private static final String PREFERRED_ID = "ExplorerTopComponent";
     private DefaultTreeModel nodes = null;
     private DefaultMutableTreeNode root = null;
+    private Result result;
 
-    private ExplorerTopComponent() {
+    public ExplorerTopComponent() {
         initComponents();
+
         setName(NbBundle.getMessage(ExplorerTopComponent.class,
                 "CTL_ExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ExplorerTopComponent.class,
@@ -408,41 +417,6 @@ final class ExplorerTopComponent extends TopComponent {
     private javax.swing.JTextField txtUser;
     // End of variables declaration//GEN-END:variables
 
-    /**
-     * Gets default instance. Do not use directly: reserved for *.settings files
-     * only, i.e. deserialization routines; otherwise you could get a
-     * non-deserialized instance. To obtain the singleton instance, use
-     * {@link #findInstance}.
-     */
-    public static synchronized ExplorerTopComponent getDefault() {
-        if (instance == null) {
-            instance = new ExplorerTopComponent();
-        }
-        return instance;
-    }
-
-    /**
-     * Obtain the ExplorerTopComponent instance. Never call {@link #getDefault}
-     * directly!
-     */
-    public static synchronized ExplorerTopComponent findInstance() {
-        TopComponent win = WindowManager.getDefault().findTopComponent(
-                PREFERRED_ID);
-        if (win == null) {
-            Logger.getLogger(ExplorerTopComponent.class.getName()).warning(
-                    "Cannot find " + PREFERRED_ID
-                    + " component. It will not be located properly in the window system.");
-            return getDefault();
-        }
-        if (win instanceof ExplorerTopComponent) {
-            return (ExplorerTopComponent) win;
-        }
-        Logger.getLogger(ExplorerTopComponent.class.getName()).warning(
-                "There seem to be multiple components with the '" + PREFERRED_ID
-                + "' ID. That is a potential source of errors and unexpected behavior.");
-        return getDefault();
-    }
-
     @Override
     public int getPersistenceType() {
         return TopComponent.PERSISTENCE_ALWAYS;
@@ -450,28 +424,26 @@ final class ExplorerTopComponent extends TopComponent {
 
     @Override
     public void componentOpened() {
+        LdapServerNode node = Utilities.actionsGlobalContext().lookup(
+                LdapServerNode.class);
+
+        if (node != null) {
+            LdapServer srv = node.getServer();
+            setDisplayName(srv.toString());
+            txtHost.setText(srv.getHost());
+            txtPort.setText(String.valueOf(srv.getPort()));
+            txtBaseDN.setText(srv.getBaseDN());
+
+            String auth = srv.getAuthentication().name();
+            cbAuthentication.setSelectedItem(auth.substring(0, 1).toUpperCase() + auth.
+                    substring(1).toLowerCase());
+            txtUser.setText(srv.getBinding());
+            txtPassword.setText(srv.getPassword());
+            btnConnectActionPerformed(null);
+        }
     }
 
     @Override
     public void componentClosed() {
-    }
-
-    @Override
-    public Object writeReplace() {
-        return new ResolvableHelper();
-    }
-
-    @Override
-    protected String preferredID() {
-        return PREFERRED_ID;
-    }
-
-    final static class ResolvableHelper implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        public Object readResolve() {
-            return ExplorerTopComponent.getDefault();
-        }
     }
 }
