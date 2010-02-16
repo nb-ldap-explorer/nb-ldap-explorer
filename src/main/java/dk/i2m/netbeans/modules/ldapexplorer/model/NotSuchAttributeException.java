@@ -17,14 +17,24 @@
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 /**
- * Type of {@link Authentication} when connecting to an {@link LdapServer}.
  *
  * @author Allan Lykke Christensen
  */
-public enum Authentication {
+public class NotSuchAttributeException extends Exception {
 
-    /** Anonymous connection. */
-    NONE,
-    /** Simple username and password authentication. */
-    SIMPLE
+    public NotSuchAttributeException(Throwable cause) {
+        super(cause);
+    }
+
+    public NotSuchAttributeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public NotSuchAttributeException(String message) {
+        super(message);
+    }
+
+    public NotSuchAttributeException() {
+        super();
+    }
 }

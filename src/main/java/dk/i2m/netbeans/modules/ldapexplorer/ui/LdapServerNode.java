@@ -61,7 +61,7 @@ public class LdapServerNode extends AbstractNode {
 
     @Override
     public Action getPreferredAction() {
-        return new ExplorerAction();
+        return null;
     }
 
     @Override

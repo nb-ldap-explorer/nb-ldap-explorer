@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Allan Lykke Christensen.
+ *  Copyright 2010 Interactive Media Management
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,14 +17,26 @@
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 /**
- * Type of {@link Authentication} when connecting to an {@link LdapServer}.
+ * {@link Exception} thrown if an error occured while communicating with an
+ * {@link LdapServer}.
  *
  * @author Allan Lykke Christensen
  */
-public enum Authentication {
+public class ConnectionException extends Exception {
 
-    /** Anonymous connection. */
-    NONE,
-    /** Simple username and password authentication. */
-    SIMPLE
+    public ConnectionException(Throwable cause) {
+        super(cause);
+    }
+
+    public ConnectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ConnectionException(String message) {
+        super(message);
+    }
+
+    public ConnectionException() {
+        super();
+    }
 }
