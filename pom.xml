@@ -4,7 +4,7 @@
     <groupId>dk.i2m.netbeans.modules</groupId>
     <artifactId>nb-ldap-explorer</artifactId>
     <packaging>nbm</packaging>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
     <name>NetBeans LDAP Explorer</name>
     <prerequisites>
         <maven>2.0</maven>
