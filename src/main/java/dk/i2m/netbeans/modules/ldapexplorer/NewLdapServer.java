@@ -50,6 +50,7 @@ public final class NewLdapServer extends CallableSystemAction {
                         getAuthentication()));
                 ldapServer.setBinding(panel.getBind());
                 ldapServer.setPassword(panel.getPassword());
+                ldapServer.setSecure(panel.isSecureSocketLayerEnabled());
 
                 try {
                     LdapService.getDefault().save(ldapServer);

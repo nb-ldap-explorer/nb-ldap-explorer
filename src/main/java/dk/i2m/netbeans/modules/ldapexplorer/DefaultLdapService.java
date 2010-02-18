@@ -21,17 +21,7 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import javax.naming.Context;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
@@ -41,161 +31,6 @@ import org.openide.filesystems.FileUtil;
  * @author Allan Lykke Christensen
  */
 public class DefaultLdapService extends LdapService {
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<String, String> getAttributeMap(String ldapUrl, String username,
-            String password, String dn) throws NotFoundException {
-        Map<String, String> attributeMap = new LinkedHashMap<String, String>();
-
-        StringBuffer sb = new StringBuffer();
-        Hashtable<String, String> env;
-
-        if (username != null && !username.isEmpty()) {
-            env = getEnvironment(ldapUrl, AUTHENTICATION_SIMPLE,
-                    username, password);
-        } else {
-            env = getEnvironment(ldapUrl);
-        }
-
-        List<String> children = new ArrayList<String>();
-        DirContext ctx = null;
-        NotFoundException exception = null;
-        try {
-            ctx = new InitialDirContext(env);
-            Attributes attrs = ctx.getAttributes(dn.toString());
-
-            for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
-                    hasMore();) {
-                Attribute attr = ae.next();
-
-                for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
-                    attributeMap.put(attr.getID(), ne.next().toString());
-                }
-            }
-        } catch (Exception ex) {
-            exception = new NotFoundException(ex);
-        } finally {
-            if (ctx != null) {
-                try {
-                    ctx.close();
-                } catch (Exception ex2) {
-                    ex2.printStackTrace();
-                }
-            }
-        }
-        if (exception != null) {
-            throw exception;
-        }
-
-        return attributeMap;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAttributes(String ldapUrl, String username, String password,
-            String dn) throws NotFoundException {
-        StringBuffer sb = new StringBuffer();
-        Hashtable<String, String> env;
-
-        if (username != null && !username.isEmpty()) {
-            env = getEnvironment(ldapUrl, AUTHENTICATION_SIMPLE,
-                    username, password);
-        } else {
-            env = getEnvironment(ldapUrl);
-        }
-
-        List<String> children = new ArrayList<String>();
-        DirContext ctx = null;
-        NotFoundException exception = null;
-        try {
-            ctx = new InitialDirContext(env);
-            Attributes attrs = ctx.getAttributes(dn.toString());
-
-            for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
-                    hasMore();) {
-                Attribute attr = ae.next();
-
-                /* Print each value */
-                for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
-                    sb.append(attr.getID());
-                    sb.append(": ");
-                    sb.append(ne.next());
-                    sb.append(System.getProperty("line.separator"));
-                }
-            }
-        } catch (Exception ex) {
-            exception = new NotFoundException(ex);
-        } finally {
-            if (ctx != null) {
-                try {
-                    ctx.close();
-                } catch (Exception ex2) {
-                    ex2.printStackTrace();
-                }
-            }
-        }
-        if (exception != null) {
-            throw exception;
-        }
-
-        return sb.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getAttributes(String ldapUrl, String dn) throws
-            NotFoundException {
-        return getAttributes(ldapUrl, "", "", dn);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String[] getChildren(String ldapUrl, String username, String password,
-            String dn) throws NotFoundException {
-        Hashtable<String, String> env;
-
-        if (username != null && !username.isEmpty()) {
-            env = getEnvironment(ldapUrl, AUTHENTICATION_SIMPLE,
-                    username, password);
-        } else {
-            env = getEnvironment(ldapUrl);
-        }
-
-        List<String> children = new ArrayList<String>();
-        DirContext ctx = null;
-        NotFoundException exception = null;
-        try {
-            ctx = new InitialDirContext(env);
-            NamingEnumeration<NameClassPair> list = ctx.list(dn);
-            while (list.hasMore()) {
-                NameClassPair nc = list.next();
-                children.add(nc.getName());
-            }
-        } catch (Exception ex) {
-            exception = new NotFoundException(ex);
-        } finally {
-            if (ctx != null) {
-                try {
-                    ctx.close();
-                } catch (Exception ex2) {
-                    ex2.printStackTrace();
-                }
-            }
-        }
-        if (exception != null) {
-            throw exception;
-        }
-
-        return children.toArray(new String[]{});
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String[] getChildren(String ldapUrl, String dn) throws
-            NotFoundException {
-        return getChildren(ldapUrl, "", "", dn);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -235,52 +70,24 @@ public class DefaultLdapService extends LdapService {
                 name());
         server.setAttribute("bind", ldapServer.getBinding());
         server.setAttribute("password", ldapServer.getPassword());
+        server.setAttribute("ssl", ldapServer.isSecure());
 
         return ldapServer;
 
     }
 
-    /**
-     * Generates a {@link Hashtable} with a configured LDAP environment.
-     *
-     * @param ldapUrl
-     *          URL of the LDAP directory service
-     * @param authentication
-     *          Type of authentication to use. Only <code>simple</code> and
-     *          <code>none</code> are supported
-     * @param username
-     *          If <code>simple</code> authentication is used, a username must
-     *          be provided
-     * @param password
-     *          If <code>simple</code> authentication is used, a password must
-     *          be provided
-     * @return {@link Hashtable} containing a configured LDAP environment
-     */
-    private Hashtable<String, String> getEnvironment(String ldapUrl,
-            String authentication, String username, String password) {
-        Hashtable<String, String> env = new Hashtable<String, String>();
-        env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, ldapUrl);
-        env.put("com.sun.jndi.ldap.connect.timeout", CONNECT_TIMEOUT_IN_MS);
-
-        if (authentication.equalsIgnoreCase(AUTHENTICATION_SIMPLE)) {
-            env.put(Context.SECURITY_AUTHENTICATION, authentication);
-            env.put(Context.SECURITY_PRINCIPAL, username);
-            env.put(Context.SECURITY_CREDENTIALS, password);
+    /** {@inheritDoc} */
+    @Override
+    public void delete(LdapServer server) throws IOException {
+        FileObject fo = FileUtil.getConfigRoot().getFileObject(
+                LdapService.SERVER_FOLDER);
+        for (FileObject ldapServer : fo.getChildren()) {
+            if (ldapServer.isData() && ldapServer.getName().equalsIgnoreCase(
+                    server.getIdentifier())) {
+                ldapServer.delete();
+            }
         }
-        return env;
-    }
 
-    /**
-     * Generates a {@link Hashtable} with a configured LDAP environment.
-     *
-     * @param ldapUrl
-     *          URL of the LDAP directory service
-     * @return {@link Hashtable} containing a configured LDAP environment
-     */
-    private Hashtable<String, String> getEnvironment(String ldapUrl) {
-        return getEnvironment(ldapUrl, "none", "", "");
     }
 
     /**
@@ -297,26 +104,14 @@ public class DefaultLdapService extends LdapService {
         String authentication = (String) fo.getAttribute("authentication");
         String bind = (String) fo.getAttribute("bind");
         String password = (String) fo.getAttribute("password");
+        Boolean secure = (Boolean) fo.getAttribute("ssl");
 
         LdapServer server = new LdapServer(host, port, baseDn);
+        server.setIdentifier(fo.getName());
         server.setAuthentication(Authentication.valueOf(authentication));
         server.setBinding(bind);
         server.setPassword(password);
-        server.setIdentifier(fo.getName());
+        server.setSecure(secure);
         return server;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void delete(LdapServer server) throws IOException {
-        FileObject fo = FileUtil.getConfigRoot().getFileObject(
-                LdapService.SERVER_FOLDER);
-        for (FileObject ldapServer : fo.getChildren()) {
-            if (ldapServer.isData() && ldapServer.getName().equalsIgnoreCase(
-                    server.getIdentifier())) {
-                ldapServer.delete();
-            }
-        }
-
     }
 }

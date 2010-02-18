@@ -23,7 +23,9 @@ package dk.i2m.netbeans.modules.ldapexplorer.ui;
  */
 public class LdapServerPanel extends javax.swing.JPanel {
 
-    /** Creates new form LdapServerPanel */
+    /** 
+     * Creates new instance of {@link LdapServerPanel}.
+     */
     public LdapServerPanel() {
         initComponents();
     }
@@ -64,7 +66,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
         // Capitalize
         String auth = authentication.substring(0, 1).toUpperCase();
         auth = auth + authentication.substring(1).toLowerCase();
-        
+
         cbAuthentication.setSelectedItem(auth);
     }
 
@@ -82,6 +84,27 @@ public class LdapServerPanel extends javax.swing.JPanel {
 
     public void setPassword(String password) {
         this.txtPassword.setText(password);
+    }
+
+    /**
+     * Determines if secure socket layer should be enabled for the connection.
+     *
+     * @return <code>true</code> if secure socket layer should be enabled,
+     *         otherwise <code>false</code>
+     */
+    public boolean isSecureSocketLayerEnabled() {
+        return this.cbSecure.isSelected();
+    }
+
+    /**
+     * Sets the secure socket layer requirement for the connection.
+     *
+     * @param enableSsl
+     *          <code>true</code> if secure socket layer is required for
+     *          the connection, otherwise <code>false</code>
+     */
+    public void setSecureSocketLayerEnabled(boolean enableSsl) {
+        this.cbSecure.setSelected(enableSsl);
     }
 
     /**
@@ -109,6 +132,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
         txtBind = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
+        cbSecure = new javax.swing.JCheckBox();
 
         lblHost.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblHost.text")); // NOI18N
 
@@ -134,6 +158,8 @@ public class LdapServerPanel extends javax.swing.JPanel {
 
         txtPassword.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtPassword.text")); // NOI18N
 
+        cbSecure.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.cbSecure.text")); // NOI18N
+
         org.jdesktop.layout.GroupLayout pnlConnectionLayout = new org.jdesktop.layout.GroupLayout(pnlConnection);
         pnlConnection.setLayout(pnlConnectionLayout);
         pnlConnectionLayout.setHorizontalGroup(
@@ -141,20 +167,27 @@ public class LdapServerPanel extends javax.swing.JPanel {
             .add(pnlConnectionLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblHost)
-                    .add(lblPort)
-                    .add(lblBaseDn)
-                    .add(lblAuthentication)
-                    .add(lblBind)
-                    .add(lblPassword))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(txtHostname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-                    .add(txtPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 57, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(txtBaseDn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-                    .add(cbAuthentication, 0, 232, Short.MAX_VALUE)
-                    .add(txtBind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-                    .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))
+                    .add(pnlConnectionLayout.createSequentialGroup()
+                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblHost)
+                            .add(lblPort)
+                            .add(lblBaseDn))
+                        .add(39, 39, 39)
+                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(txtHostname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
+                            .add(txtPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 57, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(txtBaseDn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
+                            .add(cbSecure)))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlConnectionLayout.createSequentialGroup()
+                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblAuthentication)
+                            .add(lblBind)
+                            .add(lblPassword))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(cbAuthentication, 0, 232, Short.MAX_VALUE)
+                            .add(txtBind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
+                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         pnlConnectionLayout.setVerticalGroup(
@@ -171,7 +204,9 @@ public class LdapServerPanel extends javax.swing.JPanel {
                 .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(txtBaseDn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(lblBaseDn))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(cbSecure)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblAuthentication)
                     .add(cbAuthentication, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
@@ -183,7 +218,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
                 .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblPassword)
                     .add(txtPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlConnection.TabConstraints.tabTitle"), pnlConnection); // NOI18N
@@ -196,11 +231,12 @@ public class LdapServerPanel extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlTabbed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .add(pnlTabbed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbAuthentication;
+    private javax.swing.JCheckBox cbSecure;
     private javax.swing.JLabel lblAuthentication;
     private javax.swing.JLabel lblBaseDn;
     private javax.swing.JLabel lblBind;

@@ -17,18 +17,13 @@
 package dk.i2m.netbeans.modules.ldapexplorer.ui;
 
 import dk.i2m.netbeans.modules.ldapexplorer.model.ConnectionException;
-import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntry;
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntryChildren;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
-import dk.i2m.netbeans.modules.ldapexplorer.model.QueryException;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.AbstractNode;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.util.Utilities;
@@ -36,17 +31,13 @@ import org.openide.util.Utilities;
 /**
  * {@link TopComponent} implementing an explorer view of an LDAP service.
  */
-public final class ExplorerTopComponent extends TopComponent {
+public final class ExplorerTopComponent extends TopComponent implements
+        ExplorerManager.Provider {
 
+    private ExplorerManager em = new ExplorerManager();
     private ResourceBundle bundle = NbBundle.getBundle(
             ExplorerTopComponent.class);
-    //private static ExplorerTopComponent instance;
-    /** path to the icon used by the component and its open action */
-    static final String ICON_PATH =
-            "dk/i2m/netbeans/modules/ldapexplorer/resources/address_book_32.png";
     //private static final String PREFERRED_ID = "ExplorerTopComponent";
-    private DefaultTreeModel nodes = null;
-    private DefaultMutableTreeNode root = null;
     private LdapServer server;
 
     public ExplorerTopComponent() {
@@ -54,68 +45,43 @@ public final class ExplorerTopComponent extends TopComponent {
 
         setName(bundle.getString("CTL_ExplorerTopComponent"));
         setToolTipText(bundle.getString("HINT_ExplorerTopComponent"));
-        setIcon(Utilities.loadImage(ICON_PATH, true));
+        setIcon(ImageUtilities.loadImage(bundle.getString(
+                "ICON_ExplorerTopComponent"), true));
 
-        TreeSelectionListener nodeSelect = new TreeSelectionListener() {
-
-            public void valueChanged(TreeSelectionEvent e) {
-                if (e.getNewLeadSelectionPath() == null) {
-                    return;
-                }
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.getPath().
-                        getLastPathComponent();
-
-                TreePath path = e.getNewLeadSelectionPath();
-                StringBuffer dn = new StringBuffer();
-
-                int i = 0;
-                for (Object obj : path.getPath()) {
-                    // Ignore root
-                    if (i > 0) {
-                        if (i > 1) {
-                            dn.insert(0, ",");
-                        }
-                        dn.insert(0, obj.toString());
-                    }
-                    i++;
-                }
-
-                try {
-                    LdapEntry entry = server.getEntry(dn.toString());
-                    txtOutput.setText(entry.toLDIF());
-
-                    DefaultTableModel model = (DefaultTableModel) tblAttributes.
-                            getModel();
-                    model.setRowCount(0);
-                    model.addRow(new Object[]{"dn", entry.getDn()});
-
-                    for (String att : entry.getAttributes().keySet()) {
-                        for (Object val : entry.getAttributes().get(att)) {
-                            model.addRow(new Object[]{att, val});
-                        }
-                    }
-                } catch (QueryException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-            }
-        };
-
-        ldapTree.addTreeSelectionListener(nodeSelect);
+        em.setRootContext(new AbstractNode(new LdapEntryChildren()));
+        em.getRootContext().setDisplayName("Root");
     }
 
-    /**
-     * Gets the tree of the current LDAP connection.
-     *
-     * @return {@link TreeModel} representing the tree of the current LDAP
-     *         connection
-     */
-    public TreeModel getNodes() {
-        if (nodes == null) {
-            root = new DefaultMutableTreeNode("not connected");
-            nodes = new DefaultTreeModel(root);
-        }
+    @Override
+    public int getPersistenceType() {
+        return TopComponent.PERSISTENCE_ALWAYS;
+    }
 
-        return nodes;
+    @Override
+    public void componentOpened() {
+        LdapServerNode node = Utilities.actionsGlobalContext().lookup(
+                LdapServerNode.class);
+
+        if (node != null) {
+            this.server = node.getServer();
+            setDisplayName(this.server.toString());
+        }
+    }
+
+    @Override
+    public void componentClosed() {
+        if (this.server != null) {
+            try {
+                this.server.disconnect();
+            } catch (ConnectionException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(),
+                        "An error occurred", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public ExplorerManager getExplorerManager() {
+        return em;
     }
 
     /**
@@ -130,8 +96,7 @@ public final class ExplorerTopComponent extends TopComponent {
 
         treeDetailSplitter = new javax.swing.JSplitPane();
         overviewTabbedPane = new javax.swing.JTabbedPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        ldapTree = new javax.swing.JTree();
+        beanTreeView1 = new org.openide.explorer.view.BeanTreeView();
         detailTabbedPane = new javax.swing.JTabbedPane();
         formPane = new javax.swing.JScrollPane();
         tblAttributes = new javax.swing.JTable();
@@ -141,14 +106,11 @@ public final class ExplorerTopComponent extends TopComponent {
         treeDetailSplitter.setDividerLocation(200);
         treeDetailSplitter.setDividerSize(4);
 
-        ldapTree.setModel(getNodes());
-        ldapTree.setMinimumSize(new java.awt.Dimension(200, 0));
-        ldapTree.setPreferredSize(new java.awt.Dimension(200, 76));
-        jScrollPane3.setViewportView(ldapTree);
-
-        overviewTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.jScrollPane3.TabConstraints.tabTitle"), jScrollPane3); // NOI18N
+        overviewTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.beanTreeView1.TabConstraints.tabTitle"), beanTreeView1); // NOI18N
 
         treeDetailSplitter.setLeftComponent(overviewTabbedPane);
+
+        formPane.setAutoscrolls(true);
 
         tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -184,86 +146,17 @@ public final class ExplorerTopComponent extends TopComponent {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, treeDetailSplitter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, treeDetailSplitter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * Recurring method for building the LDAP browsing tree.
-     *
-     * @param parent
-     *          Node for which to add the children
-     * @param url
-     *          URL of the LDAP service
-     * @param dn
-     *          Distinguished name of the node to add to the parent
-     */
-    private void buildTree(DefaultMutableTreeNode parent, String dn) {
-        try {
-            for (LdapEntry child : server.getTree(dn)) {
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode(child.
-                        getDn());
-
-                String newDN = child.getDn();
-                if (!dn.isEmpty()) {
-                    newDN = newDN + "," + dn;
-                }
-
-                buildTree(node, newDN);
-                parent.add(node);
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.openide.explorer.view.BeanTreeView beanTreeView1;
     private javax.swing.JTabbedPane detailTabbedPane;
     private javax.swing.JScrollPane formPane;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTree ldapTree;
     private javax.swing.JScrollPane ldifPane;
     private javax.swing.JTabbedPane overviewTabbedPane;
     private javax.swing.JTable tblAttributes;
     private javax.swing.JSplitPane treeDetailSplitter;
     private javax.swing.JTextPane txtOutput;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public int getPersistenceType() {
-        return TopComponent.PERSISTENCE_ALWAYS;
-    }
-
-    @Override
-    public void componentOpened() {
-        LdapServerNode node = Utilities.actionsGlobalContext().lookup(
-                LdapServerNode.class);
-
-        if (node != null) {
-            this.server = node.getServer();
-            setDisplayName(this.server.toString());
-            try {
-                this.server.connect();
-
-                this.root = new DefaultMutableTreeNode(this.server.toString());
-                buildTree(root, "");
-                this.nodes = new DefaultTreeModel(root);
-                this.ldapTree.setModel(nodes);
-                this.ldapTree.revalidate();
-
-            } catch (ConnectionException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public void componentClosed() {
-        if (this.server != null) {
-            try {
-                this.server.disconnect();
-            } catch (ConnectionException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 }

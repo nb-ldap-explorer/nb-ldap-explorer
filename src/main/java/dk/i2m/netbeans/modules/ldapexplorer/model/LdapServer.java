@@ -16,17 +16,27 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.SizeLimitExceededException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 
 /**
  * Connection to an {@link LdapServer}.
@@ -44,7 +54,7 @@ public class LdapServer {
     private Authentication authentication = Authentication.NONE;
     private String binding = "";
     private String password = "";
-    private DirContext dirCtx = null;
+    private LdapContext dirCtx = null;
 
     /**
      * Creates a new {@link LdapServer}.
@@ -335,7 +345,7 @@ public class LdapServer {
     public void connect() throws ConnectionException {
         try {
             this.dirCtx =
-                    new InitialDirContext(getConnectionEnvironment());
+                    new InitialLdapContext(getConnectionEnvironment(), null);
         } catch (NamingException ex) {
             throw new ConnectionException(ex);
         }
@@ -386,15 +396,29 @@ public class LdapServer {
         }
 
         try {
-            NamingEnumeration<NameClassPair> list = this.dirCtx.list(path);
-            while (list.hasMore()) {
-                NameClassPair nc = list.next();
+            NamingEnumeration<NameClassPair> results = this.dirCtx.list(path);
+
+            while (results != null & results.hasMore()) {
+                NameClassPair nc = results.next();
+
                 LdapEntry entry = new LdapEntry();
-                entry.setDn(nc.getName());
+                if (!path.isEmpty()) {
+                    entry.setDn(nc.getName() + "," + path);
+                    entry.setLabel(nc.getName());
+                } else {
+                    entry.setDn(nc.getName());
+                    entry.setLabel(nc.getName());
+                }
                 entries.add(entry);
             }
+
         } catch (NamingException ex) {
-            throw new QueryException(ex);
+            if (ex instanceof SizeLimitExceededException) {
+                Logger.getLogger(LdapServer.class.getName()).warning(ex.
+                        getMessage());
+            } else {
+                throw new QueryException(ex);
+            }
         }
 
         return entries;

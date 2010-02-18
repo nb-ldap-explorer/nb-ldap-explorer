@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 alc.
+ *  Copyright 2010 Interactive Media Management
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.ui;
 
+import dk.i2m.netbeans.modules.ldapexplorer.model.ConnectionException;
 import java.awt.event.ActionEvent;
+import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
@@ -28,15 +31,36 @@ import org.openide.windows.TopComponent;
  */
 public class ExplorerAction extends AbstractAction {
 
+    private static ResourceBundle bundle = NbBundle.getBundle(
+            ExplorerAction.class);
+
     public ExplorerAction() {
-        super(NbBundle.getMessage(ExplorerAction.class, "CTL_ExplorerAction"));
-        putValue(SMALL_ICON, new ImageIcon(Utilities.loadImage(
-                ExplorerTopComponent.ICON_PATH, true)));
+        super(bundle.getString("CTL_ExplorerAction"));
+        putValue(SMALL_ICON, ImageUtilities.loadImageIcon(bundle.getString(
+                "ICON_ExplorerTopComponent"), true));
     }
 
+    /**
+     * Event handler that connects to the selected server and opens the
+     * explorer window.
+     *
+     * @param evt
+     *          Event that invoked the handler
+     */
     public void actionPerformed(ActionEvent evt) {
-        TopComponent win = new ExplorerTopComponent();
-        win.open();
-        win.requestActive();
+        LdapServerNode node = Utilities.actionsGlobalContext().lookup(
+                LdapServerNode.class);
+        if (node != null) {
+            try {
+                node.getServer().connect();
+
+                TopComponent win = new ExplorerTopComponent();
+                win.open();
+                win.requestActive();
+            } catch (ConnectionException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage(),
+                        "Could not connect", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

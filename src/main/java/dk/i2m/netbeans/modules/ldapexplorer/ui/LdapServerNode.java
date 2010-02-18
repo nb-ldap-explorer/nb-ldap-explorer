@@ -110,6 +110,7 @@ public class LdapServerNode extends AbstractNode {
             panel.setAuthentication(server.getAuthentication().name());
             panel.setBind(server.getBinding());
             panel.setPassword(server.getPassword());
+            panel.setSecureSocketLayerEnabled(server.isSecure());
 
             ActionListener listener = new ActionListener() {
 
@@ -124,6 +125,7 @@ public class LdapServerNode extends AbstractNode {
                             getAuthentication()));
                     server.setBinding(panel.getBind());
                     server.setPassword(panel.getPassword());
+                    server.setSecure(panel.isSecureSocketLayerEnabled());
 
                     try {
                         LdapService.getDefault().save(server);

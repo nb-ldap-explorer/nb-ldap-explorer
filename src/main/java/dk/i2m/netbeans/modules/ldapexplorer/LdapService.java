@@ -19,7 +19,6 @@ package dk.i2m.netbeans.modules.ldapexplorer;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import org.openide.util.Lookup;
 
 /**
@@ -38,94 +37,6 @@ public abstract class LdapService {
     public static final String AUTHENTICATION_NONE = "none";
     /** Folder, in the NetBeans virtual file system, containing module settings. */
     public static final String SERVER_FOLDER = "i2m-ldapbrowser/servers";
-
-    /**
-     * Obtains the attributes and values of an object in a given directory.
-     *
-     * @param ldapUrl
-     *          URL of the directory service
-     * @param username
-     *          Username for connecting to the directory service
-     * @param password
-     *          Password for connecting to the directory service
-     * @param dn
-     *          Distinguished name of the object to fetch
-     * @return {@link Map} of attribute name as the key and their value as the
-     *         map value
-     * @throws NotFoundException
-     *          If an object could not be found with the given <code>dn</code>
-     */
-    public abstract Map<String, String> getAttributeMap(String ldapUrl,
-            String username, String password, String dn) throws
-            NotFoundException;
-
-    /**
-     * Obtains the attributes and values of an object in a given directory.
-     *
-     * @param ldapUrl
-     *          URL of the directory service
-     * @param username
-     *          Username for connecting to the directory service
-     * @param password
-     *          Password for connecting to the directory service
-     * @param dn
-     *          Distinguished name of the object to fetch
-     * @return {@link String} containing LDIF of the specified object
-     * @throws NotFoundException
-     *          If an object could not be found with the given <code>dn</code>
-     */
-    public abstract String getAttributes(final String ldapUrl,
-            final String username, final String password, final String dn)
-            throws NotFoundException;
-
-    /**
-     * Gets the children nodes of an object in a given directory.
-     *
-     * @param ldapUrl
-     *          URL of the directory service
-     * @param username
-     *          Username for connecting to the directory service
-     * @param password
-     *          Password for connecting to the directory service
-     * @param dn
-     *          distinguished name of the childrens parent
-     * @return Array of {@link String}s containing the distinguished names of
-     *         the children
-     * @throws NotFoundException
-     *          If an object could not be found with the given <code>dn</code>
-     */
-    public abstract String[] getChildren(final String ldapUrl,
-            final String username, final String password, final String dn)
-            throws NotFoundException;
-
-    /**
-     * Obtains the attributes and values of an object in a given directory.
-     *
-     * @param ldapUrl
-     *          URL of the directory service
-     * @param dn
-     *          Distinguished name of the object to fetch
-     * @return {@link String} containing LDIF of the specified object
-     * @throws NotFoundException
-     *          If an object could not be found with the given <code>dn</code>
-     */
-    public abstract String getAttributes(final String ldapUrl, final String dn)
-            throws NotFoundException;
-
-    /**
-     * Gets the children nodes of an object in a given directory.
-     *
-     * @param ldapUrl
-     *          URL of the directory service
-     * @param dn
-     *          distinguished name of the childrens parent
-     * @return Array of {@link String}s containing the distinguished names of
-     *         the children
-     * @throws NotFoundException
-     *          If an object could not be found with the given <code>dn</code>
-     */
-    public abstract String[] getChildren(final String ldapUrl, final String dn)
-            throws NotFoundException;
 
     /**
      * Gets a {@link List} of registered {@link LdapServer}s.
