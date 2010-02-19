@@ -16,9 +16,12 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import java.io.IOException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.naming.Context;
@@ -28,15 +31,9 @@ import javax.naming.NamingException;
 import javax.naming.SizeLimitExceededException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
-import javax.naming.ldap.PagedResultsControl;
-import javax.naming.ldap.PagedResultsResponseControl;
+import org.openide.filesystems.FileObject;
 
 /**
  * Connection to an {@link LdapServer}.
@@ -120,6 +117,7 @@ public class LdapServer {
      */
     public void setAuthentication(Authentication authentication) {
         this.authentication = authentication;
+        fire("authentication", null, authentication);
     }
 
     /**
@@ -138,7 +136,9 @@ public class LdapServer {
      *          Base distinguished name of the connection
      */
     public void setBaseDN(String baseDN) {
+        String oldBaseDN = this.baseDN;
         this.baseDN = baseDN;
+        fire("baseDN", oldBaseDN, baseDN);
     }
 
     /**
@@ -157,7 +157,9 @@ public class LdapServer {
      *          Host name or IP address of the LDAP service
      */
     public void setHost(String host) {
+        String oldHost = this.host;
         this.host = host;
+        fire("host", oldHost, host);
     }
 
     /**
@@ -165,7 +167,7 @@ public class LdapServer {
      *
      * @return Port of the LDAP service
      */
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
@@ -175,8 +177,10 @@ public class LdapServer {
      * @param port
      *          Port of the LDAP service
      */
-    public void setPort(int port) {
+    public void setPort(Integer port) {
+        Integer oldPort = Integer.valueOf(this.port);
         this.port = port;
+        fire("port", oldPort, port);
     }
 
     /**
@@ -185,7 +189,11 @@ public class LdapServer {
      * @return <code>true</code> if the connection to the {@link LdapServer}
      *         is secure, otherwise <code>false</code>
      */
-    public boolean isSecure() {
+    public Boolean isSecure() {
+        return secure;
+    }
+
+     public Boolean getSecure() {
         return secure;
     }
 
@@ -195,8 +203,9 @@ public class LdapServer {
      * @param secure
      *          Secure status of the {@link LdapServer} connection
      */
-    public void setSecure(boolean secure) {
+    public void setSecure(Boolean secure) {
         this.secure = secure;
+        fire("secure", null, secure);
     }
 
     /**
@@ -220,6 +229,7 @@ public class LdapServer {
      */
     public void setBinding(String binding) {
         this.binding = binding;
+        fire("binding", null, binding);
     }
 
     /**
@@ -460,5 +470,24 @@ public class LdapServer {
         }
 
         return entry;
+    }
+    private List<PropertyChangeListener> listeners = Collections.
+            synchronizedList(new LinkedList<PropertyChangeListener>());
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        listeners.add(pcl);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        listeners.remove(pcl);
+    }
+
+    private void fire(String propertyName, Object old, Object nue) {
+        PropertyChangeListener[] pcls = listeners.toArray(
+                new PropertyChangeListener[0]);
+        for (int i = 0; i < pcls.length; i++) {
+            pcls[i].propertyChange(new PropertyChangeEvent(this, propertyName,
+                    old, nue));
+        }
     }
 }

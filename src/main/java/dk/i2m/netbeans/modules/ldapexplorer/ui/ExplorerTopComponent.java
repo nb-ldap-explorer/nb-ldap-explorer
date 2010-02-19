@@ -16,6 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.ui;
 
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServerNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.ConnectionException;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntryChildren;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
@@ -54,7 +55,7 @@ public final class ExplorerTopComponent extends TopComponent implements
 
     @Override
     public int getPersistenceType() {
-        return TopComponent.PERSISTENCE_ALWAYS;
+        return TopComponent.PERSISTENCE_NEVER;
     }
 
     @Override
@@ -94,69 +95,20 @@ public final class ExplorerTopComponent extends TopComponent implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        treeDetailSplitter = new javax.swing.JSplitPane();
-        overviewTabbedPane = new javax.swing.JTabbedPane();
         beanTreeView1 = new org.openide.explorer.view.BeanTreeView();
-        detailTabbedPane = new javax.swing.JTabbedPane();
-        formPane = new javax.swing.JScrollPane();
-        tblAttributes = new javax.swing.JTable();
-        ldifPane = new javax.swing.JScrollPane();
-        txtOutput = new javax.swing.JTextPane();
-
-        treeDetailSplitter.setDividerLocation(200);
-        treeDetailSplitter.setDividerSize(4);
-
-        overviewTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.beanTreeView1.TabConstraints.tabTitle"), beanTreeView1); // NOI18N
-
-        treeDetailSplitter.setLeftComponent(overviewTabbedPane);
-
-        formPane.setAutoscrolls(true);
-
-        tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Attribute", "Value"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        formPane.setViewportView(tblAttributes);
-
-        detailTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.formPane.TabConstraints.tabTitle"), formPane); // NOI18N
-
-        ldifPane.setViewportView(txtOutput);
-
-        detailTabbedPane.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.ldifPane.TabConstraints.tabTitle"), ldifPane); // NOI18N
-
-        treeDetailSplitter.setRightComponent(detailTabbedPane);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(treeDetailSplitter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
+            .add(beanTreeView1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, treeDetailSplitter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+            .add(beanTreeView1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.openide.explorer.view.BeanTreeView beanTreeView1;
-    private javax.swing.JTabbedPane detailTabbedPane;
-    private javax.swing.JScrollPane formPane;
-    private javax.swing.JScrollPane ldifPane;
-    private javax.swing.JTabbedPane overviewTabbedPane;
-    private javax.swing.JTable tblAttributes;
-    private javax.swing.JSplitPane treeDetailSplitter;
-    private javax.swing.JTextPane txtOutput;
     // End of variables declaration//GEN-END:variables
 }

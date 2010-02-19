@@ -14,9 +14,9 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer.ui;
+package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import dk.i2m.netbeans.modules.ldapexplorer.model.ConnectionException;
+import dk.i2m.netbeans.modules.ldapexplorer.ui.ExplorerTopComponent;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
@@ -37,7 +37,7 @@ public class ExplorerAction extends AbstractAction {
     public ExplorerAction() {
         super(bundle.getString("CTL_ExplorerAction"));
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon(bundle.getString(
-                "ICON_ExplorerTopComponent"), true));
+                "ICON_ExplorerAction"), true));
     }
 
     /**
@@ -48,12 +48,19 @@ public class ExplorerAction extends AbstractAction {
      *          Event that invoked the handler
      */
     public void actionPerformed(ActionEvent evt) {
+
+        // Fetch currently selected LdapServerNode
         LdapServerNode node = Utilities.actionsGlobalContext().lookup(
                 LdapServerNode.class);
+
+        // Ensure that an LdapServerNode is indeed selected or found
         if (node != null) {
             try {
+
+                // Connect to the server contained in the selected node
                 node.getServer().connect();
 
+                // Open the explorer window for the server connection
                 TopComponent win = new ExplorerTopComponent();
                 win.open();
                 win.requestActive();

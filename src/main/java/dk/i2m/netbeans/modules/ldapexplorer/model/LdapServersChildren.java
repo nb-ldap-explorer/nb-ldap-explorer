@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Allan Lykke Christensen.
+ *  Copyright 2010 Interactive Media Management
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer.ui;
+package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.LdapServersNotifier;
 import dk.i2m.netbeans.modules.ldapexplorer.LdapService;
-import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import java.util.Collections;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

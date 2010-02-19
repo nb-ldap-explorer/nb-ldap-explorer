@@ -20,7 +20,7 @@
 
     <folder name="UI">
         <folder name="Runtime">
-            <file name="dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServersNode.instance">
+            <file name="dk.i2m.netbeans.modules.ldapexplorer.model.LdapServersNode.instance">
                 <attr name="position" intvalue="20"/>
             </file>
         </folder>

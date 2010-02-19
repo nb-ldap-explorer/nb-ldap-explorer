@@ -14,13 +14,12 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer.ui;
+package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.NewLdapServer;
 import java.util.ResourceBundle;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Sheet;
 import org.openide.util.NbBundle;
 import org.openide.util.actions.SystemAction;
 
@@ -50,24 +49,5 @@ public class LdapServersNode extends AbstractNode {
         Action[] result = new Action[]{
             SystemAction.get(NewLdapServer.class)};
         return result;
-    }
-
-    @Override
-    protected Sheet createSheet() {
-        Sheet sheet = Sheet.createDefault();
-        Sheet.Set set = Sheet.createPropertiesSet();
-
-//            Property enabledProp = new PropertySupport.Reflection(app,
-//                    Boolean.class, "isSaveEnabled", "setSaveEnabled");
-//            Property saveFolderProp = new PropertySupport.Reflection(app,
-//                    String.class, "getSaveFolder", "setSaveFolder");
-//
-//            enabledProp.setName(bundle.getString("LBL_SaveEnabledProperty"));
-//            saveFolderProp.setName(bundle.getString("LBL_SaveFolderProperty"));
-//            set.put(enabledProp);
-//            set.put(saveFolderProp);
-        sheet.put(set);
-
-        return sheet;
     }
 }
