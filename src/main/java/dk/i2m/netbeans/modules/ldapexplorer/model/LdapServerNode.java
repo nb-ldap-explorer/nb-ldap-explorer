@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Allan Lykke Christensen.
+ *  Copyright 2010 Interactive Media Management
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,19 +18,14 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.LdapServersNotifier;
 import dk.i2m.netbeans.modules.ldapexplorer.LdapService;
-import dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServerPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ResourceBundle;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
 import org.openide.actions.DeleteAction;
+import org.openide.actions.PropertiesAction;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
@@ -140,18 +135,13 @@ public class LdapServerNode extends AbstractNode implements
     }
 
     @Override
-    public Action getPreferredAction() {
-        return new ModifyLdapServer();
-    }
-
-    @Override
     public Action[] getActions(boolean context) {
         Action[] result = new Action[]{
             new ExplorerAction(),
             null,
             SystemAction.get(DeleteAction.class),
             null,
-            new ModifyLdapServer()
+            SystemAction.get(PropertiesAction.class),
         };
         return result;
     }
@@ -179,57 +169,6 @@ public class LdapServerNode extends AbstractNode implements
             LdapService.getDefault().save(srv);
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
-        }
-    }
-
-    private class ModifyLdapServer extends AbstractAction {
-
-        LdapServerPanel panel;
-
-        public ModifyLdapServer() {
-            putValue(NAME, bundle.getString("CTL_ModifyLdapServer"));
-        }
-
-        public void actionPerformed(ActionEvent e) {
-
-            panel = new LdapServerPanel();
-            panel.setHostname(server.getHost());
-            panel.setPort(server.getPort());
-            panel.setBaseDN(server.getBaseDN());
-            panel.setAuthentication(server.getAuthentication().name());
-            panel.setBind(server.getBinding());
-            panel.setPassword(server.getPassword());
-            panel.setSecureSocketLayerEnabled(server.isSecure());
-
-            ActionListener listener = new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    if (e.getSource() == DialogDescriptor.CANCEL_OPTION) {
-                        return;
-                    }
-                    server.setHost(panel.getHostname());
-                    server.setPort(panel.getPort());
-                    server.setBaseDN(panel.getBaseDN());
-                    server.setAuthentication(Authentication.valueOf(panel.
-                            getAuthentication()));
-                    server.setBinding(panel.getBind());
-                    server.setPassword(panel.getPassword());
-                    server.setSecure(panel.isSecureSocketLayerEnabled());
-
-                    try {
-                        LdapService.getDefault().save(server);
-                        setName(server.toString());
-                        LdapServersNotifier.changed();
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                    }
-                }
-            };
-
-            DialogDescriptor d = new DialogDescriptor(panel, NbBundle.getMessage(
-                    ModifyLdapServer.class, "CTL_ModifyLdapServer"),
-                    true, listener);
-            DialogDisplayer.getDefault().notifyLater(d);
         }
     }
 
