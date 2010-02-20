@@ -193,7 +193,7 @@ public class LdapServer {
         return secure;
     }
 
-     public Boolean getSecure() {
+    public Boolean getSecure() {
         return secure;
     }
 
@@ -419,6 +419,48 @@ public class LdapServer {
                     entry.setDn(nc.getName());
                     entry.setLabel(nc.getName());
                 }
+
+//                System.out.println(nc.getName() + ": " + nc.getNameInNamespace()
+//                        + " [" + entry.getDn() + "]");
+
+                try {
+                    Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{
+                                "objectclass"});
+
+                    for (NamingEnumeration<? extends Attribute> ae = attrs.
+                            getAll(); ae.hasMore();) {
+                        Attribute attr = ae.next();
+
+                        for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
+                            String objClass = (String) ne.next();
+                            //System.out.println("- " + nc.getName() + ": "
+                            //        + objClass);
+                            if ("organization".equalsIgnoreCase(objClass) || "organizationalUnit".
+                                    equalsIgnoreCase(objClass)) {
+                                entry.setEntryType(EntryType.ORGANISATION);
+                                break;
+                            }
+
+                            if ("groupOfUniqueNames".equalsIgnoreCase(objClass) || "groupOfNames".
+                                    equalsIgnoreCase(objClass)) {
+                                entry.setEntryType(EntryType.GROUP);
+                                break;
+                            }
+
+                            if ("person".equalsIgnoreCase(objClass) || "inetOrgPerson".
+                                    equalsIgnoreCase(objClass) || "account".
+                                    equalsIgnoreCase(objClass) || "posixAccount".
+                                    equalsIgnoreCase(objClass)) {
+                                entry.setEntryType(EntryType.PERSON);
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(LdapServer.class.getName()).warning(ex.
+                            getMessage());
+                }
+
                 entries.add(entry);
             }
 

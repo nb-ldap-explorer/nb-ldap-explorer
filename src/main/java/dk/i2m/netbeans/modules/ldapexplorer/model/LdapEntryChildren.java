@@ -16,7 +16,6 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
@@ -74,7 +73,7 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
         children.setParent(key.getDn());
         children.setLdapServer(ldapServer);
 
-        AbstractNode node = new AbstractNode(children);
+        LdapEntryNode node = new LdapEntryNode(children, key);
         node.setDisplayName(key.getLabel());
         return new Node[]{node};
     }

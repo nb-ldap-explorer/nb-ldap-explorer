@@ -28,6 +28,9 @@ import java.util.Map;
  */
 public class LdapEntry {
 
+    private boolean organisation = false;
+    private boolean person = false;
+    private EntryType entryType = EntryType.UNKNOWN;
     private String label;
     private String dn;
     private Map<String, ArrayList<Object>> attributes =
@@ -92,6 +95,26 @@ public class LdapEntry {
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    
+    /**
+     * Gets the type of entry.
+     * 
+     * @return Type of entry
+     */
+    public EntryType getEntryType() {
+        return entryType;
+    }
+
+    /**
+     * Sets the type of entry.
+     *
+     * @param entryType
+     *          Type of entry
+     */
+    public void setEntryType(EntryType entryType) {
+        this.entryType = entryType;
     }
 
     /**
