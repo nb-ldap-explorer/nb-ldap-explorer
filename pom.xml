@@ -4,7 +4,7 @@
     <groupId>dk.i2m.netbeans.modules</groupId>
     <artifactId>nb-ldap-explorer</artifactId>
     <packaging>nbm</packaging>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <name>NetBeans LDAP Explorer</name>
     <prerequisites>
         <maven>2.0</maven>
@@ -134,6 +134,7 @@
                     <keystorealias>${maven.nbm.sign.alias}</keystorealias>
                     <keystorepassword>${maven.nbm.sign.storepass}</keystorepassword>
                     <netbeansInstallation>${netbeansInstallation}</netbeansInstallation>
+                    <fileName>updates.xml</fileName>
                 </configuration>
             </plugin>
             <plugin>
