@@ -18,6 +18,7 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import java.awt.Image;
 import java.util.ResourceBundle;
+import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
@@ -31,6 +32,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class LdapEntryNode extends AbstractNode {
 
+    private boolean root = false;
     private static ResourceBundle bundle = NbBundle.getBundle(
             LdapEntryNode.class);
 
@@ -39,43 +41,67 @@ public class LdapEntryNode extends AbstractNode {
 
         setDisplayName(ldapEntry.toString());
         setShortDescription(bundle.getString("HINT_LdapEntryNode"));
+        root = false;
+    }
+
+    public LdapEntryNode(Children c) {
+        super(c);
+        setDisplayName("");
+        root = true;
     }
 
     @Override
     public Image getIcon(int type) {
-        LdapEntry entry = getLookup().lookup(LdapEntry.class);
-        Image img;
+
+        if (root) {
+            return ImageUtilities.loadImage(
+                    bundle.getString("ICON_LdapRootNode"));
+        } else {
+
+            LdapEntry entry = getLookup().lookup(LdapEntry.class);
+            Image img;
+
+            switch (entry.getEntryType()) {
+
+                case PERSON:
+                    img = ImageUtilities.loadImage(bundle.getString(
+                            "ICON_LdapEntryPersonNode"));
+                    break;
+
+                case ORGANISATION:
+                    img = ImageUtilities.loadImage(bundle.getString(
+                            "ICON_LdapEntryOrganizationNode"));
+                    break;
+
+                case GROUP:
+                    img = ImageUtilities.loadImage(bundle.getString(
+                            "ICON_LdapEntryGroupNode"));
+                    break;
 
 
-        switch (entry.getEntryType()) {
+                default:
+                    img = ImageUtilities.loadImage(bundle.getString(
+                            "ICON_LdapEntryNode"));
 
-            case PERSON:
-                img = ImageUtilities.loadImage(bundle.getString(
-                        "ICON_LdapEntryPersonNode"));
-                break;
-
-            case ORGANISATION:
-                img = ImageUtilities.loadImage(bundle.getString(
-                        "ICON_LdapEntryOrganizationNode"));
-                break;
-
-            case GROUP:
-                img = ImageUtilities.loadImage(bundle.getString(
-                        "ICON_LdapEntryGroupNode"));
-                break;
-
-
-            default:
-                img = ImageUtilities.loadImage(bundle.getString(
-                        "ICON_LdapEntryNode"));
-
+            }
+            return img;
         }
-        return img;
-
     }
 
     @Override
     public Image getOpenedIcon(int i) {
         return getIcon(i);
+    }
+
+    /**
+     * No right click actions available for {@link LdapEntryNode}s.
+     *
+     * @param context
+     * @return
+     */
+    @Override
+    public Action[] getActions(boolean context) {
+        Action[] result = new Action[]{};
+        return result;
     }
 }

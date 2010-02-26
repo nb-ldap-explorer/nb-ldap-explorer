@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openide.util.NbBundle;
 
 /**
  * Represents an entry in an LDAP tree.
@@ -28,8 +29,6 @@ import java.util.Map;
  */
 public class LdapEntry {
 
-    private boolean organisation = false;
-    private boolean person = false;
     private EntryType entryType = EntryType.UNKNOWN;
     private String label;
     private String dn;
@@ -97,7 +96,6 @@ public class LdapEntry {
         this.label = label;
     }
 
-    
     /**
      * Gets the type of entry.
      * 
@@ -221,7 +219,14 @@ public class LdapEntry {
             for (Object val : this.attributes.get(key)) {
                 ldif.append(key);
                 ldif.append(": ");
-                ldif.append(val);
+
+                if (val instanceof byte[]) {
+                    // Field is binary - convert it to hexadecimals
+                    ldif.append(NbBundle.getMessage(LdapEntry.class, "ATTRIBUTE_NOT_STRING"));
+                } else {
+                    ldif.append(val);
+                }
+
                 ldif.append(System.getProperty("line.separator"));
             }
         }

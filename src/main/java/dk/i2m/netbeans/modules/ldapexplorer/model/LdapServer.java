@@ -411,6 +411,9 @@ public class LdapServer {
             while (results != null & results.hasMore()) {
                 NameClassPair nc = results.next();
 
+                // TASK: Instead of prepending the path to the name, it may be
+                //       possibly to use nc.getNameInNamespace(). Need to verify
+
                 LdapEntry entry = new LdapEntry();
                 if (!path.isEmpty()) {
                     entry.setDn(nc.getName() + "," + path);
@@ -420,8 +423,8 @@ public class LdapServer {
                     entry.setLabel(nc.getName());
                 }
 
-//                System.out.println(nc.getName() + ": " + nc.getNameInNamespace()
-//                        + " [" + entry.getDn() + "]");
+                // System.out.println(nc.getName() + ": " + nc.getNameInNamespace()
+                //                        + " [" + entry.getDn() + "]");
 
                 try {
                     Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{

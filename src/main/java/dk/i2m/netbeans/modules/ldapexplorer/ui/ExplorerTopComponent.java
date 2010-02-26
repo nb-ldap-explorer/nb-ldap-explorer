@@ -20,14 +20,17 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServerNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.ConnectionException;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntry;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntryChildren;
-import dk.i2m.netbeans.modules.ldapexplorer.model.LdapRootNode;
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntryNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
+import dk.i2m.netbeans.modules.ldapexplorer.model.QueryException;
 import java.util.Collection;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import org.apache.commons.codec.binary.Hex;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
-import org.openide.nodes.AbstractNode;
+import org.openide.explorer.view.BeanTreeView;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -45,23 +48,26 @@ public final class ExplorerTopComponent extends TopComponent implements
     private ExplorerManager em = new ExplorerManager();
     private ResourceBundle bundle = NbBundle.getBundle(
             ExplorerTopComponent.class);
-    //private static final String PREFERRED_ID = "ExplorerTopComponent";
+    private static final String PREFERRED_ID = "ExplorerTopComponent";
     private LdapServer server;
+    private Lookup.Result result = null;
 
     public ExplorerTopComponent() {
         initComponents();
+
+        // Omit LookUps when a change is made in the explorermanager
+        associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
+        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
 
         setName(bundle.getString("CTL_ExplorerTopComponent"));
         setToolTipText(bundle.getString("HINT_ExplorerTopComponent"));
         setIcon(ImageUtilities.loadImage(bundle.getString(
                 "ICON_ExplorerTopComponent"), true));
-
-        em.setRootContext(new LdapRootNode(new LdapEntryChildren(), ""));
     }
 
     @Override
     protected String preferredID() {
-        return "LdapExplorer";
+        return PREFERRED_ID;
     }
 
     @Override
@@ -71,8 +77,15 @@ public final class ExplorerTopComponent extends TopComponent implements
 
     @Override
     public void componentOpened() {
+        // Find the current LdapServer that was selected
         LdapServerNode node = Utilities.actionsGlobalContext().lookup(
                 LdapServerNode.class);
+
+        // Listen for changes in the selection of LdapEntryNodes
+        Lookup.Template tpl = new Lookup.Template(LdapEntryNode.class);
+        result = Utilities.actionsGlobalContext().lookup(tpl);
+        result.addLookupListener(this);
+        resultChanged(null);
 
         if (node != null) {
             this.server = node.getServer();
@@ -83,6 +96,7 @@ public final class ExplorerTopComponent extends TopComponent implements
 
     @Override
     public void componentClosed() {
+        result.removeLookupListener(this);
         if (this.server != null) {
             try {
                 this.server.disconnect();
@@ -97,15 +111,63 @@ public final class ExplorerTopComponent extends TopComponent implements
         return em;
     }
 
+    /**
+     * Event handler for when an {@link LdapEntryNode} is selected.
+     *
+     * @param ev
+     *          Event that invoked the handler
+     */
     public void resultChanged(LookupEvent ev) {
-        Lookup.Result r = (Lookup.Result) ev.getSource();
-        Collection c = r.allInstances();
+        Collection c = result.allInstances();
 
         if (!c.isEmpty()) {
-            LdapEntry e = (LdapEntry) c.iterator().next();
-            JOptionPane.showMessageDialog(null, "Selected: " + e.getLabel());
+            LdapEntryNode e = (LdapEntryNode) c.iterator().next();
+
+            // Get the model of the attribute table
+            DefaultTableModel model =
+                    (DefaultTableModel) tblAttributes.getModel();
+            model.setRowCount(0);
+
+            try {
+                // Get the LdapEntry associated with this node
+                LdapEntry entry = e.getLookup().lookup(LdapEntry.class);
+
+                // Show LdapEntry if it was found for this node
+                // Note: On the root node there is no LdapEntry, hence the check
+                if (entry != null) {
+                    entry = server.getEntry(entry.getDn());
+                    txtLdif.setText(entry.toLDIF());
+
+                    // Add the DN as it is not part of the attributes
+                    addRow(model, "dn", entry.getDn());
+
+                    for (String att : entry.getAttributes().keySet()) {
+                        for (Object val : entry.getAttributes().get(att)) {
+                            addRow(model, att, val);
+                        }
+                    }
+                } else {
+                    txtLdif.setText("");
+                }
+            } catch (QueryException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        }
+    }
+
+    private void addRow(DefaultTableModel model, String att, Object val) {
+        final String LBL_PREFIX = "ATTRIBUTE_FRIENDLY_NAME_";
+        String attName = att;
+        if (bundle.containsKey(LBL_PREFIX + att)) {
+            attName = bundle.getString(LBL_PREFIX + att);
+        }
+
+        if (val instanceof byte[]) {
+            // Field is binary - convert it to hexadecimals
+            model.addRow(
+                    new Object[]{attName, Hex.encodeHexString((byte[]) val)});
         } else {
-            JOptionPane.showMessageDialog(null, "Noting selected");
+            model.addRow(new Object[]{attName, val});
         }
     }
 
@@ -120,32 +182,17 @@ public final class ExplorerTopComponent extends TopComponent implements
     private void initComponents() {
 
         splitPane = new javax.swing.JSplitPane();
-        ldapTreeView = new org.openide.explorer.view.BeanTreeView();
         tabbedDetails = new javax.swing.JTabbedPane();
-        pnlPresentation = new javax.swing.JPanel();
         pnlAttributes = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblAttributes = new javax.swing.JTable();
         pnlLdif = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtLdif = new javax.swing.JTextPane();
+        jScrollPane3 = new BeanTreeView();
 
         splitPane.setDividerLocation(170);
         splitPane.setDividerSize(5);
-        splitPane.setLeftComponent(ldapTreeView);
-
-        org.jdesktop.layout.GroupLayout pnlPresentationLayout = new org.jdesktop.layout.GroupLayout(pnlPresentation);
-        pnlPresentation.setLayout(pnlPresentationLayout);
-        pnlPresentationLayout.setHorizontalGroup(
-            pnlPresentationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 348, Short.MAX_VALUE)
-        );
-        pnlPresentationLayout.setVerticalGroup(
-            pnlPresentationLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 524, Short.MAX_VALUE)
-        );
-
-        tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlPresentation.TabConstraints.tabTitle"), pnlPresentation); // NOI18N
 
         tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -193,6 +240,8 @@ public final class ExplorerTopComponent extends TopComponent implements
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlAttributes.TabConstraints.tabTitle"), pnlAttributes); // NOI18N
 
+        txtLdif.setEditable(false);
+        txtLdif.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jScrollPane2.setViewportView(txtLdif);
 
         org.jdesktop.layout.GroupLayout pnlLdifLayout = new org.jdesktop.layout.GroupLayout(pnlLdif);
@@ -214,6 +263,7 @@ public final class ExplorerTopComponent extends TopComponent implements
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlLdif.TabConstraints.tabTitle"), pnlLdif); // NOI18N
 
         splitPane.setRightComponent(tabbedDetails);
+        splitPane.setLeftComponent(jScrollPane3);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -231,10 +281,9 @@ public final class ExplorerTopComponent extends TopComponent implements
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private org.openide.explorer.view.BeanTreeView ldapTreeView;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPanel pnlAttributes;
     private javax.swing.JPanel pnlLdif;
-    private javax.swing.JPanel pnlPresentation;
     private javax.swing.JSplitPane splitPane;
     private javax.swing.JTabbedPane tabbedDetails;
     private javax.swing.JTable tblAttributes;

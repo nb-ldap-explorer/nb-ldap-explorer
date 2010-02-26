@@ -42,7 +42,6 @@
     <scm>
         <connection>scm:hg:https://nb-ldap-explorer.googlecode.com/hg/</connection>
         <developerConnection>scm:hg:https://nb-ldap-explorer.googlecode.com/hg/</developerConnection>
-
     </scm>
 
     <repositories>
@@ -54,6 +53,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.4</version>
+        </dependency>
+
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
@@ -102,6 +107,11 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-jdesktop-layout</artifactId>
+            <version>${netbeans.platform}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-autoupdate-services</artifactId>
             <version>${netbeans.platform}</version>
         </dependency>
     </dependencies>
@@ -212,3 +222,4 @@
 
     </properties>
 </project>
+
