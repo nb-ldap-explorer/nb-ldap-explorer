@@ -220,6 +220,8 @@ public final class ExplorerTopComponent extends TopComponent implements
                 return canEdit [columnIndex];
             }
         });
+        tblAttributes.setAutoCreateRowSorter(true);
+        tblAttributes.setShowGrid(true);
         jScrollPane1.setViewportView(tblAttributes);
 
         org.jdesktop.layout.GroupLayout pnlAttributesLayout = new org.jdesktop.layout.GroupLayout(pnlAttributes);
@@ -241,7 +243,7 @@ public final class ExplorerTopComponent extends TopComponent implements
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlAttributes.TabConstraints.tabTitle"), pnlAttributes); // NOI18N
 
         txtLdif.setEditable(false);
-        txtLdif.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        txtLdif.setFont(new java.awt.Font("Courier New", 0, 12));
         jScrollPane2.setViewportView(txtLdif);
 
         org.jdesktop.layout.GroupLayout pnlLdifLayout = new org.jdesktop.layout.GroupLayout(pnlLdif);

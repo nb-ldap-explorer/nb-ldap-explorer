@@ -92,6 +92,8 @@
                             <Column editable="true" title="Value" type="java.lang.Object"/>
                           </Table>
                         </Property>
+                        <Property name="autoCreateRowSorter" type="boolean" value="true"/>
+                        <Property name="showGrid" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>
