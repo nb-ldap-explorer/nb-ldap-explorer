@@ -38,11 +38,12 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.openide.util.Utilities;
+import org.openide.windows.CloneableTopComponent;
 
 /**
  * {@link TopComponent} implementing an explorer view of an LDAP service.
  */
-public final class ExplorerTopComponent extends TopComponent implements
+public final class ExplorerTopComponent extends CloneableTopComponent implements
         ExplorerManager.Provider, LookupListener {
 
     private ExplorerManager em = new ExplorerManager();
@@ -55,7 +56,7 @@ public final class ExplorerTopComponent extends TopComponent implements
     public ExplorerTopComponent() {
         initComponents();
 
-        // Omit LookUps when a change is made in the explorermanager
+        // Let the ExplorerManager dynamically put nodes in the lookup upon selection
         associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
         em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
 
@@ -83,7 +84,7 @@ public final class ExplorerTopComponent extends TopComponent implements
 
         // Listen for changes in the selection of LdapEntryNodes
         Lookup.Template tpl = new Lookup.Template(LdapEntryNode.class);
-        result = Utilities.actionsGlobalContext().lookup(tpl);
+        result = getLookup().lookup(tpl); // No need to go global? Utilities.actionsGlobalContext().lookup(tpl);
         result.addLookupListener(this);
         resultChanged(null);
 
@@ -118,6 +119,7 @@ public final class ExplorerTopComponent extends TopComponent implements
      *          Event that invoked the handler
      */
     public void resultChanged(LookupEvent ev) {
+
         Collection c = result.allInstances();
 
         if (!c.isEmpty()) {
@@ -184,12 +186,12 @@ public final class ExplorerTopComponent extends TopComponent implements
         splitPane = new javax.swing.JSplitPane();
         tabbedDetails = new javax.swing.JTabbedPane();
         pnlAttributes = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        attributePane = new javax.swing.JScrollPane();
         tblAttributes = new javax.swing.JTable();
         pnlLdif = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        ldifPane = new javax.swing.JScrollPane();
         txtLdif = new javax.swing.JTextPane();
-        jScrollPane3 = new BeanTreeView();
+        treePane = new BeanTreeView();
 
         splitPane.setDividerLocation(170);
         splitPane.setDividerSize(5);
@@ -222,7 +224,7 @@ public final class ExplorerTopComponent extends TopComponent implements
         });
         tblAttributes.setAutoCreateRowSorter(true);
         tblAttributes.setShowGrid(true);
-        jScrollPane1.setViewportView(tblAttributes);
+        attributePane.setViewportView(tblAttributes);
 
         org.jdesktop.layout.GroupLayout pnlAttributesLayout = new org.jdesktop.layout.GroupLayout(pnlAttributes);
         pnlAttributes.setLayout(pnlAttributesLayout);
@@ -230,13 +232,13 @@ public final class ExplorerTopComponent extends TopComponent implements
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlAttributesLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlAttributesLayout.setVerticalGroup(
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlAttributesLayout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -244,7 +246,7 @@ public final class ExplorerTopComponent extends TopComponent implements
 
         txtLdif.setEditable(false);
         txtLdif.setFont(new java.awt.Font("Courier New", 0, 12));
-        jScrollPane2.setViewportView(txtLdif);
+        ldifPane.setViewportView(txtLdif);
 
         org.jdesktop.layout.GroupLayout pnlLdifLayout = new org.jdesktop.layout.GroupLayout(pnlLdif);
         pnlLdif.setLayout(pnlLdifLayout);
@@ -252,20 +254,20 @@ public final class ExplorerTopComponent extends TopComponent implements
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlLdifLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlLdifLayout.setVerticalGroup(
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlLdifLayout.createSequentialGroup()
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlLdif.TabConstraints.tabTitle"), pnlLdif); // NOI18N
 
         splitPane.setRightComponent(tabbedDetails);
-        splitPane.setLeftComponent(jScrollPane3);
+        splitPane.setLeftComponent(treePane);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -281,14 +283,14 @@ public final class ExplorerTopComponent extends TopComponent implements
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane attributePane;
+    private javax.swing.JScrollPane ldifPane;
     private javax.swing.JPanel pnlAttributes;
     private javax.swing.JPanel pnlLdif;
     private javax.swing.JSplitPane splitPane;
     private javax.swing.JTabbedPane tabbedDetails;
     private javax.swing.JTable tblAttributes;
+    private javax.swing.JScrollPane treePane;
     private javax.swing.JTextPane txtLdif;
     // End of variables declaration//GEN-END:variables
 }
