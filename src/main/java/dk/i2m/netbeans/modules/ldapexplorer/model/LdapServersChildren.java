@@ -16,8 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import dk.i2m.netbeans.modules.ldapexplorer.LdapServersNotifier;
-import dk.i2m.netbeans.modules.ldapexplorer.LdapService;
+import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import java.util.Collections;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

@@ -16,7 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import dk.i2m.netbeans.modules.ldapexplorer.NewLdapServer;
+import dk.i2m.netbeans.modules.ldapexplorer.ui.actions.NewLdapServer;
 import java.util.ResourceBundle;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;

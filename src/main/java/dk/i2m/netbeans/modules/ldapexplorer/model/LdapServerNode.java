@@ -16,8 +16,8 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import dk.i2m.netbeans.modules.ldapexplorer.LdapServersNotifier;
-import dk.i2m.netbeans.modules.ldapexplorer.LdapService;
+import dk.i2m.netbeans.modules.ldapexplorer.ui.actions.ExplorerAction;
+import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -52,7 +52,11 @@ public class LdapServerNode extends AbstractNode implements
         super(Children.LEAF, Lookups.singleton(server));
         this.server = server;
         setIconBaseWithExtension(bundle.getString("ICON_LdapServerNode"));
-        setDisplayName(server.toString());
+        if (server.isLabelSet()) {
+            setDisplayName(server.getLabel());
+        } else {
+            setDisplayName(server.toString());
+        }
         setShortDescription(bundle.getString("HINT_LdapServerNode"));
         server.addPropertyChangeListener(WeakListeners.propertyChange(this,
                 server));
@@ -82,6 +86,13 @@ public class LdapServerNode extends AbstractNode implements
         if (srv != null) {
 
             try {
+                Property labelProp = new PropertySupport.Reflection<String>(srv,
+                        String.class, "label");
+                labelProp.setName(bundle.getString("PROP_NAME_Label"));
+                labelProp.setShortDescription(
+                        bundle.getString("PROP_DESC_Label"));
+                connectionDetails.put(labelProp);
+
                 Property host = new PropertySupport.Reflection<String>(srv,
                         String.class, "host");
                 host.setName(bundle.getString("PROP_NAME_Hostname"));
@@ -93,6 +104,14 @@ public class LdapServerNode extends AbstractNode implements
                 portProp.setName(bundle.getString("PROP_NAME_Port"));
                 portProp.setShortDescription(bundle.getString("PROP_DESC_Port"));
                 connectionDetails.put(portProp);
+
+                Property timeoutProp = new PropertySupport.Reflection<Integer>(
+                        srv,
+                        Integer.class, "timeout");
+                timeoutProp.setName(bundle.getString("PROP_NAME_Timeout"));
+                timeoutProp.setShortDescription(
+                        bundle.getString("PROP_DESC_Timeout"));
+                connectionDetails.put(timeoutProp);
 
                 Property baseDnProp = new PropertySupport.Reflection<String>(srv,
                         String.class, "baseDN");
@@ -141,8 +160,7 @@ public class LdapServerNode extends AbstractNode implements
             null,
             SystemAction.get(DeleteAction.class),
             null,
-            SystemAction.get(PropertiesAction.class),
-        };
+            SystemAction.get(PropertiesAction.class),};
         return result;
     }
 
@@ -164,7 +182,11 @@ public class LdapServerNode extends AbstractNode implements
 
     public void propertyChange(PropertyChangeEvent evt) {
         LdapServer srv = getLookup().lookup(LdapServer.class);
-        setDisplayName(srv.toString());
+        if (srv.isLabelSet()) {
+            setDisplayName(srv.getLabel());
+        } else {
+            setDisplayName(srv.toString());
+        }
         try {
             LdapService.getDefault().save(srv);
         } catch (IOException ex) {

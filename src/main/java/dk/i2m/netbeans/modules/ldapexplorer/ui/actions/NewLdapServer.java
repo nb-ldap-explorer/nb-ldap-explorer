@@ -14,8 +14,10 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer;
+package dk.i2m.netbeans.modules.ldapexplorer.ui.actions;
 
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServersNotifier;
+import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import dk.i2m.netbeans.modules.ldapexplorer.model.Authentication;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServerPanel;
@@ -35,6 +37,8 @@ public final class NewLdapServer extends CallableSystemAction {
 
     public void performAction() {
         panel = new LdapServerPanel();
+        panel.setTimeout(Integer.valueOf(NbBundle.getMessage(
+                NewLdapServer.class, "txtTimeoutDefault")));
         ActionListener listener = new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -43,14 +47,17 @@ public final class NewLdapServer extends CallableSystemAction {
                 }
 
                 LdapServer ldapServer = new LdapServer();
+                ldapServer.setLabel(panel.getLabel());
                 ldapServer.setHost(panel.getHostname());
                 ldapServer.setPort(panel.getPort());
+                ldapServer.setTimeout(panel.getTimeout());
                 ldapServer.setBaseDN(panel.getBaseDN());
                 ldapServer.setAuthentication(Authentication.valueOf(panel.
                         getAuthentication()));
                 ldapServer.setBinding(panel.getBind());
                 ldapServer.setPassword(panel.getPassword());
                 ldapServer.setSecure(panel.isSecureSocketLayerEnabled());
+
 
                 try {
                     LdapService.getDefault().save(ldapServer);
@@ -61,8 +68,8 @@ public final class NewLdapServer extends CallableSystemAction {
             }
         };
 
-        DialogDescriptor d = new DialogDescriptor(panel, "New LDAP Server", true,
-                listener);
+        DialogDescriptor d = new DialogDescriptor(panel, NbBundle.getMessage(
+                NewLdapServer.class, "CTL_NewLdapServer"), true, listener);
         DialogDisplayer.getDefault().notifyLater(d);
     }
 
@@ -72,7 +79,7 @@ public final class NewLdapServer extends CallableSystemAction {
 
     @Override
     protected String iconResource() {
-        return "dk/i2m/netbeans/modules/ldapexplorer/resources/server_new.png";
+        return NbBundle.getMessage(NewLdapServer.class, "ICON_NewLdapServer");
     }
 
     public HelpCtx getHelpCtx() {

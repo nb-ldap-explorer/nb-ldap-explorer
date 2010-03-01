@@ -16,12 +16,15 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="pnlTabbed" alignment="0" pref="400" max="32767" attributes="0"/>
+          <Component id="pnlTabbed" alignment="0" pref="463" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="pnlTabbed" alignment="0" pref="313" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="pnlTabbed" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -47,31 +50,35 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lblHost" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblPort" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblBaseDn" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="txtHostname" alignment="0" pref="232" max="32767" attributes="1"/>
-                                  <Component id="txtPort" alignment="0" min="-2" pref="57" max="-2" attributes="0"/>
-                                  <Component id="txtBaseDn" alignment="0" pref="232" max="32767" attributes="1"/>
-                                  <Component id="cbSecure" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lblAuthentication" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblBind" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lblPassword" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                          <Component id="lblLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblHost" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblPort" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblTimeout" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblBaseDn" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblAuthentication" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblBind" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblPassword" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="cbAuthentication" alignment="0" pref="232" max="32767" attributes="1"/>
-                                  <Component id="txtBind" alignment="0" pref="232" max="32767" attributes="1"/>
-                                  <Component id="txtPassword" alignment="0" pref="232" max="32767" attributes="0"/>
+                                  <Component id="txtBind" alignment="0" pref="291" max="32767" attributes="1"/>
+                                  <Component id="txtPassword" alignment="0" pref="291" max="32767" attributes="0"/>
+                                  <Component id="cbAuthentication" alignment="1" pref="291" max="32767" attributes="1"/>
+                                  <Component id="txtBaseDn" alignment="0" pref="291" max="32767" attributes="1"/>
+                                  <Component id="cbSecure" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="txtLabel" alignment="0" pref="291" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="txtHostname" alignment="0" pref="291" max="32767" attributes="1"/>
+                                  <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                      <Component id="txtTimeout" alignment="0" max="32767" attributes="1"/>
+                                      <Component id="txtPort" alignment="0" pref="57" max="32767" attributes="1"/>
+                                  </Group>
                               </Group>
                           </Group>
                       </Group>
@@ -81,39 +88,50 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblHost" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtHostname" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblLabel" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="txtPort" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblHost" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtHostname" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="txtBaseDn" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblBaseDn" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblPort" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtPort" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblTimeout" alignment="2" min="-2" pref="16" max="-2" attributes="0"/>
+                          <Component id="txtTimeout" alignment="2" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblBaseDn" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtBaseDn" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cbSecure" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblAuthentication" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbAuthentication" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblAuthentication" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbAuthentication" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblBind" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtBind" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblBind" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtBind" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblPassword" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtPassword" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="2" attributes="0">
+                          <Component id="lblPassword" alignment="2" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtPassword" alignment="2" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -210,6 +228,37 @@
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="dk/i2m/netbeans/modules/ldapexplorer/ui/Bundle.properties" key="LdapServerPanel.cbSecure.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="dk/i2m/netbeans/modules/ldapexplorer/ui/Bundle.properties" key="LdapServerPanel.lblLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="dk/i2m/netbeans/modules/ldapexplorer/ui/Bundle.properties" key="LdapServerPanel.txtLabel.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblTimeout">
+              <Properties>
+                <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="txtTimeout"/>
+                </Property>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="dk/i2m/netbeans/modules/ldapexplorer/ui/Bundle.properties" key="LdapServerPanel.lblTimeout.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtTimeout">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="dk/i2m/netbeans/modules/ldapexplorer/ui/Bundle.properties" key="LdapServerPanel.txtTimeout.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>

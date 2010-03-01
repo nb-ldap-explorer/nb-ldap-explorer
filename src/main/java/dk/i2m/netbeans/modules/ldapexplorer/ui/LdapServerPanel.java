@@ -38,6 +38,14 @@ public class LdapServerPanel extends javax.swing.JPanel {
         return txtHostname.getText();
     }
 
+    public void setLabel(String label) {
+        this.txtLabel.setText(label);
+    }
+
+    public String getLabel() {
+        return txtLabel.getText();
+    }
+
     public void setPort(Integer port) {
         this.txtPort.setText(String.valueOf(port));
     }
@@ -45,6 +53,18 @@ public class LdapServerPanel extends javax.swing.JPanel {
     public Integer getPort() {
         try {
             return Integer.valueOf(txtPort.getText());
+        } catch (NumberFormatException ex) {
+            return 0;
+        }
+    }
+
+    public void setTimeout(Integer timeout) {
+        this.txtTimeout.setText(String.valueOf(timeout));
+    }
+
+    public Integer getTimeout() {
+        try {
+            return Integer.valueOf(txtTimeout.getText());
         } catch (NumberFormatException ex) {
             return 0;
         }
@@ -133,6 +153,10 @@ public class LdapServerPanel extends javax.swing.JPanel {
         lblPassword = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
         cbSecure = new javax.swing.JCheckBox();
+        lblLabel = new javax.swing.JLabel();
+        txtLabel = new javax.swing.JTextField();
+        lblTimeout = new javax.swing.JLabel();
+        txtTimeout = new javax.swing.JTextField();
 
         lblHost.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblHost.text")); // NOI18N
 
@@ -160,6 +184,15 @@ public class LdapServerPanel extends javax.swing.JPanel {
 
         cbSecure.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.cbSecure.text")); // NOI18N
 
+        lblLabel.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblLabel.text")); // NOI18N
+
+        txtLabel.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtLabel.text")); // NOI18N
+
+        lblTimeout.setLabelFor(txtTimeout);
+        lblTimeout.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblTimeout.text")); // NOI18N
+
+        txtTimeout.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtTimeout.text")); // NOI18N
+
         org.jdesktop.layout.GroupLayout pnlConnectionLayout = new org.jdesktop.layout.GroupLayout(pnlConnection);
         pnlConnection.setLayout(pnlConnectionLayout);
         pnlConnectionLayout.setHorizontalGroup(
@@ -167,58 +200,71 @@ public class LdapServerPanel extends javax.swing.JPanel {
             .add(pnlConnectionLayout.createSequentialGroup()
                 .addContainerGap()
                 .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(lblLabel)
+                    .add(lblHost)
+                    .add(lblPort)
+                    .add(lblTimeout)
+                    .add(lblBaseDn)
+                    .add(lblAuthentication)
+                    .add(lblBind)
+                    .add(lblPassword))
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(pnlConnectionLayout.createSequentialGroup()
-                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblHost)
-                            .add(lblPort)
-                            .add(lblBaseDn))
-                        .add(39, 39, 39)
-                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(txtHostname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-                            .add(txtPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 57, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(txtBaseDn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-                            .add(cbSecure)))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlConnectionLayout.createSequentialGroup()
-                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblAuthentication)
-                            .add(lblBind)
-                            .add(lblPassword))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(cbAuthentication, 0, 232, Short.MAX_VALUE)
-                            .add(txtBind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE)
-                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))))
+                            .add(txtBind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                            .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.TRAILING, cbAuthentication, 0, 291, Short.MAX_VALUE)
+                            .add(txtBaseDn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                            .add(cbSecure)
+                            .add(txtLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)))
+                    .add(pnlConnectionLayout.createSequentialGroup()
+                        .add(10, 10, 10)
+                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(txtHostname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                            .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                .add(org.jdesktop.layout.GroupLayout.LEADING, txtTimeout)
+                                .add(org.jdesktop.layout.GroupLayout.LEADING, txtPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         pnlConnectionLayout.setVerticalGroup(
             pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlConnectionLayout.createSequentialGroup()
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlConnectionLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
+                    .add(lblLabel)
+                    .add(txtLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
                     .add(lblHost)
                     .add(txtHostname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblPort))
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
+                    .add(lblPort)
+                    .add(txtPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
+                    .add(lblTimeout, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 16, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(txtTimeout, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtBaseDn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblBaseDn))
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
+                    .add(lblBaseDn)
+                    .add(txtBaseDn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(cbSecure)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
                     .add(lblAuthentication)
                     .add(cbAuthentication, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
                     .add(lblBind)
                     .add(txtBind, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
                     .add(lblPassword)
                     .add(txtPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlConnection.TabConstraints.tabTitle"), pnlConnection); // NOI18N
@@ -227,11 +273,13 @@ public class LdapServerPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlTabbed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .add(pnlTabbed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlTabbed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
+            .add(layout.createSequentialGroup()
+                .add(pnlTabbed)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -241,14 +289,18 @@ public class LdapServerPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lblBaseDn;
     private javax.swing.JLabel lblBind;
     private javax.swing.JLabel lblHost;
+    private javax.swing.JLabel lblLabel;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblPort;
+    private javax.swing.JLabel lblTimeout;
     private javax.swing.JPanel pnlConnection;
     private javax.swing.JTabbedPane pnlTabbed;
     private javax.swing.JTextField txtBaseDn;
     private javax.swing.JTextField txtBind;
     private javax.swing.JTextField txtHostname;
+    private javax.swing.JTextField txtLabel;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtPort;
+    private javax.swing.JTextField txtTimeout;
     // End of variables declaration//GEN-END:variables
 }

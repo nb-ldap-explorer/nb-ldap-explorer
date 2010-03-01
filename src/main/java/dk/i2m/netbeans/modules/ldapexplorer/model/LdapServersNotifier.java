@@ -14,7 +14,7 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer;
+package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Interactive Media Management
+ *  Copyright 2010 Allan Lykke Christensen.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,14 +14,8 @@
  *  limitations under the License.
  *  under the License.
  */
+/**
+ * Model classes.
+ */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-/**
- * Type of {@link LdapEntry}.
- *
- * @author Allan Lykke Christensen
- */
-public enum EntryType {
-
-    UNKNOWN, PERSON, ORGANISATION, GROUP
-}

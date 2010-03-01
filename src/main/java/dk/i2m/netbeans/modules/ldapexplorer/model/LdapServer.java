@@ -51,6 +51,7 @@ public class LdapServer {
     private Authentication authentication = Authentication.NONE;
     private String binding = "";
     private String password = "";
+    private String label = "";
     private LdapContext dirCtx = null;
 
     /**
@@ -252,6 +253,46 @@ public class LdapServer {
     }
 
     /**
+     * Gets the user friendly label of the server.
+     * 
+     * @return User friendly label of the server
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Sets the user friendly label of the server.
+     *
+     * @param label
+     *          User friendly label of the server
+     */
+    public void setLabel(String label) {
+        this.label = label;
+        fire("label", null, label);
+    }
+
+    /**
+     * Gets the connection timeout of the server.
+     *
+     * @return Connection time out of the server
+     */
+    public Integer getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Sets the connection timeout of the server.
+     *
+     * @param timeout
+     *          Connection timeout of the server
+     */
+    public void setTimeout(Integer timeout) {
+        this.timeout = timeout;
+        fire("timeout", null, timeout);
+    }
+
+    /**
      * Determines if the {@link LdapServer} is new. The {@link LdapServer} is
      * new if the {@link LdapServer#identifier} has not been set.
      *
@@ -263,6 +304,20 @@ public class LdapServer {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Determines if the label has been set for the server.
+     *
+     * @return <code>true</code> if the label was set on the server, otherwise
+     *         <code>false</code>
+     */
+    public boolean isLabelSet() {
+        if (this.label == null || this.label.isEmpty()) {
+            return false;
+        } else {
+            return true;
         }
     }
 

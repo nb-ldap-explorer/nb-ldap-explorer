@@ -14,29 +14,8 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer;
-
 /**
- * {@link Exception} thrown when a requested object could not be found in a
- * directory service.
- *
- * @author Allan Lykke Christensen
+ * User interface components.
  */
-public class NotFoundException extends Exception {
+package dk.i2m.netbeans.modules.ldapexplorer.ui;
 
-    public NotFoundException(Throwable cause) {
-        super(cause);
-    }
-
-    public NotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NotFoundException(String message) {
-        super(message);
-    }
-
-    public NotFoundException() {
-        super();
-    }
-}

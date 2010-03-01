@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Interactive Media Management
+ *  Copyright 2010 Interactive Media Management.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,14 +14,8 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer.model;
-
 /**
- * Type of {@link LdapEntry}.
- *
- * @author Allan Lykke Christensen
+ * Services provided by the module.
  */
-public enum EntryType {
+package dk.i2m.netbeans.modules.ldapexplorer.services;
 
-    UNKNOWN, PERSON, ORGANISATION, GROUP
-}

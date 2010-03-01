@@ -14,7 +14,7 @@
  *  limitations under the License.
  *  under the License.
  */
-package dk.i2m.netbeans.modules.ldapexplorer;
+package dk.i2m.netbeans.modules.ldapexplorer.services;
 
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import java.io.IOException;

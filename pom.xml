@@ -42,15 +42,33 @@
     <scm>
         <connection>scm:hg:https://nb-ldap-explorer.googlecode.com/hg/</connection>
         <developerConnection>scm:hg:https://nb-ldap-explorer.googlecode.com/hg/</developerConnection>
+        <url>http://nb-ldap-explorer.googlecode.com/hg/</url>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>m2.i2m.dk</id>
+            <name>I2M Artifact Repository</name>
+            <url>ftp://www.i2m.dk/m2.i2m.dk</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
+        <repository>
+            <id>i2m</id>
+            <name>repository hosting i2m artifacts</name>
+            <url>http://m2.i2m.dk</url>
+        </repository>
+
         <repository>
             <id>netbeans</id>
             <name>repository hosting netbeans.org api artifacts</name>
             <url>http://bits.netbeans.org/maven2</url>
         </repository>
     </repositories>
+
+
+
 
     <dependencies>
         <dependency>
@@ -176,8 +194,55 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <aggregate>true</aggregate>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                    </links>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <outputEncoding>UTF-8</outputEncoding>
+                </configuration>
+            </plugin>
+            
         </plugins>
     </build>
+
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <code>javadoc:aggregate</code>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jxr-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>taglist-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
