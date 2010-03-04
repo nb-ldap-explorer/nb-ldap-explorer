@@ -132,6 +132,12 @@
             <artifactId>org-netbeans-modules-autoupdate-services</artifactId>
             <version>${netbeans.platform}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -211,7 +217,7 @@
                     <outputEncoding>UTF-8</outputEncoding>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 
@@ -288,4 +294,5 @@
 
     </properties>
 </project>
+
 

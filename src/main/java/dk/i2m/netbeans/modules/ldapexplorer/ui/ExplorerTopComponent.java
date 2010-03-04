@@ -21,9 +21,12 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.ConnectionException;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntry;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntryChildren;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapEntryNode;
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryChildren;
+import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.model.QueryException;
 import java.util.Collection;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -61,7 +64,6 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
 
         setName(bundle.getString("CTL_ExplorerTopComponent"));
-        setToolTipText(bundle.getString("HINT_ExplorerTopComponent"));
         setIcon(ImageUtilities.loadImage(bundle.getString(
                 "ICON_ExplorerTopComponent"), true));
     }
@@ -90,7 +92,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
 
         if (node != null) {
             this.server = node.getServer();
-            setDisplayName(this.server.toString());
+
+            setToolTipText(this.server.toString());
+            if (this.server.isLabelSet()) {
+                setDisplayName(this.server.getLabel());
+            } else {
+                setDisplayName(this.server.toString());
+            }
             em.getRootContext().setDisplayName(this.server.getBaseDN());
         }
     }
@@ -192,6 +200,10 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         ldifPane = new javax.swing.JScrollPane();
         txtLdif = new javax.swing.JTextPane();
         treePane = new BeanTreeView();
+        jPanel1 = new javax.swing.JPanel();
+        txtFilter = new javax.swing.JTextField();
+        btnFilter = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
 
         splitPane.setDividerLocation(170);
         splitPane.setDividerSize(5);
@@ -232,13 +244,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlAttributesLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlAttributesLayout.setVerticalGroup(
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlAttributesLayout.createSequentialGroup()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -254,13 +266,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlLdifLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlLdifLayout.setVerticalGroup(
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlLdifLayout.createSequentialGroup()
-                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -269,21 +281,80 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         splitPane.setRightComponent(tabbedDetails);
         splitPane.setLeftComponent(treePane);
 
+        txtFilter.setText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtFilter.text")); // NOI18N
+        txtFilter.setToolTipText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtFilter.toolTipText")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(btnFilter, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnFilter.text")); // NOI18N
+        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFilterActionPerformed(evt);
+            }
+        });
+
+        org.openide.awt.Mnemonics.setLocalizedText(btnClear, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnClear.text")); // NOI18N
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(btnFilter)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(btnClear))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                .add(txtFilter, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(btnClear)
+                .add(btnFilter))
+        );
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)
+            .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(27, 27, 27)
-                .add(splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE))
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
+        try {
+            List<LdapEntry> searchResults = server.search(txtFilter.getText());
+
+            em.setRootContext(new LdapSearchEntryNode(new LdapSearchEntryChildren(
+                    searchResults)));
+
+        } catch (QueryException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }//GEN-LAST:event_btnFilterActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        txtFilter.setText("");
+        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
+        componentOpened();
+    }//GEN-LAST:event_btnClearActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane attributePane;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnFilter;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane ldifPane;
     private javax.swing.JPanel pnlAttributes;
     private javax.swing.JPanel pnlLdif;
@@ -291,6 +362,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     private javax.swing.JTabbedPane tabbedDetails;
     private javax.swing.JTable tblAttributes;
     private javax.swing.JScrollPane treePane;
+    private javax.swing.JTextField txtFilter;
     private javax.swing.JTextPane txtLdif;
     // End of variables declaration//GEN-END:variables
 }
