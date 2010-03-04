@@ -16,6 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
+import dk.i2m.netbeans.modules.ldapexplorer.security.XTrustProvider;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import javax.naming.NamingException;
 import javax.naming.SizeLimitExceededException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import org.openide.filesystems.FileObject;
@@ -398,6 +401,7 @@ public class LdapServer {
             env.put(Context.SECURITY_PRINCIPAL, this.binding);
             env.put(Context.SECURITY_CREDENTIALS, this.password);
         }
+
         return env;
     }
 
@@ -409,6 +413,10 @@ public class LdapServer {
      */
     public void connect() throws ConnectionException {
         try {
+            if (isSecure()) {
+                XTrustProvider.install();
+            }
+
             this.dirCtx =
                     new InitialLdapContext(getConnectionEnvironment(), null);
         } catch (NamingException ex) {
@@ -589,5 +597,78 @@ public class LdapServer {
             pcls[i].propertyChange(new PropertyChangeEvent(this, propertyName,
                     old, nue));
         }
+    }
+
+    public List<LdapEntry> search(String filter) throws QueryException {
+        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+
+        if (!isConnected()) {
+            return entries;
+        }
+
+        try {
+            SearchControls controls = new SearchControls();
+            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            NamingEnumeration<SearchResult> results = this.dirCtx.search("",
+                    filter, controls);
+
+            while (results != null & results.hasMore()) {
+                SearchResult sr = results.next();
+
+                LdapEntry entry = new LdapEntry();
+
+                entry.setDn(sr.getName());
+                entry.setLabel(sr.getName());
+
+                try {
+                    Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{
+                                "objectclass"});
+
+                    for (NamingEnumeration<? extends Attribute> ae = attrs.
+                            getAll(); ae.hasMore();) {
+                        Attribute attr = ae.next();
+
+                        for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
+                            String objClass = (String) ne.next();
+                            if ("organization".equalsIgnoreCase(objClass) || "organizationalUnit".
+                                    equalsIgnoreCase(objClass)) {
+                                entry.setEntryType(EntryType.ORGANISATION);
+                                break;
+                            }
+
+                            if ("groupOfUniqueNames".equalsIgnoreCase(objClass) || "groupOfNames".
+                                    equalsIgnoreCase(objClass)) {
+                                entry.setEntryType(EntryType.GROUP);
+                                break;
+                            }
+
+                            if ("person".equalsIgnoreCase(objClass) || "inetOrgPerson".
+                                    equalsIgnoreCase(objClass) || "account".
+                                    equalsIgnoreCase(objClass) || "posixAccount".
+                                    equalsIgnoreCase(objClass)) {
+                                entry.setEntryType(EntryType.PERSON);
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(LdapServer.class.getName()).warning(ex.
+                            getMessage());
+                }
+
+                entries.add(entry);
+            }
+
+        } catch (NamingException ex) {
+            if (ex instanceof SizeLimitExceededException) {
+                Logger.getLogger(LdapServer.class.getName()).warning(ex.
+                        getMessage());
+            } else {
+                throw new QueryException(ex);
+            }
+        }
+
+        return entries;
+
     }
 }
