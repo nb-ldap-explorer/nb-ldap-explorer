@@ -19,7 +19,6 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
-import org.openide.util.Utilities;
 
 /**
  * LDAP entry {@link Children} for displaying nodes on the UI.
@@ -49,13 +48,6 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
 
     @Override
     protected void addNotify() {
-        if (ldapServer == null) {
-            LdapServerNode node = Utilities.actionsGlobalContext().lookup(
-                    LdapServerNode.class);
-            if (node != null) {
-                ldapServer = node.getServer();
-            }
-        }
         if (ldapServer != null) {
             try {
                 setKeys(ldapServer.getTree(parent));
@@ -67,7 +59,6 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
 
     @Override
     protected Node[] createNodes(LdapEntry key) {
-
         // Prepare for rendering the children of the node
         LdapEntryChildren children = new LdapEntryChildren();
         children.setParent(key.getDn());

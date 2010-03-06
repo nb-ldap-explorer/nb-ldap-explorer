@@ -56,16 +56,11 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     private LdapServer server;
     private Lookup.Result result = null;
 
+    /**
+     * Creates a new instance of {@link ExplorerTopComponent}.
+     */
     public ExplorerTopComponent() {
         initComponents();
-
-        // Let the ExplorerManager dynamically put nodes in the lookup upon selection
-        associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
-        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
-
-        setName(bundle.getString("CTL_ExplorerTopComponent"));
-        setIcon(ImageUtilities.loadImage(bundle.getString(
-                "ICON_ExplorerTopComponent"), true));
     }
 
     @Override
@@ -80,26 +75,28 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
 
     @Override
     public void componentOpened() {
+        // Let the ExplorerManager dynamically put nodes in the lookup upon
+        // selection
+        associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
+        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
+
+        setName(bundle.getString("CTL_ExplorerTopComponent"));
+        setIcon(ImageUtilities.loadImage(bundle.getString(
+                "ICON_ExplorerTopComponent"), true));
+
+        // Listen for changes in the selection of LdapEntryNodes
+        Lookup.Template tpl = new Lookup.Template(LdapEntryNode.class);
+        result = getLookup().lookup(tpl);
+        result.addLookupListener(this);
+        resultChanged(null);
+
         // Find the current LdapServer that was selected
         LdapServerNode node = Utilities.actionsGlobalContext().lookup(
                 LdapServerNode.class);
 
-        // Listen for changes in the selection of LdapEntryNodes
-        Lookup.Template tpl = new Lookup.Template(LdapEntryNode.class);
-        result = getLookup().lookup(tpl); // No need to go global? Utilities.actionsGlobalContext().lookup(tpl);
-        result.addLookupListener(this);
-        resultChanged(null);
-
         if (node != null) {
             this.server = node.getServer();
-
-            setToolTipText(this.server.toString());
-            if (this.server.isLabelSet()) {
-                setDisplayName(this.server.getLabel());
-            } else {
-                setDisplayName(this.server.toString());
-            }
-            em.getRootContext().setDisplayName(this.server.getBaseDN());
+            prepareBrowsing();
         }
     }
 
@@ -181,6 +178,21 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         }
     }
 
+    private void prepareBrowsing() {
+        txtFilter.setText("");
+        setToolTipText(this.server.toString());
+        if (this.server.isLabelSet()) {
+            setDisplayName(this.server.getLabel());
+        } else {
+            setDisplayName(this.server.toString());
+        }
+
+        LdapEntryChildren children = new LdapEntryChildren();
+        children.setLdapServer(server);
+        em.setRootContext(new LdapEntryNode(children));
+        em.getRootContext().setDisplayName(this.server.getBaseDN());
+    }
+
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -203,7 +215,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         jPanel1 = new javax.swing.JPanel();
         txtFilter = new javax.swing.JTextField();
         btnFilter = new javax.swing.JButton();
-        btnClear = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
 
         splitPane.setDividerLocation(170);
         splitPane.setDividerSize(5);
@@ -291,10 +303,11 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(btnClear, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnClear.text")); // NOI18N
-        btnClear.addActionListener(new java.awt.event.ActionListener() {
+        org.openide.awt.Mnemonics.setLocalizedText(btnReset, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnReset.text")); // NOI18N
+        btnReset.setToolTipText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnReset.toolTipText")); // NOI18N
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnClearActionPerformed(evt);
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -303,17 +316,17 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnFilter)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnClear))
+                .add(btnReset))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                 .add(txtFilter, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(btnClear)
+                .add(btnReset)
                 .add(btnFilter))
         );
 
@@ -345,15 +358,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         }
     }//GEN-LAST:event_btnFilterActionPerformed
 
-    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        txtFilter.setText("");
-        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
-        componentOpened();
-    }//GEN-LAST:event_btnClearActionPerformed
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        prepareBrowsing();
+    }//GEN-LAST:event_btnResetActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane attributePane;
-    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnFilter;
+    private javax.swing.JButton btnReset;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane ldifPane;
     private javax.swing.JPanel pnlAttributes;

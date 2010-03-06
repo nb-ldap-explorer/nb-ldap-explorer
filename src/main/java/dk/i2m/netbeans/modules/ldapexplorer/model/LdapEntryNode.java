@@ -17,6 +17,7 @@
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import java.awt.Image;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
@@ -40,7 +41,7 @@ public class LdapEntryNode extends AbstractNode {
         super(c, Lookups.singleton(ldapEntry));
 
         setDisplayName(ldapEntry.toString());
-        setShortDescription(bundle.getString("HINT_LdapEntryNode"));
+        setShortDescription(ldapEntry.getPrimaryObjectClass().name());
         root = false;
     }
 
@@ -57,34 +58,12 @@ public class LdapEntryNode extends AbstractNode {
             return ImageUtilities.loadImage(
                     bundle.getString("ICON_LdapRootNode"));
         } else {
-
             LdapEntry entry = getLookup().lookup(LdapEntry.class);
-            Image img;
+            String imgUri = MessageFormat.format(bundle.getString(
+                    "PATH_LdapEntryNodeIcon"), entry.getPrimaryObjectClass().
+                    name());
 
-            switch (entry.getEntryType()) {
-
-                case PERSON:
-                    img = ImageUtilities.loadImage(bundle.getString(
-                            "ICON_LdapEntryPersonNode"));
-                    break;
-
-                case ORGANISATION:
-                    img = ImageUtilities.loadImage(bundle.getString(
-                            "ICON_LdapEntryOrganizationNode"));
-                    break;
-
-                case GROUP:
-                    img = ImageUtilities.loadImage(bundle.getString(
-                            "ICON_LdapEntryGroupNode"));
-                    break;
-
-
-                default:
-                    img = ImageUtilities.loadImage(bundle.getString(
-                            "ICON_LdapEntryNode"));
-
-            }
-            return img;
+            return ImageUtilities.loadImage(imgUri);
         }
     }
 

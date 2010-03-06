@@ -20,6 +20,9 @@ import org.openide.nodes.Children;
 import org.openide.util.NbBundle;
 
 /**
+ * Node representing an {@link LdapEntry} search result.
+ *
+ * Note: With time this will be merged into {@link LdapEntryNode}.
  *
  * @author Allan Lykke Christensen
  */

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Interactive Media Management
+ *  Copyright 2010 Allan Lykke Christensen.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 /**
- * Type of {@link LdapEntry}.
+ * Enmeration containing the priority of object classes. The priority is used
+ * to decide which icon to display if an {@link LdapEntry} has multiple
+ * object classes.
  *
  * @author Allan Lykke Christensen
  */
-public enum EntryType {
+public enum ObjectClass {
 
-    UNKNOWN, PERSON, ORGANISATION, GROUP
+    domain, organization, organizationalUnit, groupOfUniqueNames, groupOfNames,
+    inetOrgPerson, person, account, posixAccount, dominoServer, dominoGroup, WebSite, unknown;
 }

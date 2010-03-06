@@ -22,6 +22,7 @@ import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 
 /**
+ * LDAP entry {@link Children} for displaying search result nodes on the UI.
  *
  * @author Allan Lykke Christensen
  */

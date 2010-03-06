@@ -486,46 +486,52 @@ public class LdapServer {
                     entry.setLabel(nc.getName());
                 }
 
-                // System.out.println(nc.getName() + ": " + nc.getNameInNamespace()
-                //                        + " [" + entry.getDn() + "]");
+                addObjectClasses(entry);
+                entries.add(entry);
+            }
 
-                try {
-                    Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{
-                                "objectclass"});
+        } catch (NamingException ex) {
+            if (ex instanceof SizeLimitExceededException) {
+                Logger.getLogger(LdapServer.class.getName()).warning(ex.
+                        getMessage());
+            } else {
+                throw new QueryException(ex);
+            }
+        }
 
-                    for (NamingEnumeration<? extends Attribute> ae = attrs.
-                            getAll(); ae.hasMore();) {
-                        Attribute attr = ae.next();
+        return entries;
+    }
 
-                        for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
-                            String objClass = (String) ne.next();
-                            //System.out.println("- " + nc.getName() + ": "
-                            //        + objClass);
-                            if ("organization".equalsIgnoreCase(objClass) || "organizationalUnit".
-                                    equalsIgnoreCase(objClass)) {
-                                entry.setEntryType(EntryType.ORGANISATION);
-                                break;
-                            }
+    /**
+     * Searches the subtree for LDAP entries matching the given {@code filter}.
+     *
+     * @param filter
+     *          LDAP filter
+     * @return {@link List} of {@link LdapEntry} objects matching the filter
+     * @throws QueryException
+     *          If the search failed
+     */
+    public List<LdapEntry> search(String filter) throws QueryException {
+        List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
-                            if ("groupOfUniqueNames".equalsIgnoreCase(objClass) || "groupOfNames".
-                                    equalsIgnoreCase(objClass)) {
-                                entry.setEntryType(EntryType.GROUP);
-                                break;
-                            }
+        if (!isConnected()) {
+            return entries;
+        }
 
-                            if ("person".equalsIgnoreCase(objClass) || "inetOrgPerson".
-                                    equalsIgnoreCase(objClass) || "account".
-                                    equalsIgnoreCase(objClass) || "posixAccount".
-                                    equalsIgnoreCase(objClass)) {
-                                entry.setEntryType(EntryType.PERSON);
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(LdapServer.class.getName()).warning(ex.
-                            getMessage());
-                }
+        try {
+            SearchControls controls = new SearchControls();
+            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            NamingEnumeration<SearchResult> results = this.dirCtx.search("",
+                    filter, controls);
+
+            while (results != null & results.hasMore()) {
+                SearchResult sr = results.next();
+
+                LdapEntry entry = new LdapEntry();
+
+                entry.setDn(sr.getName());
+                entry.setLabel(sr.getName());
+                addObjectClasses(entry);
 
                 entries.add(entry);
             }
@@ -540,6 +546,31 @@ public class LdapServer {
         }
 
         return entries;
+    }
+
+    /**
+     * Adds object classes to an {@link LdapEntry}.
+     *
+     * @param entry
+     *          {@link LdapEntry} for which to add object classes
+     */
+    private void addObjectClasses(LdapEntry entry) {
+        try {
+            Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{
+                        "objectclass"});
+
+            for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
+                    hasMore();) {
+                Attribute attr = ae.next();
+
+                for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
+                    String objClass = (String) ne.next();
+                    entry.addObjectClass(objClass);
+                }
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(LdapServer.class.getName()).warning(ex.getMessage());
+        }
     }
 
     /**
@@ -597,78 +628,5 @@ public class LdapServer {
             pcls[i].propertyChange(new PropertyChangeEvent(this, propertyName,
                     old, nue));
         }
-    }
-
-    public List<LdapEntry> search(String filter) throws QueryException {
-        List<LdapEntry> entries = new ArrayList<LdapEntry>();
-
-        if (!isConnected()) {
-            return entries;
-        }
-
-        try {
-            SearchControls controls = new SearchControls();
-            controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results = this.dirCtx.search("",
-                    filter, controls);
-
-            while (results != null & results.hasMore()) {
-                SearchResult sr = results.next();
-
-                LdapEntry entry = new LdapEntry();
-
-                entry.setDn(sr.getName());
-                entry.setLabel(sr.getName());
-
-                try {
-                    Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{
-                                "objectclass"});
-
-                    for (NamingEnumeration<? extends Attribute> ae = attrs.
-                            getAll(); ae.hasMore();) {
-                        Attribute attr = ae.next();
-
-                        for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
-                            String objClass = (String) ne.next();
-                            if ("organization".equalsIgnoreCase(objClass) || "organizationalUnit".
-                                    equalsIgnoreCase(objClass)) {
-                                entry.setEntryType(EntryType.ORGANISATION);
-                                break;
-                            }
-
-                            if ("groupOfUniqueNames".equalsIgnoreCase(objClass) || "groupOfNames".
-                                    equalsIgnoreCase(objClass)) {
-                                entry.setEntryType(EntryType.GROUP);
-                                break;
-                            }
-
-                            if ("person".equalsIgnoreCase(objClass) || "inetOrgPerson".
-                                    equalsIgnoreCase(objClass) || "account".
-                                    equalsIgnoreCase(objClass) || "posixAccount".
-                                    equalsIgnoreCase(objClass)) {
-                                entry.setEntryType(EntryType.PERSON);
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(LdapServer.class.getName()).warning(ex.
-                            getMessage());
-                }
-
-                entries.add(entry);
-            }
-
-        } catch (NamingException ex) {
-            if (ex instanceof SizeLimitExceededException) {
-                Logger.getLogger(LdapServer.class.getName()).warning(ex.
-                        getMessage());
-            } else {
-                throw new QueryException(ex);
-            }
-        }
-
-        return entries;
-
     }
 }

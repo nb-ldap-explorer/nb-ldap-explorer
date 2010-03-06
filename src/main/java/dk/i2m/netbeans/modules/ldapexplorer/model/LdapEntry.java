@@ -29,11 +29,11 @@ import org.openide.util.NbBundle;
  */
 public class LdapEntry {
 
-    private EntryType entryType = EntryType.UNKNOWN;
     private String label;
     private String dn;
     private Map<String, ArrayList<Object>> attributes =
             new HashMap<String, ArrayList<Object>>();
+    private List<String> objectClasses = new ArrayList<String>();
 
     /**
      * Creates a new instance of {@link LdapEntry}.
@@ -97,22 +97,39 @@ public class LdapEntry {
     }
 
     /**
-     * Gets the type of entry.
-     * 
-     * @return Type of entry
+     * Gets the primary {@link ObjectClass} of the entry. The primary
+     * {@link ObjectClass} is determined from the order of object classes in the
+     * {@link ObjectClass} enumeration.
+     *
+     * @return Primary {@link ObjectClass} of the entry
      */
-    public EntryType getEntryType() {
-        return entryType;
+    public ObjectClass getPrimaryObjectClass() {
+        for (ObjectClass oc : ObjectClass.values()) {
+            if (objectClasses.contains(oc.name())) {
+                return oc;
+            }
+        }
+
+        return ObjectClass.unknown;
     }
 
     /**
-     * Sets the type of entry.
+     * Add an object class to the entry.
      *
-     * @param entryType
-     *          Type of entry
+     * @param objectClass
+     *          Object class to add
      */
-    public void setEntryType(EntryType entryType) {
-        this.entryType = entryType;
+    public void addObjectClass(String objectClass) {
+        this.objectClasses.add(objectClass);
+    }
+
+    /**
+     * Gets a {@link List} of the object classes of the entry.
+     *
+     * @return {@link List} of object classes of the entry
+     */
+    public List<String> getObjectClasses() {
+        return this.objectClasses;
     }
 
     /**
@@ -222,7 +239,8 @@ public class LdapEntry {
 
                 if (val instanceof byte[]) {
                     // Field is binary - convert it to hexadecimals
-                    ldif.append(NbBundle.getMessage(LdapEntry.class, "ATTRIBUTE_NOT_STRING"));
+                    ldif.append(NbBundle.getMessage(LdapEntry.class,
+                            "ATTRIBUTE_NOT_STRING"));
                 } else {
                     ldif.append(val);
                 }
