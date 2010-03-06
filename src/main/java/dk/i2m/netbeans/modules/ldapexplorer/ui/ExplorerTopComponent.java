@@ -165,8 +165,8 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     private void addRow(DefaultTableModel model, String att, Object val) {
         final String LBL_PREFIX = "ATTRIBUTE_FRIENDLY_NAME_";
         String attName = att;
-        if (bundle.containsKey(LBL_PREFIX + att)) {
-            attName = bundle.getString(LBL_PREFIX + att);
+        if (bundle.containsKey(LBL_PREFIX + att.toLowerCase())) {
+            attName = bundle.getString(LBL_PREFIX + att.toLowerCase());
         }
 
         if (val instanceof byte[]) {

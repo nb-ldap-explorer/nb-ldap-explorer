@@ -105,7 +105,7 @@ public class LdapEntry {
      */
     public ObjectClass getPrimaryObjectClass() {
         for (ObjectClass oc : ObjectClass.values()) {
-            if (objectClasses.contains(oc.name())) {
+            if (objectClasses.contains(oc.name().toLowerCase())) {
                 return oc;
             }
         }
@@ -120,7 +120,7 @@ public class LdapEntry {
      *          Object class to add
      */
     public void addObjectClass(String objectClass) {
-        this.objectClasses.add(objectClass);
+        this.objectClasses.add(objectClass.toLowerCase());
     }
 
     /**
