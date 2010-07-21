@@ -50,6 +50,12 @@ public class DefaultLdapService extends LdapService {
     public static final String FO_ATTR_LABEL = "label";
     /** FileObject attribute containing the connection timeout of the LdapServer. */
     public static final String FO_ATTR_TIMEOUT = "timeout";
+    /** FileObject attribute containing the loginConfiguration for the LdapServer */
+    public static final String FO_ATTR_LOGINCONF = "loginconf";
+    /** FileObject attribute containing the loginConfiguration for the LdapServer */
+    public static final String FO_ATTR_KRB5USERNAME = "krb5username";
+    /** FileObject attribute containing the loginConfiguration for the LdapServer */
+    public static final String FO_ATTR_KRB5PASSWORD = "krb5password";
     /** Prefix of FileObjects containing LdapServers. */
     public static final String FO_PREFIX = "i2m-ldapserver-";
 
@@ -94,7 +100,9 @@ public class DefaultLdapService extends LdapService {
         server.setAttribute(FO_ATTR_BIND, ldapServer.getBinding());
         server.setAttribute(FO_ATTR_PASSWORD, ldapServer.getPassword());
         server.setAttribute(FO_ATTR_SSL, ldapServer.isSecure());
-
+        server.setAttribute(FO_ATTR_LOGINCONF, ldapServer.getLoginConf());
+        server.setAttribute(FO_ATTR_KRB5USERNAME, ldapServer.getKrb5username());
+        server.setAttribute(FO_ATTR_KRB5PASSWORD, ldapServer.getKrb5password());
         return ldapServer;
     }
 
@@ -129,6 +137,9 @@ public class DefaultLdapService extends LdapService {
         String bind = getAttributeAsString(fo, FO_ATTR_BIND, "");
         String password = getAttributeAsString(fo, FO_ATTR_PASSWORD, "");
         Boolean secure = getAttributeAsBoolean(fo, FO_ATTR_SSL, false);
+        String[] loginConfig = getAttributeAsStringArray(fo, FO_ATTR_LOGINCONF, new String[0]);
+        String krb5username = getAttributeAsString(fo, FO_ATTR_KRB5USERNAME, "");
+        String krb5password = getAttributeAsString(fo, FO_ATTR_KRB5PASSWORD, "");
 
         LdapServer server = new LdapServer(host, port, baseDn);
         server.setLabel(label);
@@ -138,7 +149,20 @@ public class DefaultLdapService extends LdapService {
         server.setBinding(bind);
         server.setPassword(password);
         server.setSecure(secure);
+        server.setLoginConf(loginConfig);
+        server.setKrb5username(krb5username);
+        server.setKrb5password(krb5password);
         return server;
+    }
+
+    private String[] getAttributeAsStringArray(FileObject fo, String key,
+            String[] defaultValue) {
+        Object obj = fo.getAttribute(key);
+        if (obj == null) {
+            return defaultValue;
+        } else {
+            return (String[]) obj;
+        }
     }
 
     private String getAttributeAsString(FileObject fo, String key,

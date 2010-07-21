@@ -52,7 +52,7 @@ public class LdapServerTest {
     @Ignore("Need a test harness")
     public void testConnect() throws Exception {
         System.out.println("connect");
-        LdapServer server = new LdapServer();
+        BaseLdapServer server = new BaseLdapServer();
         server.setHost("localhost");
         server.setPort(1636);
         server.setAuthentication(Authentication.NONE);

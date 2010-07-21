@@ -1,12 +1,12 @@
 /*
  *  Copyright 2010 Interactive Media Management
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,6 +80,11 @@ public class LdapServerNode extends AbstractNode implements
         securityDetails.setDisplayName(bundle.getString("PROPSET_NAME_Security"));
         securityDetails.setShortDescription(bundle.getString(
                 "PROPSET_DESC_Security"));
+        Sheet.Set krb5securityDetails = Sheet.createPropertiesSet();
+        krb5securityDetails.setName("krb5security");
+        krb5securityDetails.setDisplayName(bundle.getString("PROPSET_NAME_KRB5Security"));
+        krb5securityDetails.setShortDescription(bundle.getString(
+                "PROPSET_DESC_KRB5Security"));
 
         LdapServer srv = getLookup().lookup(LdapServer.class);
 
@@ -139,6 +144,29 @@ public class LdapServerNode extends AbstractNode implements
                 bindProp.setShortDescription(bundle.getString("PROP_DESC_Bind"));
                 securityDetails.put(bindProp);
 
+                Property passwordProp = new PropertySupport.Reflection<String>(srv,
+                        String.class, "password");
+                passwordProp.setName(bundle.getString("PROP_NAME_Password"));
+                passwordProp.setShortDescription(bundle.getString("PROP_DESC_Password"));
+                securityDetails.put(passwordProp);
+
+                Property loginConfProp = new PropertySupport.Reflection<String[]>(srv,
+                        String[].class, "loginConf");
+                loginConfProp.setName(bundle.getString("PROP_NAME_loginConf"));
+                loginConfProp.setShortDescription(bundle.getString("PROP_DESC_loginConf"));
+                krb5securityDetails.put(loginConfProp);
+
+                Property krb5usernameProp = new PropertySupport.Reflection<String>(srv,
+                        String.class, "krb5username");
+                krb5usernameProp.setName(bundle.getString("PROP_NAME_krb5username"));
+                krb5usernameProp.setShortDescription(bundle.getString("PROP_DESC_krb5username"));
+                krb5securityDetails.put(krb5usernameProp);
+
+                Property krb5passwordProp = new PropertySupport.Reflection<String>(srv,
+                        String.class, "krb5password");
+                krb5passwordProp.setName(bundle.getString("PROP_NAME_krb5password"));
+                krb5passwordProp.setShortDescription(bundle.getString("PROP_DESC_krb5password"));
+                krb5securityDetails.put(krb5passwordProp);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
@@ -147,7 +175,7 @@ public class LdapServerNode extends AbstractNode implements
 
         sheet.put(connectionDetails);
         sheet.put(securityDetails);
-
+        sheet.put(krb5securityDetails);
 
         return sheet;
 
