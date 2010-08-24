@@ -34,6 +34,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
+import org.openide.text.CloneableEditorSupport;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -210,7 +211,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         tblAttributes = new javax.swing.JTable();
         pnlLdif = new javax.swing.JPanel();
         ldifPane = new javax.swing.JScrollPane();
-        txtLdif = new javax.swing.JTextPane();
+        txtLdif = new javax.swing.JEditorPane();
         treePane = new BeanTreeView();
         jPanel1 = new javax.swing.JPanel();
         txtFilter = new javax.swing.JTextField();
@@ -220,6 +221,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         splitPane.setDividerLocation(170);
         splitPane.setDividerSize(5);
 
+        tblAttributes.setAutoCreateRowSorter(true);
         tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
@@ -246,8 +248,6 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                 return canEdit [columnIndex];
             }
         });
-        tblAttributes.setAutoCreateRowSorter(true);
-        tblAttributes.setShowGrid(true);
         attributePane.setViewportView(tblAttributes);
 
         org.jdesktop.layout.GroupLayout pnlAttributesLayout = new org.jdesktop.layout.GroupLayout(pnlAttributes);
@@ -256,20 +256,20 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlAttributesLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlAttributesLayout.setVerticalGroup(
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlAttributesLayout.createSequentialGroup()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlAttributes.TabConstraints.tabTitle"), pnlAttributes); // NOI18N
 
         txtLdif.setEditable(false);
-        txtLdif.setFont(new java.awt.Font("Courier New", 0, 12));
+        txtLdif.setEditorKit(CloneableEditorSupport.getEditorKit("text/ldif"));
         ldifPane.setViewportView(txtLdif);
 
         org.jdesktop.layout.GroupLayout pnlLdifLayout = new org.jdesktop.layout.GroupLayout(pnlLdif);
@@ -278,14 +278,12 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlLdifLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
+                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlLdifLayout.setVerticalGroup(
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlLdifLayout.createSequentialGroup()
-                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
         );
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlLdif.TabConstraints.tabTitle"), pnlLdif); // NOI18N
@@ -316,7 +314,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
+                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnFilter)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -374,6 +372,6 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     private javax.swing.JTable tblAttributes;
     private javax.swing.JScrollPane treePane;
     private javax.swing.JTextField txtFilter;
-    private javax.swing.JTextPane txtLdif;
+    private javax.swing.JEditorPane txtLdif;
     // End of variables declaration//GEN-END:variables
 }
