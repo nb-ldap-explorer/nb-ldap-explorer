@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Layer: com/google/code/nb_ldap_explorer/ldif/layer.xml
+OpenIDE-Module-Localizing-Bundle: com/google/code/nb_ldap_explorer/ldif/Bundle.properties

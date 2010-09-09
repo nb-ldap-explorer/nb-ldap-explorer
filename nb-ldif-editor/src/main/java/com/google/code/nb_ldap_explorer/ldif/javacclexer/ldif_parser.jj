@@ -1,0 +1,460 @@
+/*=======================================================================================
+ *
+ * Author: 
+ *	Nicola Venditti (Nicola.Venditti@Sun.com)
+ *	$Author: nico $
+ * Start-Date: 
+ *	mercoled�,  7 dicembre 2005, 22:06:40 CET
+ * Version: 
+ 	$version$
+ * Description: 
+ *	This class parses LDAP Data Interchange Format (LDIF) files
+ * RFC involved: 
+ *	[1] RFC 2849 - The LDAP Data Interchange Format (LDIF) - Technical
+ *	Specification 
+ *	[2] RFC 2253 - Lightweight Directory Access Protocol (v3): 
+ *	UTF-8 String Representation of Distinguished Names
+ *	[3] RFC 1738 - Uniform Resource Locators
+ *	[4] RFC 2234 - Augmented BNF for Syntax Specifications: ABNF
+ *
+ *
+ * Rough LDIF files structure:
+ *
+ *   [version: 1]
+ *   LDIF record or change-record
+ *   [LDIF record or change-record]*
+ *   <EOF>
+ *
+ * Example of record in an LDIF file: 
+ *	dn: cn=Nicola Venditti, ou=Identity Practice, ou=Client Solutions, dc=sun, dc=it
+ *	changetype: add
+ *	objectclass: top
+ *	objectclass: person
+ *	objectclass: organizationalPerson
+ *	cn: Nicola Venditti
+ *	sn: Venditti
+ *	uid: nico
+ *	telephonenumber: +39 222 222 111
+ *	jpegphoto:< file:///usr/local/directory/photos/fiona.jpg
+ *	description:: UHJlc3RvIHNhcuAgTmF0YWxlIQ==  
+ *	#                  ^ "Presto sar� Natale", � is not SAFE and must be base64 encoded 
+ *	#		   (For English people: Soon will be Christmas)
+ *
+ * More examples are provided in RFC [1] and [2]
+ *
+ *===========================================================================================*/ 
+
+
+//-------------------------------------------------
+// JavaCC parsing options
+//-------------------------------------------------
+options {
+  STATIC = false;
+  JAVA_UNICODE_ESCAPE = true;
+  ERROR_REPORTING = false;
+    BUILD_PARSER = false;
+}
+
+
+//-------------------------------------------------
+// PARSER CLASS
+//-------------------------------------------------
+PARSER_BEGIN(LDIF_Parser)
+package com.google.code.nb_ldap_explorer.ldif.javacclexer;
+
+public class LDIF_Parser 
+{
+	public static void main(String args[]) 
+  		throws ParseException 
+ 	{
+                LDIF_Parser parser = new LDIF_Parser(System.in);
+                Token t = parser.getNextToken();
+                while(t.kind != 0) {
+                    System.out.println(t.kind + " - " + t.image);
+                    t = parser.getNextToken();
+                }
+                //parser.LDIF_File();
+  	}
+}
+
+PARSER_END(LDIF_Parser)
+
+TOKEN_MGR_DECLS:
+{
+    public int getLexerState() {
+        return curLexState;
+    }
+}
+
+//-----------------------------------------------------------------
+// TERMINAL SYMBOLS AND PSEUDO-TOKENS
+//-----------------------------------------------------------------
+
+// Pattern matching (pseudo-tokens)
+TOKEN: {<#ALPHA: ["a"-"z", "A"-"Z"] > }
+TOKEN: {<#DIGIT: ["0"-"9"]> }
+TOKEN: {<#UTF8_1: ["\200"-"\277"] > }
+TOKEN: {<#UTF8_2: ["\300"-"\337"]<UTF8_1> > }
+TOKEN: {<#UTF8_3: ["\340"-"\357"]<UTF8_1><UTF8_1> > }
+TOKEN: {<#UTF8_4: ["\360"-"\367"]<UTF8_1><UTF8_1><UTF8_1> > }
+TOKEN: {<#UTF8_5: ["\370"-"\373"]<UTF8_1><UTF8_1><UTF8_1><UTF8_1> > }
+TOKEN: {<#UTF8_6: ["\374"-"\375"]<UTF8_1><UTF8_1><UTF8_1><UTF8_1><UTF8_1> > }
+
+TOKEN: {<#SAFE_CHAR: ~["\000", "\012", "\015"]> }
+TOKEN: {<#SAFE_INIT_CHAR: ~["\000", "\012", "\015", " ", ":", "<"]> }
+TOKEN: {<#SAFE_STRING: <SAFE_INIT_CHAR> (<SAFE_CHAR>)* > }
+
+TOKEN: {<#UTF8_CHAR: <SAFE_CHAR> | <UTF8_2> | <UTF8_3> | <UTF8_4> | <UTF8_5> | <UTF8_6> >}
+TOKEN: {<#UTF8_STRING: (<UTF8_CHAR>)+ >}
+
+TOKEN: {<#BASE64_CHAR: ["+", "/", "=", "0"-"9", "a"-"z", "A"-"Z"]>}
+TOKEN: {<#BASE64_STRING: (<BASE64_CHAR>)+ >}
+TOKEN: {<#BASE64_UTF8_STRING: <BASE64_STRING> >} 
+
+TOKEN: {<DNVALUESEP: ",">}
+TOKEN: {<DNNAMECOMPONENTSEP: "+">}
+TOKEN: {<NCATTRIBUTETYPEVALUESEP: "="> : ATTVALUE_S }
+
+
+// LDIF Comments (lines starting with #)
+<*> TOKEN:
+{
+	<LDIF_COMMENT: "#" (~["\n", "\r"])* ("\n" | "\r" | "\n\r") >
+}
+
+<*> TOKEN:
+{
+	<EOL: "\n" | "\r" | "\r\n" > 
+}
+
+<DEFAULT> TOKEN:
+{
+	<SPACE: " ">
+	|
+	<VERSION: "version:" (<SPACE>)*>: VERSION_S
+	|
+	<DN_START: "dn:" (<SPACE>)* > : DN_S
+	|
+	<CHANGETYPE: "changetype" >
+	|
+	<CONTROL: "control" >
+	|
+	<CONTROL_CRITICALITY: "true" | "false" >
+	|
+	<ADD: "add" >
+	|
+	<MODIFY: "modify" >
+	|
+	<DELETE: "delete" >
+	|
+	<REPLACE: "replace" >
+	|
+	<MODRDN: "modrdn" | "moddn" >
+	|
+	<NEWRDN: "newrdn" >
+	|
+	<DELETEOLDRDN: "deleteoldrdn" >
+	|
+	<NEWSUPERIOR: "newsuperior" >
+	|
+	<DN64_START: "dn::" (<SPACE>)* > : DN64_VALUE_S
+	|
+	<ATTVAL_SEP: ":" (<SPACE>)* > 
+	|
+	<ATTVAL_SEP_64: "::" (<SPACE>)* >
+	|
+	<ATTVAL_SEP_URL: ":<" (<SPACE>)* >
+	|
+	<END_OF_MOD: "-">
+	|
+	<OPTION_SEP: ";">
+	|
+	<ATTRIBUTE_TYPE_STRING: <ALPHA> (<ALPHA> | <DIGIT> | "-")* > 
+	|
+	<LDAP_OID: (<DIGIT>)+ ("." (<DIGIT>)+ )* >
+}
+
+<DN_S> TOKEN:
+{
+    <DN: <SAFE_STRING>> : DEFAULT
+}
+
+<VERSION_S> TOKEN:
+{
+	<VERSION_NUM: "0" | "1" > : DEFAULT
+}
+
+<DELETEOLDRDN_S> TOKEN:
+{
+	<DELETEOLDRDN_YESNO: "0" | "1" > : DEFAULT
+}
+
+<ATTVALUE_S> TOKEN: 
+{
+	<ATTVALUE: <SAFE_STRING> (<EOL> <SPACE> <SAFE_STRING>)*> 
+		{matchedToken.image = image.toString().replace("\n ","");} : DEFAULT
+}
+
+<ATTVALUE_S_64> TOKEN: 
+{
+	<BASE64_ATTVALUE: <BASE64_STRING> (<EOL> <SPACE> <SAFE_STRING>)* > 
+		{matchedToken.image = image.toString().replace("\n ","");} : DEFAULT
+}
+
+<ATTVALUE_S_64> SKIP: 
+{
+	< <EOL> " ">
+}
+
+<ATTVALUE_S_URL> TOKEN: 
+{
+	<URL: (~["\n", "\r"])+ > : DEFAULT
+}
+
+<DN64_VALUE_S> TOKEN: 
+{
+	<DN64_VALUE: <BASE64_UTF8_STRING> (<EOL> <SPACE> <SAFE_STRING>)*> 
+		 {matchedToken.image = image.toString().replace("\n ","");} : DEFAULT
+}
+
+
+//-------------------------------------------------
+// LDIF GRAMMAR
+//-------------------------------------------------
+
+void LDIF_File(): {}
+{
+	(LDIF_Version() <EOL>)?
+	(LDIF_Record() (<EOL>)+)+
+	<EOF>
+}
+
+
+void LDIF_Version():
+{}
+{
+	<VERSION> <VERSION_NUM> 
+}
+
+
+void LDIF_Record(): 
+{}
+{
+	DN_Spec() <EOL>   
+	(ChangeRecord() | AttributeTypeAndValueRecord())
+}
+
+
+void DN_Spec(): 
+{}
+{
+	(Normal_DN_Spec() | Base64_DN_Spec() )
+}
+
+
+void Normal_DN_Spec(): 
+{}
+{
+	(<DN_START> Normal_DN_Value() <EOL>)
+}
+
+void Normal_DN_Value_Sep():
+{}
+{
+	<DNVALUESEP>
+}
+
+void DN_NameComponent_Sep():
+{}
+{
+	<DNNAMECOMPONENTSEP>
+}
+
+void NC_AttributeTypeAndValue_Sep():
+{}
+{
+	<NCATTRIBUTETYPEVALUESEP>
+}
+
+void Normal_DN_Value(): 
+{
+}
+{
+	<DN>
+}
+
+
+void DN_NameComponent(): 
+{}
+{
+	(NC_AttributeTypeAndValue() (DN_NameComponent_Sep() NC_AttributeTypeAndValue())*)
+}
+
+void NC_AttributeTypeAndValue(): 
+{}
+{
+	( NC_AttributeType() NC_AttributeTypeAndValue_Sep() NC_AttributeValue() )
+}
+
+void NC_AttributeType(): 
+{}
+{
+	( <LDAP_OID> | <ATTRIBUTE_TYPE_STRING>) 
+}
+
+void NC_AttributeValue(): 
+{}
+{
+	<ATTVALUE>
+}
+
+void Base64_DN_Spec(): 
+{}
+{
+	<DN64_START> Base64_DN_Value()
+}
+
+void Base64_DN_Value(): 
+{}
+{
+	<DN64_VALUE>
+}
+
+void AttributeTypeAndValueRecord(): 
+{}
+{
+	(AttributeTypeAndValue_Spec() <EOL> {token_source.SwitchTo(DEFAULT);} )+
+}
+
+void AttributeTypeAndValue_Spec(): 
+{}
+{
+	(AttributeDescription() Value_Spec() )
+}
+
+void Value_Spec(): 
+{
+}
+{
+	(
+		 (<ATTVAL_SEP> {token_source.SwitchTo(ATTVALUE_S);} (AttributeValue())? )
+		 |
+		 (<ATTVAL_SEP_64> {token_source.SwitchTo(ATTVALUE_S_64);} (Base64_AttributeValue())? )
+		 |
+		 // TODO: complete parsing of URLs of form file://.... (see BNF in RFC 1738)
+		 (<ATTVAL_SEP_URL> {token_source.SwitchTo(ATTVALUE_S_URL);}  (URL())? ) 
+	 )
+}
+
+
+void AttributeDescription(): 
+{}
+{
+	AttributeType() (Options())*
+}
+
+void AttributeType(): 
+{}
+{
+	(<LDAP_OID> | AttributeTypeString())
+}
+
+
+void AttributeTypeString(): 
+{}
+{
+	<ATTRIBUTE_TYPE_STRING>
+}
+
+void Options(): 
+{}
+{
+	(<OPTION_SEP> <ATTRIBUTE_TYPE_STRING>)
+}
+
+void AttributeValue(): 
+{}
+{
+	//NICO: testing
+	//<ATTVALUE>  (<EOL> " " <ATTVALUE>)*
+	<ATTVALUE>
+}
+
+void Base64_AttributeValue(): 
+{}
+{
+	<BASE64_ATTVALUE>
+}
+
+void URL(): 
+{}
+{
+	<URL>
+}
+
+void ChangeRecord():
+{}
+{
+	(<CONTROL> <ATTVAL_SEP> 
+		<LDAP_OID> 
+		((<SPACE>)+ <CONTROL_CRITICALITY>)?
+		(Value_Spec())? 
+	<EOL>)*
+
+	<CHANGETYPE> <ATTVAL_SEP>
+	(
+		<ADD> <EOL> AttributeTypeAndValueRecord() (<END_OF_MOD>)?
+		|
+		<DELETE> <EOL> (<END_OF_MOD>)?
+		|
+		(
+		<MODIFY> <EOL> 
+		Modify_Spec()  (<END_OF_MOD> <EOL> Modify_Spec())*
+		)
+		|
+		(
+		<MODRDN>  <EOL> 
+		ModRDN_Spec() 
+		(<END_OF_MOD>)? 
+		)
+	) 
+}
+
+
+void Modify_Spec(): 
+{}
+{
+	<ADD> <ATTVAL_SEP>  AttributeDescription() <EOL>
+		AttributeTypeAndValue_Spec() <EOL> {token_source.SwitchTo(DEFAULT);}
+	|
+	<DELETE> <ATTVAL_SEP>  AttributeDescription() <EOL> 
+		(AttributeTypeAndValue_Spec() <EOL> {token_source.SwitchTo(DEFAULT);})*
+	|
+	<REPLACE> <ATTVAL_SEP>  AttributeDescription() <EOL> 
+		(AttributeTypeAndValue_Spec() <EOL> {token_source.SwitchTo(DEFAULT);} )*
+}
+
+
+void ModRDN_Spec(): 
+{}
+{
+	<NEWRDN>
+	(
+		<ATTVAL_SEP>  DN_NameComponent()
+		|
+		<ATTVAL_SEP_64>  {token_source.SwitchTo(DN64_VALUE_S);} Base64_DN_Value()
+	) <EOL> 
+
+	<DELETEOLDRDN> <ATTVAL_SEP> {token_source.SwitchTo(DELETEOLDRDN_S);}  <DELETEOLDRDN_YESNO> 
+	<EOL>  {token_source.SwitchTo(DEFAULT);}
+	( <NEWSUPERIOR> 
+		(
+			<ATTVAL_SEP> Normal_DN_Value()
+			|
+			<ATTVAL_SEP_64> {token_source.SwitchTo(DN64_VALUE_S);} Base64_DN_Value()
+		)
+		<EOL> {token_source.SwitchTo(DEFAULT);}
+	)? 
+}
+
+

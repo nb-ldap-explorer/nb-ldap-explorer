@@ -1,0 +1,9 @@
+version: 1
+dn: dc=structure-net, dc=de
+changetype: add
+objectclass: organization
+objectclass: top
+o: Structure Net
+l: Hamburg
+postalcode: 21033
+streetadress: Billwiese 22
