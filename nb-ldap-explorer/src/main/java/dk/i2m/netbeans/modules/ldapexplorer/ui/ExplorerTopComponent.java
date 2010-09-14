@@ -293,6 +293,11 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
 
         txtFilter.setText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtFilter.text")); // NOI18N
         txtFilter.setToolTipText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtFilter.toolTipText")); // NOI18N
+        txtFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFilterActionPerformed(evt);
+            }
+        });
 
         org.openide.awt.Mnemonics.setLocalizedText(btnFilter, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnFilter.text")); // NOI18N
         btnFilter.addActionListener(new java.awt.event.ActionListener() {
@@ -344,21 +349,36 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
-        try {
-            List<LdapEntry> searchResults = server.search(txtFilter.getText());
+    private void executeFilter() {
+        String filterText = txtFilter.getText().trim();
+        if (filterText.isEmpty()) {
+            prepareBrowsing();
+        } else {
+            try {
+                List<LdapEntry> searchResults = server.search(filterText);
 
-            em.setRootContext(new LdapSearchEntryNode(new LdapSearchEntryChildren(
-                    searchResults)));
+                em.setRootContext(new LdapSearchEntryNode(new LdapSearchEntryChildren(
+                        searchResults)));
 
-        } catch (QueryException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
+            } catch (QueryException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
         }
+    }
+
+    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
+        executeFilter();
     }//GEN-LAST:event_btnFilterActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-        prepareBrowsing();
+        txtFilter.setText("");
+        executeFilter();
     }//GEN-LAST:event_btnResetActionPerformed
+
+    private void txtFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFilterActionPerformed
+        executeFilter();
+    }//GEN-LAST:event_txtFilterActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane attributePane;
     private javax.swing.JButton btnFilter;
