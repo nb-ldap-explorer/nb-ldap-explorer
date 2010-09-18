@@ -17,7 +17,9 @@
 package dk.i2m.netbeans.modules.ldapexplorer.services;
 
 import dk.i2m.netbeans.modules.ldapexplorer.model.Authentication;
+import dk.i2m.netbeans.modules.ldapexplorer.model.Krb5LoginConf;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,10 +54,12 @@ public class DefaultLdapService extends LdapService {
     public static final String FO_ATTR_TIMEOUT = "timeout";
     /** FileObject attribute containing the loginConfiguration for the LdapServer */
     public static final String FO_ATTR_LOGINCONF = "loginconf";
-    /** FileObject attribute containing the loginConfiguration for the LdapServer */
+    /** FileObject attribute containing the Kerberos 5 Username for the LdapServer */
     public static final String FO_ATTR_KRB5USERNAME = "krb5username";
-    /** FileObject attribute containing the loginConfiguration for the LdapServer */
+    /** FileObject attribute containing the Kerberos 5 Password for the LdapServer */
     public static final String FO_ATTR_KRB5PASSWORD = "krb5password";
+    /** FileObject attribute containing the Kerberos 5 Keytab for the LdapServer */
+    public static final String FO_ATTR_KRB5KEYTAB = "krb5keytab";
     /** Prefix of FileObjects containing LdapServers. */
     public static final String FO_PREFIX = "i2m-ldapserver-";
 
@@ -100,9 +104,12 @@ public class DefaultLdapService extends LdapService {
         server.setAttribute(FO_ATTR_BIND, ldapServer.getBinding());
         server.setAttribute(FO_ATTR_PASSWORD, ldapServer.getPassword());
         server.setAttribute(FO_ATTR_SSL, ldapServer.isSecure());
-        server.setAttribute(FO_ATTR_LOGINCONF, ldapServer.getLoginConf());
+        server.setAttribute(FO_ATTR_LOGINCONF, Krb5LoginConf.values()[ldapServer.getKrb5LoginConf().ordinal()]);
         server.setAttribute(FO_ATTR_KRB5USERNAME, ldapServer.getKrb5username());
         server.setAttribute(FO_ATTR_KRB5PASSWORD, ldapServer.getKrb5password());
+        if(ldapServer.getKrb5keytab() != null) {
+            server.setAttribute(FO_ATTR_KRB5KEYTAB, ldapServer.getKrb5keytab().toString());
+        }
         return ldapServer;
     }
 
@@ -137,9 +144,19 @@ public class DefaultLdapService extends LdapService {
         String bind = getAttributeAsString(fo, FO_ATTR_BIND, "");
         String password = getAttributeAsString(fo, FO_ATTR_PASSWORD, "");
         Boolean secure = getAttributeAsBoolean(fo, FO_ATTR_SSL, false);
-        String[] loginConfig = getAttributeAsStringArray(fo, FO_ATTR_LOGINCONF, new String[0]);
+        Krb5LoginConf loginConfig = Krb5LoginConf.SYSTEM_ACCOUNT;
+        // Wenn die Config Daten nicht vorhanden sind oder nicht auflösbar sind,
+        // ersetzen wir durch einen Standard-Wert
+        try {
+            String krb5LoginConfString = (String) fo.getAttribute(FO_ATTR_LOGINCONF);
+            loginConfig = Krb5LoginConf.valueOf(krb5LoginConfString);
+        } catch (NullPointerException ex) {
+        } catch (IllegalArgumentException ex) {
+        } catch (ClassCastException ex) {
+        }
         String krb5username = getAttributeAsString(fo, FO_ATTR_KRB5USERNAME, "");
         String krb5password = getAttributeAsString(fo, FO_ATTR_KRB5PASSWORD, "");
+        File krb5keytab = new File(getAttributeAsString(fo, FO_ATTR_KRB5KEYTAB, ""));
 
         LdapServer server = new LdapServer(host, port, baseDn);
         server.setLabel(label);
@@ -149,9 +166,10 @@ public class DefaultLdapService extends LdapService {
         server.setBinding(bind);
         server.setPassword(password);
         server.setSecure(secure);
-        server.setLoginConf(loginConfig);
+        server.setKrb5LoginConf(loginConfig);
         server.setKrb5username(krb5username);
         server.setKrb5password(krb5password);
+        server.setKrb5keytab(krb5keytab);
         return server;
     }
 

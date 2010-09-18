@@ -16,7 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import dk.i2m.netbeans.modules.ldapexplorer.ui.PasswordDialog;
+import java.io.File;
 import java.io.IOException;
 import java.security.PrivilegedAction;
 import java.util.Hashtable;
@@ -42,7 +42,8 @@ public class LdapServer extends BaseLdapServer {
 
     private String krb5username = "";
     private String krb5password = "";
-    private String[] loginConf = new String[0];
+    private File krb5keytab = null;
+    private Krb5LoginConf krb5loginConf = Krb5LoginConf.SYSTEM_ACCOUNT;
     private Subject identity = null;
 
     /**
@@ -230,19 +231,18 @@ public class LdapServer extends BaseLdapServer {
         }
     }
 
-    public String[] getLoginConf() {
-        return loginConf;
+    public Krb5LoginConf getKrb5LoginConf() {
+        return krb5loginConf;
     }
 
-    public void setLoginConf(String[] loginConf) {
-        String[] old = this.loginConf;
-        if( loginConf == null ) {
-            this.loginConf = new String[0];
-        } else {
-            this.loginConf = loginConf;
+    public void setKrb5LoginConf(Krb5LoginConf loginConf) {
+        if(loginConf == null) {
+            throw new IllegalArgumentException("The Krb5Login Configuration must not be NULL");
         }
         this.identity = null;
-        fire("loginConf", old, this.loginConf);
+        Krb5LoginConf old = this.krb5loginConf;
+        this.krb5loginConf = loginConf;
+        fire("krb5LoginConf", old, this.krb5loginConf);
     }
 
     private Subject getIdentity() throws LoginException {
@@ -255,48 +255,13 @@ public class LdapServer extends BaseLdapServer {
             throw new IllegalStateException(
                     "LoginContext only allowed + used for Kerberos5!");
         }
-        StringBuilder sb = new StringBuilder();
-        final java.util.HashMap<String, String> options = new java.util.HashMap<String, String>();
-        for(String line: this.getLoginConf()) {
-            sb.append(sb);
-            if(line.trim().length() == 0) continue;
-            String[] parts = line.split("=", 2);
-            if(parts.length > 1) {
-                options.put(parts[0], parts[1]);
-            } else {
-                options.put(parts[0], "");
-            }
-        }
-        l.info("LoginConf: " + sb.toString());
-        final javax.security.auth.login.Configuration c =
-                new javax.security.auth.login.Configuration() {
-            @Override
-            public javax.security.auth.login.AppConfigurationEntry[] getAppConfigurationEntry(String name) {
-                return new javax.security.auth.login.AppConfigurationEntry[]{
-                            new javax.security.auth.login.AppConfigurationEntry(
-                            "com.sun.security.auth.module.Krb5LoginModule",
-                            javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                            options)
-                        };
-            }
-        };
+
         LoginContext lc = new LoginContext("generated", null, new CallbackHandler() {
             public void handle(Callback[] callbacks) throws IOException,
                     UnsupportedCallbackException {
                 String username = getKrb5username().trim();
                 String password = getKrb5password().trim();
                 l.info("Password/Username Callbackhandler called");
-                if ( username.length() == 0 || password.length() == 0 ) {
-                    PasswordDialog pd = new PasswordDialog(null);
-                    pd.setUsername(username);
-                    pd.setPassword(password);
-                    pd.setVisible(true);
-                    // The dialog is modal ...
-                    if(! pd.isCanceled()) {
-                        username = pd.getUsername();
-                        password = pd.getPassword();
-                    }
-                }
                 for (Callback callback : callbacks) {
                     if (callback instanceof NameCallback) {
                         ((NameCallback) callback).setName(username);
@@ -305,7 +270,7 @@ public class LdapServer extends BaseLdapServer {
                     }
                 }
             }
-        }, c);
+        }, krb5loginConf.getLoginConfiguration(getKrb5username(), null));
         l.info("Logging in");
         lc.login();
         l.info("Logged in");
@@ -334,5 +299,13 @@ public class LdapServer extends BaseLdapServer {
         this.krb5username = krb5username;
         this.identity = null;
         fire(krb5username, old, this.krb5username);
+    }
+
+    public File getKrb5keytab() {
+        return krb5keytab;
+    }
+
+    public void setKrb5keytab(File krb5keytab) {
+        this.krb5keytab = krb5keytab;
     }
 }

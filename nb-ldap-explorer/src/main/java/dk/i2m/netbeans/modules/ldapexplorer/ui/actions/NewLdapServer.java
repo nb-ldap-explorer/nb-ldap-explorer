@@ -19,6 +19,7 @@ package dk.i2m.netbeans.modules.ldapexplorer.ui.actions;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServersNotifier;
 import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import dk.i2m.netbeans.modules.ldapexplorer.model.Authentication;
+import dk.i2m.netbeans.modules.ldapexplorer.model.Krb5LoginConf;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServerPanel;
 import java.awt.event.ActionEvent;
@@ -52,11 +53,14 @@ public final class NewLdapServer extends CallableSystemAction {
                 ldapServer.setPort(panel.getPort());
                 ldapServer.setTimeout(panel.getTimeout());
                 ldapServer.setBaseDN(panel.getBaseDN());
-                ldapServer.setAuthentication(Authentication.valueOf(panel.
-                        getAuthentication()));
+                ldapServer.setAuthentication(panel.getAuthentication());
                 ldapServer.setBinding(panel.getBind());
                 ldapServer.setPassword(panel.getPassword());
                 ldapServer.setSecure(panel.isSecureSocketLayerEnabled());
+                ldapServer.setKrb5LoginConf(panel.getKrb5LoginConf());
+                ldapServer.setKrb5keytab(panel.getKrb5Keytab());
+                ldapServer.setKrb5username(panel.getKrb5Username());
+                ldapServer.setKrb5password(panel.getKrb5Password());
 
 
                 try {

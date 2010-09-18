@@ -20,6 +20,7 @@ import dk.i2m.netbeans.modules.ldapexplorer.ui.actions.ExplorerAction;
 import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import javax.swing.Action;
@@ -150,8 +151,8 @@ public class LdapServerNode extends AbstractNode implements
                 passwordProp.setShortDescription(bundle.getString("PROP_DESC_Password"));
                 securityDetails.put(passwordProp);
 
-                Property loginConfProp = new PropertySupport.Reflection<String[]>(srv,
-                        String[].class, "loginConf");
+                Property loginConfProp = new PropertySupport.Reflection<Krb5LoginConf>(srv,
+                        Krb5LoginConf.class, "krb5LoginConf");
                 loginConfProp.setName(bundle.getString("PROP_NAME_loginConf"));
                 loginConfProp.setShortDescription(bundle.getString("PROP_DESC_loginConf"));
                 krb5securityDetails.put(loginConfProp);
@@ -167,6 +168,12 @@ public class LdapServerNode extends AbstractNode implements
                 krb5passwordProp.setName(bundle.getString("PROP_NAME_krb5password"));
                 krb5passwordProp.setShortDescription(bundle.getString("PROP_DESC_krb5password"));
                 krb5securityDetails.put(krb5passwordProp);
+
+                Property krb5keytabProp = new PropertySupport.Reflection<File>(srv,
+                        File.class, "krb5keytab");
+                krb5keytabProp.setName(bundle.getString("PROP_NAME_krb5keytab"));
+                krb5keytabProp.setShortDescription(bundle.getString("PROP_DESC_krb5keytab"));
+                krb5securityDetails.put(krb5keytabProp);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
