@@ -73,6 +73,7 @@ public class LdapServer extends BaseLdapServer {
         if(this.getAuthentication() == Authentication.KERBEROS5) {
             env.put(Context.SECURITY_AUTHENTICATION, "GSSAPI");
         }
+        l.info(env.toString());
         return env;
     }
 
@@ -270,7 +271,7 @@ public class LdapServer extends BaseLdapServer {
                     }
                 }
             }
-        }, krb5loginConf.getLoginConfiguration(getKrb5username(), null));
+        }, krb5loginConf.getLoginConfiguration(getKrb5username(), getKrb5keytab()));
         l.info("Logging in");
         lc.login();
         l.info("Logged in");
