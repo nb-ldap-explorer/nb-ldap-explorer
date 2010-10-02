@@ -154,6 +154,11 @@
             <artifactId>org-openide-text</artifactId>
             <version>RELEASE68</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>apache-commons-codec-1.3</artifactId>
+            <version>RELEASE69</version>
+        </dependency>
     </dependencies>
 
     <build>

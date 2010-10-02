@@ -16,11 +16,14 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Represents an entry in an LDAP tree.
@@ -34,6 +37,8 @@ public class LdapEntry {
     private Map<String, ArrayList<Object>> attributes =
             new HashMap<String, ArrayList<Object>>();
     private List<String> objectClasses = new ArrayList<String>();
+    // Ensure that the base64 encoding string is not foled
+    private Base64 encoder = new Base64(76, (System.getProperty("line.separator") + " ").getBytes());
 
     /**
      * Creates a new instance of {@link LdapEntry}.
@@ -235,14 +240,22 @@ public class LdapEntry {
 
             for (Object val : this.attributes.get(key)) {
                 ldif.append(key);
-                ldif.append(": ");
+                ldif.append(":");
 
-                if (val instanceof byte[]) {
-                    // Field is binary - convert it to hexadecimals
-                    ldif.append(NbBundle.getMessage(LdapEntry.class,
-                            "ATTRIBUTE_NOT_STRING"));
+                if ( val instanceof byte[] ) {
+                    ldif.append(": ");
+                    ldif.append(new String(encoder.encode((byte[]) val)).trim());
                 } else {
-                    ldif.append(val);
+                    String value = val.toString();
+                    if( isSafeString(value) ) {
+                        ldif.append(" ");
+                        ldif.append(value);
+                    } else {
+                        try {
+                            ldif.append(": ");
+                            ldif.append(new String(encoder.encode(value.getBytes("UTF-8"))).trim());
+                        } catch (UnsupportedEncodingException ex) {}
+                    }
                 }
 
                 ldif.append(System.getProperty("line.separator"));
@@ -250,5 +263,28 @@ public class LdapEntry {
         }
 
         return ldif.toString();
+    }
+
+    /**
+     * Check whether String is a safe String according to rfc2849
+     */
+    private boolean isSafeString(String toBeChecked) {
+        // null is no safe String!
+        if(toBeChecked == null) return false;
+        // the empty string is obvisually safe ...
+        if(toBeChecked.length() == 0) return true;
+        // safe strings may not contain non-ascii chars, NUL, LF and CR
+        for(int i = 0; i < toBeChecked.length(); i++) {
+            char candidate = toBeChecked.charAt(i);
+            if( candidate > 127 || candidate == '\r' || candidate == '\n' || candidate == '\000') {
+                return false;
+            }
+        }
+        // Ok - now lets check for the special cases for the start of the safe string
+        char candidate = toBeChecked.charAt(0);
+        if( candidate == ':' || candidate == ' ' || candidate == ':' || candidate == '<' ) {
+        }
+        // Nothing left - we are clear
+        return true;
     }
 }
