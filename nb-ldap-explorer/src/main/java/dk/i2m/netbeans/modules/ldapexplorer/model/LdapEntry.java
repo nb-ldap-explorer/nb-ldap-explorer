@@ -283,6 +283,7 @@ public class LdapEntry {
         // Ok - now lets check for the special cases for the start of the safe string
         char candidate = toBeChecked.charAt(0);
         if( candidate == ':' || candidate == ' ' || candidate == ':' || candidate == '<' ) {
+            return false;
         }
         // Nothing left - we are clear
         return true;
