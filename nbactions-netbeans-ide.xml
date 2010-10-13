@@ -5,9 +5,12 @@
             <goals>
                 <goal>package</goal>
                 <goal>nbm:cluster</goal>
-                <goal>nbm:run-ide</goal>
-            </goals>
-        </action>
+            <goal>nbm:run-ide</goal>
+        </goals>
+        <properties>
+            <netbeansInstallation>/home/mblaesing/netbeans-6.9.1/</netbeansInstallation>
+        </properties>
+    </action>
         <action>
             <actionName>debug</actionName>
             <goals>
