@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.security.auth.Subject;
@@ -275,7 +276,7 @@ public class LdapServer extends BaseLdapServer {
         l.info("Logging in");
         lc.login();
         l.info("Logged in");
-        l.info("Subject: " + lc.getSubject().toString());
+        l.log(Level.INFO, "Subject: %s", new Object[]{lc.getSubject().toString()});
         this.identity = lc.getSubject();
         return lc.getSubject();
     }

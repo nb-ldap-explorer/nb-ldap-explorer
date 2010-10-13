@@ -19,6 +19,7 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import javax.security.auth.login.AppConfigurationEntry;
 
 public enum Krb5LoginConf {
@@ -27,6 +28,7 @@ public enum Krb5LoginConf {
     PRINCIPAL_KEYTAB("Principal/Keytab");
 
     private String title;
+    private static Logger l = Logger.getLogger(Krb5LoginConf.class.getCanonicalName());
 
     private Krb5LoginConf(String title) {
         this.title = title;
@@ -59,7 +61,9 @@ public enum Krb5LoginConf {
                 options.put("keytab",  keytab != null ? keytab.toString() : "");
                 break;
         }
-        
+
+        l.info("Options: " + options.toString());
+
         final javax.security.auth.login.Configuration c =
                 new javax.security.auth.login.Configuration() {
 
