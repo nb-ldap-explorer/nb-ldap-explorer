@@ -232,8 +232,19 @@ public class LdapEntry {
      * @return LDIF representation of the entry
      */
     public String toLDIF() {
-        StringBuilder ldif = new StringBuilder("dn: ");
-        ldif.append(this.dn);
+        StringBuilder ldif = new StringBuilder();
+        ldif.append("dn:");
+        if (isSafeString(this.dn)) {
+            ldif.append(" ");
+            ldif.append(this.dn);
+        } else {
+            try {
+                ldif.append(": ");
+                ldif.append(new String(encoder.encode(this.dn.getBytes("UTF-8"))).
+                        trim());
+            } catch (UnsupportedEncodingException ex) {
+            }
+        }
         ldif.append(System.getProperty("line.separator"));
 
         for (String key : this.attributes.keySet()) {
