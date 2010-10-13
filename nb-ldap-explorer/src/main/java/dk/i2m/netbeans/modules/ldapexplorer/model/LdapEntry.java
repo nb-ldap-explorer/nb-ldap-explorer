@@ -233,6 +233,8 @@ public class LdapEntry {
      */
     public String toLDIF() {
         StringBuilder ldif = new StringBuilder();
+        ldif.append("version: 1");
+        ldif.append(System.getProperty("line.separator"));
         ldif.append("dn:");
         if (isSafeString(this.dn)) {
             ldif.append(" ");
