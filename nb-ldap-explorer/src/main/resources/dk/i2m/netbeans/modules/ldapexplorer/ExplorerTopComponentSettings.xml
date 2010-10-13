@@ -4,5 +4,5 @@
     <module name="dk.i2m.netbeans.modules.ldapexplorer" spec="1.0"/>
     <instanceof class="org.openide.windows.TopComponent"/>
     <instanceof class="dk.i2m.netbeans.modules.ldapexplorer.ui.ExplorerTopComponent"/>
-    <instance class="dk.i2m.netbeans.modules.ldapexplorer.ui.ExplorerTopComponent" method="getDefault"/>
+    <!--<instance class="dk.i2m.netbeans.modules.ldapexplorer.ui.ExplorerTopComponent" method="getDefault"/>-->
 </settings>
