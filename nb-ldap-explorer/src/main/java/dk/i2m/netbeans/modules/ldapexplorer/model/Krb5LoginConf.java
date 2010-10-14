@@ -58,7 +58,7 @@ public enum Krb5LoginConf {
                 options.put("useTicketCache", "false");
                 options.put("useKeyTab", "true");
                 options.put("principal", principal != null ? principal : "");
-                options.put("keytab",  keytab != null ? keytab.toString() : "");
+                options.put("keyTab",  keytab != null ? keytab.toString() : "");
                 break;
         }
 
