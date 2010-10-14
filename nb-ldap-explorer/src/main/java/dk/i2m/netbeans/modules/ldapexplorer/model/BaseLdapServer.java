@@ -21,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +45,11 @@ import org.openide.filesystems.FileObject;
  * @author Allan Lykke Christensen
  */
 public class BaseLdapServer {
-
+    private Comparator<LdapEntry> labelSorter = new Comparator<LdapEntry>() {
+            public int compare(LdapEntry t, LdapEntry t1) {
+                return t.getLabel().compareTo(t1.getLabel());
+            }
+        };
     private String identifier = null;
     private String host;
     private int port;
@@ -499,6 +504,8 @@ public class BaseLdapServer {
             }
         }
 
+        Collections.sort(entries, labelSorter);
+
         return entries;
     }
 
@@ -544,6 +551,8 @@ public class BaseLdapServer {
                 throw new QueryException(ex);
             }
         }
+
+        Collections.sort(entries, labelSorter);
 
         return entries;
     }
