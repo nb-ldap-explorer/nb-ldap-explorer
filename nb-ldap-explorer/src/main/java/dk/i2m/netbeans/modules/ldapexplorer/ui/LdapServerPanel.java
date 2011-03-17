@@ -178,6 +178,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         pnlTabbed = new javax.swing.JTabbedPane();
         pnlConnection = new javax.swing.JPanel();
@@ -189,41 +190,85 @@ public class LdapServerPanel extends javax.swing.JPanel {
         txtBaseDn = new javax.swing.JTextField();
         lblAuthentication = new javax.swing.JLabel();
         cbAuthentication = new javax.swing.JComboBox();
-        cbSecure = new javax.swing.JCheckBox();
         lblLabel = new javax.swing.JLabel();
         txtLabel = new javax.swing.JTextField();
         lblTimeout = new javax.swing.JLabel();
         txtTimeout = new javax.swing.JTextField();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel3 = new javax.swing.JPanel();
-        txtBind = new javax.swing.JTextField();
+        cbSecure = new javax.swing.JCheckBox();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        pnlSecuritySimple = new javax.swing.JPanel();
         lblBind = new javax.swing.JLabel();
+        txtBind = new javax.swing.JTextField();
         lblPassword = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
-        jPanel1 = new javax.swing.JPanel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        pnlSecurityKerberos5 = new javax.swing.JPanel();
         lblKrb5LoginConf = new javax.swing.JLabel();
         cbKrb5LoginConf = new javax.swing.JComboBox();
+        lblKrb5Username = new javax.swing.JLabel();
         txtKrb5Username = new javax.swing.JTextField();
+        lblKrb5Password = new javax.swing.JLabel();
         txtKrb5Password = new javax.swing.JTextField();
+        lblKrb5Keytab = new javax.swing.JLabel();
         txtKrb5Keytab = new javax.swing.JTextField();
         btnKrb5Keytab = new javax.swing.JButton();
-        lblKrb5Username = new javax.swing.JLabel();
-        lblKrb5Password = new javax.swing.JLabel();
-        lblKrb5Keytab = new javax.swing.JLabel();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
+
+        pnlConnection.setLayout(new java.awt.GridBagLayout());
 
         lblHost.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblHost.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlConnection.add(lblHost, gridBagConstraints);
 
         txtHostname.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtHostname.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(txtHostname, gridBagConstraints);
 
         lblPort.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblPort.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlConnection.add(lblPort, gridBagConstraints);
 
         txtPort.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtPort.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(txtPort, gridBagConstraints);
 
         lblBaseDn.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblBaseDn.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlConnection.add(lblBaseDn, gridBagConstraints);
 
         txtBaseDn.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtBaseDn.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(txtBaseDn, gridBagConstraints);
 
         lblAuthentication.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblAuthentication.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlConnection.add(lblAuthentication, gridBagConstraints);
 
         cbAuthentication.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -233,64 +278,134 @@ public class LdapServerPanel extends javax.swing.JPanel {
         DefaultComboBoxModel cbAuthenticationModel = new DefaultComboBoxModel(Authentication.values());
 
         cbAuthentication.setModel(cbAuthenticationModel);
-
-        cbSecure.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.cbSecure.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(cbAuthentication, gridBagConstraints);
 
         lblLabel.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlConnection.add(lblLabel, gridBagConstraints);
 
         txtLabel.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        pnlConnection.add(txtLabel, gridBagConstraints);
 
         lblTimeout.setLabelFor(txtTimeout);
         lblTimeout.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblTimeout.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlConnection.add(lblTimeout, gridBagConstraints);
 
         txtTimeout.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtTimeout.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(txtTimeout, gridBagConstraints);
 
-        txtBind.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtBind.text")); // NOI18N
+        cbSecure.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.cbSecure.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(cbSecure, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        pnlConnection.add(filler1, gridBagConstraints);
+
+        pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlConnection.TabConstraints.tabTitle"), pnlConnection); // NOI18N
+
+        pnlSecuritySimple.setAlignmentY(0.0F);
+        pnlSecuritySimple.setLayout(new java.awt.GridBagLayout());
 
         lblBind.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblBind.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlSecuritySimple.add(lblBind, gridBagConstraints);
+
+        txtBind.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtBind.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        pnlSecuritySimple.add(txtBind, gridBagConstraints);
 
         lblPassword.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblPassword.text")); // NOI18N
         lblPassword.setMaximumSize(new java.awt.Dimension(71, 17));
         lblPassword.setMinimumSize(new java.awt.Dimension(71, 17));
         lblPassword.setPreferredSize(new java.awt.Dimension(71, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlSecuritySimple.add(lblPassword, gridBagConstraints);
 
         txtPassword.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtPassword.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        pnlSecuritySimple.add(txtPassword, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        pnlSecuritySimple.add(filler2, gridBagConstraints);
 
-        org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel3Layout.createSequentialGroup()
-                        .add(lblBind, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(68, 68, 68)
-                        .add(txtBind, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 570, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .add(lblPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 93, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(7, 7, 7)
-                        .add(txtPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 570, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtBind, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblBind))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(99, Short.MAX_VALUE))
-        );
+        pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlSecuritySimple.TabConstraints.tabTitle"), pnlSecuritySimple); // NOI18N
 
-        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
+        pnlSecurityKerberos5.setLayout(new java.awt.GridBagLayout());
 
         lblKrb5LoginConf.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5LoginConf.text")); // NOI18N
         lblKrb5LoginConf.setPreferredSize(new java.awt.Dimension(71, 17));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        pnlSecurityKerberos5.add(lblKrb5LoginConf, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 250;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.weightx = 1.0;
+        pnlSecurityKerberos5.add(cbKrb5LoginConf, gridBagConstraints);
+        DefaultComboBoxModel cbKrb5LoginConfModel = new DefaultComboBoxModel(Krb5LoginConf.values());
+
+        cbKrb5LoginConf.setModel(cbKrb5LoginConfModel);
+
+        lblKrb5Username.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5Username.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        pnlSecurityKerberos5.add(lblKrb5Username, gridBagConstraints);
 
         txtKrb5Username.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtKrb5Username.text")); // NOI18N
         txtKrb5Username.addActionListener(new java.awt.event.ActionListener() {
@@ -298,10 +413,48 @@ public class LdapServerPanel extends javax.swing.JPanel {
                 txtKrb5UsernameActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
+        gridBagConstraints.weightx = 1.0;
+        pnlSecurityKerberos5.add(txtKrb5Username, gridBagConstraints);
+
+        lblKrb5Password.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5Password.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        pnlSecurityKerberos5.add(lblKrb5Password, gridBagConstraints);
 
         txtKrb5Password.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtKrb5Password.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
+        gridBagConstraints.weightx = 1.0;
+        pnlSecurityKerberos5.add(txtKrb5Password, gridBagConstraints);
+
+        lblKrb5Keytab.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5Keytab.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        pnlSecurityKerberos5.add(lblKrb5Keytab, gridBagConstraints);
 
         txtKrb5Keytab.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtKrb5Keytab.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 331;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
+        gridBagConstraints.weightx = 1.0;
+        pnlSecurityKerberos5.add(txtKrb5Keytab, gridBagConstraints);
 
         btnKrb5Keytab.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.btnKrb5Keytab.text")); // NOI18N
         btnKrb5Keytab.addActionListener(new java.awt.event.ActionListener() {
@@ -309,163 +462,27 @@ public class LdapServerPanel extends javax.swing.JPanel {
                 btnKrb5KeytabActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlSecurityKerberos5.add(btnKrb5Keytab, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        pnlSecurityKerberos5.add(filler3, gridBagConstraints);
 
-        lblKrb5Username.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5Username.text")); // NOI18N
+        pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlSecurityKerberos5.TabConstraints.tabTitle"), pnlSecurityKerberos5); // NOI18N
 
-        lblKrb5Password.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5Password.text")); // NOI18N
-
-        lblKrb5Keytab.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5Keytab.text")); // NOI18N
-
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(lblKrb5LoginConf, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(35, 35, 35)
-                        .add(cbKrb5LoginConf, 0, 564, Short.MAX_VALUE))
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(lblKrb5Username, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 94, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(lblKrb5Password)
-                            .add(lblKrb5Keytab))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(txtKrb5Password, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
-                            .add(txtKrb5Username, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .add(txtKrb5Keytab, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(btnKrb5Keytab)))))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblKrb5LoginConf, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(cbKrb5LoginConf, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtKrb5Username, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblKrb5Username))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtKrb5Password, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblKrb5Password))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtKrb5Keytab, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(btnKrb5Keytab)
-                    .add(lblKrb5Keytab))
-                .addContainerGap(31, Short.MAX_VALUE))
-        );
-
-        DefaultComboBoxModel cbKrb5LoginConfModel = new DefaultComboBoxModel(Krb5LoginConf.values());
-
-        cbKrb5LoginConf.setModel(cbKrb5LoginConfModel);
-
-        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
-
-        org.jdesktop.layout.GroupLayout pnlConnectionLayout = new org.jdesktop.layout.GroupLayout(pnlConnection);
-        pnlConnection.setLayout(pnlConnectionLayout);
-        pnlConnectionLayout.setHorizontalGroup(
-            pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlConnectionLayout.createSequentialGroup()
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, pnlConnectionLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, pnlConnectionLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(pnlConnectionLayout.createSequentialGroup()
-                                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(lblLabel)
-                                    .add(lblHost)
-                                    .add(lblPort))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtHostname, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)))
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlConnectionLayout.createSequentialGroup()
-                                .add(lblTimeout)
-                                .add(25, 25, 25)
-                                .add(txtTimeout, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE))
-                            .add(pnlConnectionLayout.createSequentialGroup()
-                                .add(lblBaseDn)
-                                .add(55, 55, 55)
-                                .add(txtBaseDn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE))))
-                    .add(pnlConnectionLayout.createSequentialGroup()
-                        .add(127, 127, 127)
-                        .add(cbSecure, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE))
-                    .add(pnlConnectionLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(lblAuthentication)
-                        .add(18, 18, 18)
-                        .add(cbAuthentication, 0, 591, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        pnlConnectionLayout.setVerticalGroup(
-            pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlConnectionLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblLabel)
-                    .add(txtLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblHost)
-                    .add(txtHostname, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblPort)
-                    .add(txtPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(txtTimeout, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblTimeout, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 16, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lblBaseDn)
-                    .add(txtBaseDn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(cbSecure)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(pnlConnectionLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cbAuthentication, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblAuthentication))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlConnection.TabConstraints.tabTitle"), pnlConnection); // NOI18N
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlTabbed, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlTabbed)
-        );
+        add(pnlTabbed);
     }// </editor-fold>//GEN-END:initComponents
 
     private void cbAuthenticationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbAuthenticationActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbAuthenticationActionPerformed
-
-    private void txtKrb5UsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKrb5UsernameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtKrb5UsernameActionPerformed
+}//GEN-LAST:event_cbAuthenticationActionPerformed
 
     private void btnKrb5KeytabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKrb5KeytabActionPerformed
         JFileChooser jfc = new JFileChooser(getKrb5Keytab());
@@ -473,16 +490,20 @@ public class LdapServerPanel extends javax.swing.JPanel {
         if ( returnValue == JFileChooser.APPROVE_OPTION ) {
             this.setKrb5Keytab(jfc.getSelectedFile());
         }
-    }//GEN-LAST:event_btnKrb5KeytabActionPerformed
+}//GEN-LAST:event_btnKrb5KeytabActionPerformed
+
+    private void txtKrb5UsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKrb5UsernameActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_txtKrb5UsernameActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnKrb5Keytab;
     private javax.swing.JComboBox cbAuthentication;
     private javax.swing.JComboBox cbKrb5LoginConf;
     private javax.swing.JCheckBox cbSecure;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
     private javax.swing.JLabel lblAuthentication;
     private javax.swing.JLabel lblBaseDn;
     private javax.swing.JLabel lblBind;
@@ -496,6 +517,8 @@ public class LdapServerPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lblPort;
     private javax.swing.JLabel lblTimeout;
     private javax.swing.JPanel pnlConnection;
+    private javax.swing.JPanel pnlSecurityKerberos5;
+    private javax.swing.JPanel pnlSecuritySimple;
     private javax.swing.JTabbedPane pnlTabbed;
     private javax.swing.JTextField txtBaseDn;
     private javax.swing.JTextField txtBind;
