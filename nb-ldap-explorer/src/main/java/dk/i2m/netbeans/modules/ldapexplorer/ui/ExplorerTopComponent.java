@@ -25,6 +25,7 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryChildren;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.model.QueryException;
+import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -144,6 +145,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                 // Note: On the root node there is no LdapEntry, hence the check
                 if (entry != null) {
                     entry = server.getEntry(entry.getDn());
+                    ldifPane.scrollRectToVisible( new Rectangle(0, 0, 1, 1));
                     txtLdif.setText(entry.toLDIF());
 
                     // Add the DN as it is not part of the attributes
