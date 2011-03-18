@@ -358,9 +358,9 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         } else {
             try {
                 List<LdapEntry> searchResults = server.search(filterText);
-
-                em.setRootContext(new LdapSearchEntryNode(new LdapSearchEntryChildren(
-                        searchResults)));
+                LdapSearchEntryChildren children = new LdapSearchEntryChildren(searchResults);
+                children.setLdapServer(server);
+                em.setRootContext(new LdapSearchEntryNode(children));
 
             } catch (QueryException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());

@@ -29,6 +29,7 @@ import org.openide.nodes.Node;
 public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
 
     private List<LdapEntry> entries = new ArrayList<LdapEntry>();
+    private LdapServer ldapServer = null;
 
     public LdapSearchEntryChildren(List<LdapEntry> entries) {
         this.entries = entries;
@@ -36,6 +37,14 @@ public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
 
     public void setEntries(List<LdapEntry> entries) {
         this.entries = entries;
+    }
+    
+    public LdapServer getLdapServer() {
+        return ldapServer;
+    }
+
+    public void setLdapServer(LdapServer ldapServer) {
+        this.ldapServer = ldapServer;
     }
 
     @Override
@@ -46,6 +55,8 @@ public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
     @Override
     protected Node[] createNodes(LdapEntry key) {
         LdapEntryChildren children = new LdapEntryChildren();
+        children.setParent(key.getDn());
+        children.setLdapServer(ldapServer);
         LdapEntryNode node = new LdapEntryNode(children, key);
         node.setDisplayName(key.getLabel());
         return new Node[]{node};
