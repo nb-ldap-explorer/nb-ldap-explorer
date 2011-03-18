@@ -151,7 +151,6 @@ public class LdapServer extends BaseLdapServer {
                 return javax.security.auth.Subject.doAs(
                         getIdentity(),
                         new PrivilegedAction<List<LdapEntry>>() {
-
                             public List<LdapEntry> run() {
                                 try {
                                     return LdapServer.super.getTree(path);
@@ -163,7 +162,7 @@ public class LdapServer extends BaseLdapServer {
             } catch (LoginException ex) {
                 throw new QueryException(ex);
             } catch (RuntimeException ex) {
-                if (ex.getCause() instanceof ConnectionException) {
+                if (ex.getCause() instanceof QueryException) {
                     throw (QueryException) ex.getCause();
                 } else {
                     throw ex;
@@ -181,7 +180,6 @@ public class LdapServer extends BaseLdapServer {
                 return javax.security.auth.Subject.doAs(
                         getIdentity(),
                         new PrivilegedAction<List<LdapEntry>>() {
-
                             public List<LdapEntry> run() {
                                 try {
                                     return LdapServer.super.search(filter);
@@ -193,7 +191,7 @@ public class LdapServer extends BaseLdapServer {
             } catch (LoginException ex) {
                 throw new QueryException(ex);
             } catch (RuntimeException ex) {
-                if (ex.getCause() instanceof ConnectionException) {
+                if (ex.getCause() instanceof QueryException) {
                     throw (QueryException) ex.getCause();
                 } else {
                     throw ex;
@@ -222,7 +220,7 @@ public class LdapServer extends BaseLdapServer {
             } catch (LoginException ex) {
                 throw new QueryException(ex);
             } catch (RuntimeException ex) {
-                if (ex.getCause() instanceof ConnectionException) {
+                if (ex.getCause() instanceof QueryException) {
                     throw (QueryException) ex.getCause();
                 } else {
                     throw ex;
