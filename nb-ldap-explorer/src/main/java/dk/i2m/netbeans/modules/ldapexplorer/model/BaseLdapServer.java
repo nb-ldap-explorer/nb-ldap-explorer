@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.naming.CommunicationException;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
@@ -467,6 +468,10 @@ public class BaseLdapServer {
      *          If the path is invalid or the server could not be queried
      */
     public List<LdapEntry> getTree(String path) throws QueryException {
+        return getTree(path, true);
+    }
+    
+    protected List<LdapEntry> getTree(String path, boolean firstTry) throws QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
         if (!isConnected()) {
@@ -494,14 +499,19 @@ public class BaseLdapServer {
                 addObjectClasses(entry);
                 entries.add(entry);
             }
-
-        } catch (NamingException ex) {
-            if (ex instanceof SizeLimitExceededException) {
-                Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
-                        getMessage());
+        } catch (SizeLimitExceededException ex) {
+            Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.getMessage());
+        } catch (CommunicationException ex) {
+            // When the connection was closed by the server - try to connect again
+            // (once) and return that result
+            if (firstTry) {
+                entries.clear();
+                entries = getTree(path, false);
             } else {
                 throw new QueryException(ex);
             }
+        } catch (NamingException ex) {
+            throw new QueryException(ex);
         }
 
         Collections.sort(entries, labelSorter);
@@ -519,6 +529,10 @@ public class BaseLdapServer {
      *          If the search failed
      */
     public List<LdapEntry> search(String filter) throws QueryException {
+        return this.search(filter, true);
+    }
+    
+    protected List<LdapEntry> search(String filter, boolean firstTry) throws QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
         if (!isConnected()) {
@@ -542,14 +556,19 @@ public class BaseLdapServer {
 
                 entries.add(entry);
             }
-
-        } catch (NamingException ex) {
-            if (ex instanceof SizeLimitExceededException) {
-                Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
-                        getMessage());
+        } catch (CommunicationException ex) {
+            // When the connection was closed by the server - try to connect again
+            // (once) and return that result
+            if (firstTry) {
+                entries.clear();
+                entries = search(filter, false);
             } else {
                 throw new QueryException(ex);
             }
+        } catch (SizeLimitExceededException ex) {
+            Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.getMessage());
+        } catch (NamingException ex) {
+            throw new QueryException(ex);
         }
 
         Collections.sort(entries, labelSorter);
@@ -592,6 +611,10 @@ public class BaseLdapServer {
      *          If the entry could not be retrieved
      */
     public LdapEntry getEntry(String dn) throws QueryException {
+        return this.getEntry(dn, true);
+    }
+        
+    private LdapEntry getEntry(String dn, boolean firstTry) throws QueryException {
         StringBuilder fullDn = new StringBuilder(dn);
         fullDn.append(",");
         fullDn.append(baseDN);
@@ -612,6 +635,14 @@ public class BaseLdapServer {
                 for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
                     entry.setAttribute(attr.getID(), ne.next());
                 }
+            }
+        } catch (CommunicationException ex) {
+            // When the connection was closed by the server - try to connect again
+            // (once) and return that result
+            if (firstTry) {
+                return getEntry(dn, false);
+            } else {
+                throw new QueryException(ex);
             }
         } catch (NamingException ex) {
             throw new QueryException(ex);
