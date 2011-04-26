@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nbm>
 <!--<moduleType>autoload</moduleType>-->
-<!--<codeNameBase>dk.i2m.netbeans.modules.nbldifeditor/1</codeNameBase>-->
+<codeNameBase>com.google.code.nb_ldap_explorer.ldif</codeNameBase>
+<author>Matthias Bläsing</author>
 <licenseName>Apache License, Version 2.0</licenseName>
-<licenseFile>license.txt</licenseFile>
-
+<licenseFile>src/main/resources/license.txt</licenseFile>
+<distributionUrl>http://netbeans.i2m.dk/</distributionUrl>
 </nbm>
