@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
-import org.openide.util.Exceptions;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import org.openide.awt.HtmlBrowser.URLDisplayer;
 
 /**
  * Panel showing the properties of an {@link LdapServer}.
@@ -31,7 +33,7 @@ import org.openide.util.Exceptions;
  * @author Allan Lykke Christensen
  */
 public class LdapServerPanel extends javax.swing.JPanel {
-
+    
     /** 
      * Creates new instance of {@link LdapServerPanel}.
      */
@@ -212,10 +214,12 @@ public class LdapServerPanel extends javax.swing.JPanel {
         lblKrb5Keytab = new javax.swing.JLabel();
         txtKrb5Keytab = new javax.swing.JTextField();
         btnKrb5Keytab = new javax.swing.JButton();
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        kerberosInfoScrollPane = new javax.swing.JScrollPane();
+        kerberosInfoTextPane = new javax.swing.JEditorPane();
 
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
+        pnlConnection.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         pnlConnection.setLayout(new java.awt.GridBagLayout());
 
         lblHost.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblHost.text")); // NOI18N
@@ -331,6 +335,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
 
         pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlConnection.TabConstraints.tabTitle"), pnlConnection); // NOI18N
 
+        pnlSecuritySimple.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         pnlSecuritySimple.setAlignmentY(0.0F);
         pnlSecuritySimple.setLayout(new java.awt.GridBagLayout());
 
@@ -377,10 +382,10 @@ public class LdapServerPanel extends javax.swing.JPanel {
 
         pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlSecuritySimple.TabConstraints.tabTitle"), pnlSecuritySimple); // NOI18N
 
+        pnlSecurityKerberos5.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         pnlSecurityKerberos5.setLayout(new java.awt.GridBagLayout());
 
         lblKrb5LoginConf.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblKrb5LoginConf.text")); // NOI18N
-        lblKrb5LoginConf.setPreferredSize(new java.awt.Dimension(71, 17));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -465,15 +470,33 @@ public class LdapServerPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE;
         pnlSecurityKerberos5.add(btnKrb5Keytab, gridBagConstraints);
+
+        kerberosInfoTextPane.setBackground(new java.awt.Color(254, 254, 254));
+        kerberosInfoTextPane.setContentType(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.kerberosInfoTextPane.contentType_1")); // NOI18N
+        kerberosInfoTextPane.setEditable(false);
+        kerberosInfoTextPane.addHyperlinkListener(
+            new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent he) {
+                    if( he.getEventType() == HyperlinkEvent.EventType.ACTIVATED ) {
+                        URLDisplayer.getDefault().showURL(he.getURL());
+                    }
+                }
+            }
+        );
+        kerberosInfoTextPane.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.kerberosInfoTextPane.text")); // NOI18N
+        kerberosInfoTextPane.setPreferredSize(new java.awt.Dimension(1000, 400));
+        kerberosInfoScrollPane.setViewportView(kerberosInfoTextPane);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        pnlSecurityKerberos5.add(filler3, gridBagConstraints);
+        pnlSecurityKerberos5.add(kerberosInfoScrollPane, gridBagConstraints);
 
         pnlTabbed.addTab(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.pnlSecurityKerberos5.TabConstraints.tabTitle"), pnlSecurityKerberos5); // NOI18N
 
@@ -503,7 +526,8 @@ public class LdapServerPanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox cbSecure;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
-    private javax.swing.Box.Filler filler3;
+    private javax.swing.JScrollPane kerberosInfoScrollPane;
+    private javax.swing.JEditorPane kerberosInfoTextPane;
     private javax.swing.JLabel lblAuthentication;
     private javax.swing.JLabel lblBaseDn;
     private javax.swing.JLabel lblBind;
