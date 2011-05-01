@@ -116,7 +116,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.platform>RELEASE67</netbeans.platform>
-        <netbeans.version>RELEASE691</netbeans.version>
+        <netbeans.version>RELEASE67</netbeans.version>
         <!--
             License to include in the header of the file when filesa are created
             through the NetBeans IDE.
