@@ -5,12 +5,11 @@
     <parent>
         <artifactId>nb-ldap-bundle</artifactId>
         <groupId>dk.i2m.netbeans.modules</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
     </parent>
     <groupId>dk.i2m.netbeans.modules</groupId>
     <artifactId>nb-ldap-explorer</artifactId>
     <packaging>nbm</packaging>
-    <version>0.5-SNAPSHOT</version>
     <name>NetBeans LDAP Explorer</name>
     <prerequisites>
         <maven>2.0</maven>
