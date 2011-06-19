@@ -4,7 +4,7 @@
     <parent>
         <artifactId>nb-ldap-bundle</artifactId>
         <groupId>dk.i2m.netbeans.modules</groupId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.6</version>
     </parent>
     <groupId>dk.i2m.netbeans.modules</groupId>
     <artifactId>nb-ldap-explorer</artifactId>
