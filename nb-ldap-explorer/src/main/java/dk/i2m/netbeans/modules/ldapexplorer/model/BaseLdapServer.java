@@ -505,6 +505,11 @@ public class BaseLdapServer {
             // When the connection was closed by the server - try to connect again
             // (once) and return that result
             if (firstTry) {
+                try {
+                    connect();
+                } catch (ConnectionException ex2) {
+                    throw new QueryException(ex2);
+                }
                 entries.clear();
                 entries = getTree(path, false);
             } else {
@@ -560,6 +565,11 @@ public class BaseLdapServer {
             // When the connection was closed by the server - try to connect again
             // (once) and return that result
             if (firstTry) {
+                try {
+                    connect();
+                } catch (ConnectionException ex2) {
+                    throw new QueryException(ex2);
+                }
                 entries.clear();
                 entries = search(filter, false);
             } else {
@@ -640,6 +650,11 @@ public class BaseLdapServer {
             // When the connection was closed by the server - try to connect again
             // (once) and return that result
             if (firstTry) {
+                try {
+                    connect();
+                } catch (ConnectionException ex2) {
+                    throw new QueryException(ex2);
+                }
                 return getEntry(dn, false);
             } else {
                 throw new QueryException(ex);
