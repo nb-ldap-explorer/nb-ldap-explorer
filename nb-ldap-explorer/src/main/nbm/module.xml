@@ -4,6 +4,5 @@
     <licenseName>Apache License, Version 2.0</licenseName>
     <licenseFile>src/main/resources/license.txt</licenseFile>
     <author>Allan Lykke Christensen</author>
-    <distributionUrl>http://netbeans.i2m.dk/</distributionUrl>
 </nbm>
 

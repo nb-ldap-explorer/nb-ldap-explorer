@@ -50,16 +50,22 @@
             <name>repository hosting netbeans.org api artifacts</name>
             <url>http://bits.netbeans.org/maven2</url>
         </repository>
+        <repository>
+            <url>http://download.java.net/maven/2/</url>
+            <id>beans-binding</id>
+            <layout>default</layout>
+            <name>Repository for library Library[beans-binding]</name>
+        </repository>
     </repositories>
-
+ 
     <distributionManagement>
         <repository>
-            <id>m2.i2m.dk</id>
-            <name>I2M Artifact Repository</name>
-            <url>ftp://www.i2m.dk/m2.i2m.dk</url>
+            <id>dummy</id>
+            <name>Dummy</name>
+            <url>http://dummy</url>
         </repository>
     </distributionManagement>
-
+ 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -70,23 +76,27 @@
     </dependencies>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ftp</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
                     <version>3.2</version>
+                    <extensions>true</extensions>
                     <configuration>
                         <cluster>nb-ldap-bundle</cluster>
+                        <keystore>${maven.nbm.sign.keystore}</keystore>
+                        <keystorealias>${maven.nbm.sign.alias}</keystorealias>
+                        <keystorepassword>${maven.nbm.sign.storepass}</keystorepassword>
+                        <netbeansInstallation>${netbeansInstallation}</netbeansInstallation>
                         <fileName>updates.xml</fileName>
+                        <distBase>.</distBase>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.3</version>
                 </plugin>
                 <plugin>
                     <!-- netbeans modules in 6.9+ are 1.6 compatible -->
@@ -96,6 +106,23 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <useDefaultManifestFile>true</useDefaultManifestFile>
+                        <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
             </plugins>
@@ -106,34 +133,43 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.1</version>
             </plugin>
+            <!-- disabled as not use case currently visible
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <source>1.6</source>
+                    <aggregate>true</aggregate>
+                    <links>
+                        <link>http://http://docs.oracle.com/javase/6/docs/api/</link>
+                    </links>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            -->
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>updatesite</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>nbm-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>site</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>autoupdate</goal>
-                                </goals>
-                                <configuration>
-                                    <distBase>http://netbeans.i2m.dk/</distBase>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -182,5 +218,6 @@
     <modules>
         <module>nb-ldap-explorer</module>
         <module>nb-ldif-editor</module>
+        <module>nb-ldap-packaging</module>
     </modules>
 </project>

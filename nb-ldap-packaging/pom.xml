@@ -1,0 +1,70 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>nb-ldap-bundle</artifactId>
+        <groupId>dk.i2m.netbeans.modules</groupId>
+        <version>0.7-SNAPSHOT</version>
+    </parent>
+    <groupId>dk.i2m.netbeans.modules</groupId>
+    <artifactId>nb-ldap-packaging</artifactId>
+    <packaging>pom</packaging>
+    <name>NetBeans LDAP Explorer Package</name>
+    <prerequisites>
+        <maven>2.0</maven>
+    </prerequisites>
+    <inceptionYear>2010</inceptionYear>
+    <description>Packaging of netbeans ldap explorer packages</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>dk.i2m.netbeans.modules</groupId>
+            <artifactId>nb-ldif-editor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.i2m.netbeans.modules</groupId>
+            <artifactId>nb-ldap-explorer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>buildAutoupdate</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>autoupdate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>buildDistribution</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <finalName>nb-ldap-explorer-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>distribution-descriptor.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
