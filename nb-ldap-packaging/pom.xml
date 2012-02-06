@@ -30,6 +30,15 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.googlecode.maven-gcu-plugin</groupId>
+                    <artifactId>maven-gcu-plugin</artifactId>
+                    <version>1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -65,6 +74,58 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-gcu-plugin</groupId>
+                <artifactId>maven-gcu-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <configuration>
+                            <serverId>nb-ldap-explorer</serverId>
+                            <failsOnError>true</failsOnError>
+                            <projectName>nb-ldap-explorer</projectName>
+                            <uploads>
+                                <upload>
+                                    <file>target/nb-ldap-explorer-${project.version}.zip</file>
+                                    <summary>${project.name} plugin bundle ${project.version}</summary>
+                                    <labels>
+                                        <label>Featured</label>
+                                        <label>Type-Archive</label>
+                                    </labels>
+                                </upload>
+                                <upload>
+                                    <file>target/netbeans_site/nb-ldap-explorer-${project.version}.nbm</file>
+                                    <summary>nb-ldap-explorer ${project.version} plugin</summary>
+                                    <labels>
+                                        <label>Featured</label>
+                                        <label>Type-Archive</label>
+                                    </labels>
+                                </upload>
+                                <upload>
+                                    <file>target/netbeans_site/nb-ldif-editor-${project.version}.nbm</file>
+                                    <summary>nb-ldif-editor ${project.version} plugin</summary>
+                                    <labels>
+                                        <label>Featured</label>
+                                        <label>Type-Archive</label>
+                                    </labels>
+                                </upload>
+                                <upload>
+                                    <file>target/netbeans_site/updates.xml</file>
+                                    <summary>Update Center XML for Netbeans</summary>
+                                </upload>
+                                <upload>
+                                    <file>target/netbeans_site/updates.xml.gz</file>
+                                    <summary>Update Center XML (compressed) for Netbeans</summary>
+                                </upload>
+                            </uploads>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
