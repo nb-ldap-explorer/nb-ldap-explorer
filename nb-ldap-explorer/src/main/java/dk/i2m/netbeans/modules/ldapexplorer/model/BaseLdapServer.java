@@ -126,8 +126,9 @@ public class BaseLdapServer {
      *          Type of {@link Authentication}
      */
     public void setAuthentication(Authentication authentication) {
+        Authentication old = this.authentication;
         this.authentication = authentication;
-        fire("authentication", null, authentication);
+        fire("authentication", old, authentication);
     }
 
     /**
@@ -214,8 +215,9 @@ public class BaseLdapServer {
      *          Secure status of the {@link LdapServer} connection
      */
     public void setSecure(Boolean secure) {
+        Boolean oldSecure = this.secure;
         this.secure = secure;
-        fire("secure", null, secure);
+        fire("secure", oldSecure, secure);
     }
 
     /**
@@ -238,8 +240,9 @@ public class BaseLdapServer {
      *          User binding
      */
     public void setBinding(String binding) {
+        String oldBinding = this.binding;
         this.binding = binding;
-        fire("binding", null, binding);
+        fire("binding", oldBinding, binding);
     }
 
     /**
@@ -258,7 +261,9 @@ public class BaseLdapServer {
      *          Password for the binding
      */
     public void setPassword(String password) {
+        String oldPassword = this.password;
         this.password = password;
+        fire("password", oldPassword, password);
     }
 
     /**
@@ -277,8 +282,9 @@ public class BaseLdapServer {
      *          User friendly label of the server
      */
     public void setLabel(String label) {
+        String oldLabel = this.label;
         this.label = label;
-        fire("label", null, label);
+        fire("label", oldLabel, label);
     }
 
     /**
@@ -297,8 +303,9 @@ public class BaseLdapServer {
      *          Connection timeout of the server
      */
     public void setTimeout(Integer timeout) {
+        Integer oldTimeout = this.timeout;
         this.timeout = timeout;
-        fire("timeout", null, timeout);
+        fire("timeout", oldTimeout, timeout);
     }
 
     /**
