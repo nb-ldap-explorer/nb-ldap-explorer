@@ -192,6 +192,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
 
         LdapEntryChildren children = new LdapEntryChildren();
         children.setLdapServer(server);
+        children.setParent(this.server.getBaseDN());
         em.setRootContext(new LdapEntryNode(children));
         em.getRootContext().setDisplayName(this.server.getBaseDN());
     }

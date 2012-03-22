@@ -47,10 +47,10 @@ import org.openide.filesystems.FileObject;
  */
 public class BaseLdapServer {
     private Comparator<LdapEntry> labelSorter = new Comparator<LdapEntry>() {
-            public int compare(LdapEntry t, LdapEntry t1) {
-                return t.getLabel().compareTo(t1.getLabel());
-            }
-        };
+        public int compare(LdapEntry t, LdapEntry t1) {
+            return t.getLabel().compareTo(t1.getLabel());
+        }
+    };
     private String identifier = null;
     private String host;
     private int port;
@@ -73,12 +73,9 @@ public class BaseLdapServer {
     /**
      * Creates a new {@link LdapServer}.
      *
-     * @param host
-     *          Hostname or IP of the {@link LdapServer}
-     * @param port
-     *          Port of the {@link LdapServer}
-     * @param baseDN
-     *          Base distinguished name
+     * @param host Hostname or IP of the {@link LdapServer}
+     * @param port Port of the {@link LdapServer}
+     * @param baseDN Base distinguished name
      */
     public BaseLdapServer(String host, int port, String baseDN) {
         this.host = host;
@@ -87,8 +84,8 @@ public class BaseLdapServer {
     }
 
     /**
-     * Gets the unique identifier of the {@link LdapServer}. The identifier
-     * is the same as the name of the {@link FileObject} storing the
+     * Gets the unique identifier of the {@link LdapServer}. The identifier is
+     * the same as the name of the {@link FileObject} storing the
      * {@link LdapServer}.
      *
      * @return Unique identifier of the {@link LdapServer}
@@ -103,8 +100,7 @@ public class BaseLdapServer {
      * same as the name of the {@link FileObject} storing the
      * {@link LdapServer}.
      *
-     * @param identifier
-     *          Unique identifier of the {@link LdapServer}.
+     * @param identifier Unique identifier of the {@link LdapServer}.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -122,8 +118,7 @@ public class BaseLdapServer {
     /**
      * Sets the type of {@link Authentication} for the server.
      *
-     * @param authentication
-     *          Type of {@link Authentication}
+     * @param authentication Type of {@link Authentication}
      */
     public void setAuthentication(Authentication authentication) {
         Authentication old = this.authentication;
@@ -133,7 +128,7 @@ public class BaseLdapServer {
 
     /**
      * Gets the base distinguished name of the connection.
-     * 
+     *
      * @return Base distinguished name of the connection
      */
     public String getBaseDN() {
@@ -143,8 +138,7 @@ public class BaseLdapServer {
     /**
      * Sets the base distinguished name of the connection.
      *
-     * @param baseDN
-     *          Base distinguished name of the connection
+     * @param baseDN Base distinguished name of the connection
      */
     public void setBaseDN(String baseDN) {
         String oldBaseDN = this.baseDN;
@@ -164,8 +158,7 @@ public class BaseLdapServer {
     /**
      * Sets the host name or IP address of the LDAP service.
      *
-     * @param host
-     *          Host name or IP address of the LDAP service
+     * @param host Host name or IP address of the LDAP service
      */
     public void setHost(String host) {
         String oldHost = this.host;
@@ -185,8 +178,7 @@ public class BaseLdapServer {
     /**
      * Sets the port of the LDAP service.
      *
-     * @param port
-     *          Port of the LDAP service
+     * @param port Port of the LDAP service
      */
     public void setPort(Integer port) {
         Integer oldPort = Integer.valueOf(this.port);
@@ -196,9 +188,11 @@ public class BaseLdapServer {
 
     /**
      * Determines if the connection to the {@link LdapServer} is secure.
-     * 
-     * @return <code>true</code> if the connection to the {@link LdapServer}
-     *         is secure, otherwise <code>false</code>
+     *
+     * @return
+     * <code>true</code> if the connection to the {@link LdapServer} is secure,
+     * otherwise
+     * <code>false</code>
      */
     public Boolean isSecure() {
         return secure;
@@ -211,8 +205,7 @@ public class BaseLdapServer {
     /**
      * Sets the secure status of the {@link LdapServer} connection.
      *
-     * @param secure
-     *          Secure status of the {@link LdapServer} connection
+     * @param secure Secure status of the {@link LdapServer} connection
      */
     public void setSecure(Boolean secure) {
         Boolean oldSecure = this.secure;
@@ -221,8 +214,8 @@ public class BaseLdapServer {
     }
 
     /**
-     * Gets the user binding of the connection. This is only considered when
-     * the {@link Authentication} type requires it (e.g.
+     * Gets the user binding of the connection. This is only considered when the {@link Authentication}
+     * type requires it (e.g.
      * {@link Authentication#SIMPLE}).
      *
      * @return User binding of the connection
@@ -232,12 +225,11 @@ public class BaseLdapServer {
     }
 
     /**
-     * Sets the user binding of the connection. This is only considered when
-     * the {@link Authentication} type requires it (e.g.
+     * Sets the user binding of the connection. This is only considered when the {@link Authentication}
+     * type requires it (e.g.
      * {@link Authentication#SIMPLE}).
      *
-     * @param binding
-     *          User binding
+     * @param binding User binding
      */
     public void setBinding(String binding) {
         String oldBinding = this.binding;
@@ -257,8 +249,7 @@ public class BaseLdapServer {
     /**
      * Sets the password for the binding.
      *
-     * @param password
-     *          Password for the binding
+     * @param password Password for the binding
      */
     public void setPassword(String password) {
         String oldPassword = this.password;
@@ -268,7 +259,7 @@ public class BaseLdapServer {
 
     /**
      * Gets the user friendly label of the server.
-     * 
+     *
      * @return User friendly label of the server
      */
     public String getLabel() {
@@ -278,8 +269,7 @@ public class BaseLdapServer {
     /**
      * Sets the user friendly label of the server.
      *
-     * @param label
-     *          User friendly label of the server
+     * @param label User friendly label of the server
      */
     public void setLabel(String label) {
         String oldLabel = this.label;
@@ -299,8 +289,7 @@ public class BaseLdapServer {
     /**
      * Sets the connection timeout of the server.
      *
-     * @param timeout
-     *          Connection timeout of the server
+     * @param timeout Connection timeout of the server
      */
     public void setTimeout(Integer timeout) {
         Integer oldTimeout = this.timeout;
@@ -312,8 +301,9 @@ public class BaseLdapServer {
      * Determines if the {@link LdapServer} is new. The {@link LdapServer} is
      * new if the {@link LdapServer#identifier} has not been set.
      *
-     * @return <code>true</code> if the {@link LdapServer} is new, otherwise
-     *         <code>false</code>
+     * @return
+     * <code>true</code> if the {@link LdapServer} is new, otherwise
+     * <code>false</code>
      */
     public boolean isNew() {
         if (this.identifier == null) {
@@ -326,8 +316,9 @@ public class BaseLdapServer {
     /**
      * Determines if the label has been set for the server.
      *
-     * @return <code>true</code> if the label was set on the server, otherwise
-     *         <code>false</code>
+     * @return
+     * <code>true</code> if the label was set on the server, otherwise
+     * <code>false</code>
      */
     public boolean isLabelSet() {
         if (this.label == null || this.label.isEmpty()) {
@@ -339,13 +330,14 @@ public class BaseLdapServer {
 
     /**
      * Equality of an {@link LdapServer} is based on
-     * {@link LdapServer#getIdentifier()}. Note that {@link LdapServer}s
-     * without an identifier will all be equal.
+     * {@link LdapServer#getIdentifier()}. Note that {@link LdapServer}s without
+     * an identifier will all be equal.
      *
      * @param obj
      *          {@link LdapServer} to compare
-     * @return <code>true</code> if the {@link LdapServer} is equal, otherwise
-     *         <code>false</code>
+     * @return
+     * <code>true</code> if the {@link LdapServer} is equal, otherwise
+     * <code>false</code>
      */
     @Override
     public boolean equals(Object obj) {
@@ -373,8 +365,8 @@ public class BaseLdapServer {
     }
 
     /**
-     * The {@link String} representation of this object is the connection
-     * string for the LDAP service.
+     * The {@link String} representation of this object is the connection string
+     * for the LDAP service.
      *
      * @return String representation of the server
      */
@@ -389,14 +381,11 @@ public class BaseLdapServer {
         sb.append(host);
         sb.append(":");
         sb.append(port);
-        sb.append("/");
-        sb.append(baseDN);
         return sb.toString();
     }
 
     /**
-     * Generates a {@link Hashtable} with the environment for connecting to
-     * the {@link LdapServer}.
+     * Generates a {@link Hashtable} with the environment for connecting to the {@link LdapServer}.
      *
      * @return {@link Hashtable} containing a configured LDAP environment
      */
@@ -421,8 +410,7 @@ public class BaseLdapServer {
     /**
      * Connects to the {@link LdapServer}.
      *
-     * @throws ConnectionException
-     *          If a connection could not be established
+     * @throws ConnectionException If a connection could not be established
      */
     public void connect() throws ConnectionException {
         try {
@@ -439,9 +427,8 @@ public class BaseLdapServer {
 
     /**
      * Disconnects from an {@link LdapServer}.
-     * 
-     * @throws ConnectionException
-     *          If the connection could not be abrupted
+     *
+     * @throws ConnectionException If the connection could not be abrupted
      */
     public void disconnect() throws ConnectionException {
         if (this.dirCtx != null) {
@@ -456,8 +443,9 @@ public class BaseLdapServer {
     /**
      * Determines if a connection has already been established.
      *
-     * @return <code>true</code> if a connection has already been established,
-     *         otherwise <code>false</code>
+     * @return
+     * <code>true</code> if a connection has already been established, otherwise
+     * <code>false</code>
      */
     public boolean isConnected() {
         return this.dirCtx != null;
@@ -467,17 +455,16 @@ public class BaseLdapServer {
      * Gets a {@link List} of {@link LdapEntry} objects residing in the given
      * path.
      *
-     * @param path
-     *          Path for which to obtain the {@link LdapEntry} objects
+     * @param path Path for which to obtain the {@link LdapEntry} objects
      * @return {@link List} of {@link LdapEntry} objects residing in
-     *         <code>path</code>
-     * @throws QueryException
-     *          If the path is invalid or the server could not be queried
+     * <code>path</code>
+     * @throws QueryException If the path is invalid or the server could not be
+     * queried
      */
     public List<LdapEntry> getTree(String path) throws QueryException {
-        return getTree(path, true);
-    }
-    
+            return getTree(path, true);
+        }
+
     protected List<LdapEntry> getTree(String path, boolean firstTry) throws QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
@@ -491,17 +478,10 @@ public class BaseLdapServer {
             while (results != null & results.hasMore()) {
                 NameClassPair nc = results.next();
 
-                // TASK: Instead of prepending the path to the name, it may be
-                //       possibly to use nc.getNameInNamespace(). Need to verify
-
                 LdapEntry entry = new LdapEntry();
-                if (!path.isEmpty()) {
-                    entry.setDn(nc.getName() + "," + path);
-                    entry.setLabel(nc.getName());
-                } else {
-                    entry.setDn(nc.getName());
-                    entry.setLabel(nc.getName());
-                }
+
+                entry.setDn(nc.getNameInNamespace());
+                entry.setLabel(nc.getName());
 
                 addObjectClasses(entry);
                 entries.add(entry);
@@ -534,16 +514,14 @@ public class BaseLdapServer {
     /**
      * Searches the subtree for LDAP entries matching the given {@code filter}.
      *
-     * @param filter
-     *          LDAP filter
+     * @param filter LDAP filter
      * @return {@link List} of {@link LdapEntry} objects matching the filter
-     * @throws QueryException
-     *          If the search failed
+     * @throws QueryException If the search failed
      */
     public List<LdapEntry> search(String filter) throws QueryException {
-        return this.search(filter, true);
-    }
-    
+            return this.search(filter, true);
+        }
+
     protected List<LdapEntry> search(String filter, boolean firstTry) throws QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
@@ -554,7 +532,8 @@ public class BaseLdapServer {
         try {
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results = this.dirCtx.search("",
+            NamingEnumeration<SearchResult> results =
+                    this.dirCtx.search(getBaseDN(),
                     filter, controls);
 
             while (results != null & results.hasMore()) {
@@ -562,7 +541,7 @@ public class BaseLdapServer {
 
                 LdapEntry entry = new LdapEntry();
 
-                entry.setDn(sr.getName());
+                entry.setDn(sr.getNameInNamespace());
                 entry.setLabel(sr.getName());
                 addObjectClasses(entry);
 
@@ -601,7 +580,8 @@ public class BaseLdapServer {
      */
     private void addObjectClasses(LdapEntry entry) {
         try {
-            Attributes attrs = this.dirCtx.getAttributes(entry.getDn(), new String[]{
+            Attributes attrs = this.dirCtx.getAttributes(entry.getDn(),
+                    new String[]{
                         "objectclass"});
 
             for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
@@ -614,30 +594,27 @@ public class BaseLdapServer {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.getMessage());
+            Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
+                    getMessage());
         }
     }
 
     /**
      * Gets an {@link LdapEntry} from the LDAP server
      *
-     * @param dn
-     *          Distinguished name of the entry
-     * @return {@link LdapEntry} matching the <code>dn</code>
-     * @throws QueryException
-     *          If the entry could not be retrieved
+     * @param dn Distinguished name of the entry
+     * @return {@link LdapEntry} matching the
+     * <code>dn</code>
+     * @throws QueryException If the entry could not be retrieved
      */
     public LdapEntry getEntry(String dn) throws QueryException {
         return this.getEntry(dn, true);
     }
-        
-    private LdapEntry getEntry(String dn, boolean firstTry) throws QueryException {
-        StringBuilder fullDn = new StringBuilder(dn);
-        fullDn.append(",");
-        fullDn.append(baseDN);
 
+    private LdapEntry getEntry(String dn, boolean firstTry) throws
+            QueryException {
         LdapEntry entry = new LdapEntry();
-        entry.setDn(fullDn.toString());
+        entry.setDn(dn);
         if (!isConnected()) {
             throw new QueryException("Not connected");
         }
