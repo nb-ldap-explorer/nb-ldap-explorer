@@ -19,12 +19,14 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 import dk.i2m.netbeans.modules.ldapexplorer.security.XTrustProvider;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.CommunicationException;
 import javax.naming.Context;
@@ -36,8 +38,11 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 import org.openide.filesystems.FileObject;
 
 /**
@@ -46,7 +51,9 @@ import org.openide.filesystems.FileObject;
  * @author Allan Lykke Christensen
  */
 public class BaseLdapServer {
+
     private Comparator<LdapEntry> labelSorter = new Comparator<LdapEntry>() {
+
         public int compare(LdapEntry t, LdapEntry t1) {
             return t.getLabel().compareTo(t1.getLabel());
         }
@@ -62,6 +69,8 @@ public class BaseLdapServer {
     private String password = "";
     private String label = "";
     private LdapContext dirCtx = null;
+    private Boolean pagingSupported = null;
+    private Integer maxQuerySize = null;
 
     /**
      * Creates a new {@link LdapServer}.
@@ -418,6 +427,9 @@ public class BaseLdapServer {
                 XTrustProvider.install();
             }
 
+            this.pagingSupported = null;
+            this.maxQuerySize = null;
+
             this.dirCtx =
                     new InitialLdapContext(getConnectionEnvironment(), null);
         } catch (NamingException ex) {
@@ -451,6 +463,51 @@ public class BaseLdapServer {
         return this.dirCtx != null;
     }
 
+    protected NamingEnumeration<SearchResult> getRootDSE() throws
+            NamingException {
+        NamingEnumeration<SearchResult> result = null;
+        String base = "";
+        String filter = "(objectclass=*)";
+        SearchControls controls = new SearchControls();
+        controls.setSearchScope(SearchControls.OBJECT_SCOPE);
+        if (isConnected()) {
+            result = this.dirCtx.search(base, filter, controls);
+        }
+        return result;
+    }
+
+    protected boolean isPagingSupported() {
+        if (pagingSupported == null) {
+            pagingSupported = false;
+            try {
+                NamingEnumeration<SearchResult> ne = getRootDSE();
+
+                OUTER:
+                while (ne != null && ne.hasMoreElements()) {
+                    SearchResult sr = ne.next();
+                    Attribute supportedControls = sr.getAttributes().get(
+                            "supportedControl");
+                    if (supportedControls != null) {
+                        NamingEnumeration attribute = supportedControls.getAll();
+                        while (attribute.hasMore()) {
+                            Object value = attribute.next();
+                            if (PagedResultsControl.OID.equals(value)) {
+                                pagingSupported = true;
+                                break OUTER;
+                            }
+                        }
+                    }
+                }
+            } catch (NamingException ex) {
+                Logger.getLogger(BaseLdapServer.class.getName()).log(
+                        Level.WARNING,
+                        "Failed to query ldap server for PagedResultsControl",
+                        ex.getMessage());
+            }
+        }
+        return pagingSupported;
+    }
+
     /**
      * Gets a {@link List} of {@link LdapEntry} objects residing in the given
      * path.
@@ -462,10 +519,100 @@ public class BaseLdapServer {
      * queried
      */
     public List<LdapEntry> getTree(String path) throws QueryException {
+        if (isPagingSupported() && maxQuerySize != null) {
+            return getPagedTree(path, true);
+        } else {
             return getTree(path, true);
         }
+    }
 
-    protected List<LdapEntry> getTree(String path, boolean firstTry) throws QueryException {
+    private byte[] getPageContextCookie() throws NamingException {
+        Control[] controls = this.dirCtx.getResponseControls();
+        if (controls != null) {
+            for (int i = 0; i < controls.length; i++) {
+                if (controls[i] instanceof PagedResultsResponseControl) {
+                    PagedResultsResponseControl prrc =
+                            (PagedResultsResponseControl) controls[i];
+                    return prrc.getCookie();
+                }
+            }
+        }
+        return null;
+    }
+
+    protected List<LdapEntry> getPagedTree(String path, boolean firstTry) throws
+            QueryException {
+        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+
+        if (!isConnected()) {
+            return entries;
+        }
+        try {
+            SearchControls searchControls = new SearchControls();
+            searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+
+            dirCtx.setRequestControls(new Control[]{
+                        new PagedResultsControl(maxQuerySize, Control.CRITICAL)
+                    });
+
+            while (true) {
+                NamingEnumeration<SearchResult> results = dirCtx.search(
+                        path,
+                        "objectClass=*",
+                        searchControls);
+
+                while (results != null & results.hasMore()) {
+                    NameClassPair nc = results.next();
+
+                    LdapEntry entry = new LdapEntry();
+
+                    entry.setDn(nc.getNameInNamespace());
+                    entry.setLabel(nc.getName());
+
+                    addObjectClasses(entry);
+                    entries.add(entry);
+                }
+                byte[] cookie = getPageContextCookie();
+                if (cookie == null) {
+                    break;
+                }
+                dirCtx.setRequestControls(new Control[]{
+                            new PagedResultsControl(maxQuerySize, cookie,
+                            Control.CRITICAL)
+                        });
+            }
+        } catch (CommunicationException ex) {
+            // When the connection was closed by the server - try to connect again
+            // (once) and return that result
+            if (firstTry) {
+                try {
+                    connect();
+                } catch (ConnectionException ex2) {
+                    throw new QueryException(ex2);
+                }
+                entries.clear();
+                entries = getPagedTree(path, false);
+            } else {
+                throw new QueryException(ex);
+            }
+        } catch (NamingException ex) {
+            throw new QueryException(ex);
+        } catch (IOException ex) {
+            throw new QueryException(ex);
+        } finally {
+            try {
+                dirCtx.setRequestControls(null);
+            } catch (NamingException ex) {
+            }
+        }
+
+        Collections.sort(entries, labelSorter);
+
+        return entries;
+    }
+
+    protected List<LdapEntry> getTree(String path, boolean firstTry) throws
+            QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
         if (!isConnected()) {
@@ -487,7 +634,14 @@ public class BaseLdapServer {
                 entries.add(entry);
             }
         } catch (SizeLimitExceededException ex) {
-            Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.getMessage());
+            if (isPagingSupported()) {
+                maxQuerySize = entries.size();
+                entries = getPagedTree(path, true);
+            } else {
+                // TODO: Evaluate if this should be a displayed error!
+                Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
+                        getMessage());
+            }
         } catch (CommunicationException ex) {
             // When the connection was closed by the server - try to connect again
             // (once) and return that result
@@ -519,10 +673,82 @@ public class BaseLdapServer {
      * @throws QueryException If the search failed
      */
     public List<LdapEntry> search(String filter) throws QueryException {
+        if (isPagingSupported() && maxQuerySize != null) {
+            return this.pagedSearch(filter, true);
+        } else {
             return this.search(filter, true);
         }
+    }
 
-    protected List<LdapEntry> search(String filter, boolean firstTry) throws QueryException {
+    protected List<LdapEntry> pagedSearch(String filter, boolean firstTry)
+            throws QueryException {
+        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+
+        if (!isConnected()) {
+            return entries;
+        }
+
+        try {
+            SearchControls searchControls = new SearchControls();
+            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+            dirCtx.setRequestControls(new Control[]{
+                        new PagedResultsControl(maxQuerySize, Control.CRITICAL)
+                    });
+
+            while (true) {
+                NamingEnumeration<SearchResult> results =
+                        dirCtx.search(getBaseDN(), filter,
+                        searchControls);
+
+                while (results != null & results.hasMore()) {
+                    SearchResult sr = results.next();
+
+                    LdapEntry entry = new LdapEntry();
+
+                    entry.setDn(sr.getNameInNamespace());
+                    entry.setLabel(sr.getName());
+                    addObjectClasses(entry);
+
+                    entries.add(entry);
+                }
+                byte[] cookie = getPageContextCookie();
+                if (cookie == null) {
+                    break;
+                }
+                dirCtx.setRequestControls(new Control[]{
+                            new PagedResultsControl(maxQuerySize, cookie,
+                            Control.CRITICAL)
+                        });
+            }
+
+        } catch (CommunicationException ex) {
+            // When the connection was closed by the server - try to connect again
+            // (once) and return that result
+            if (firstTry) {
+                try {
+                    connect();
+                } catch (ConnectionException ex2) {
+                    throw new QueryException(ex2);
+                }
+                entries.clear();
+                entries = pagedSearch(filter, false);
+            } else {
+                throw new QueryException(ex);
+            }
+        } catch (NamingException ex) {
+            throw new QueryException(ex);
+        } catch (IOException ex) {
+            throw new QueryException(ex);
+        }
+
+        Collections.sort(entries, labelSorter);
+
+        return entries;
+    }
+
+    protected List<LdapEntry> search(String filter, boolean firstTry) throws
+            QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
         if (!isConnected()) {
@@ -562,7 +788,14 @@ public class BaseLdapServer {
                 throw new QueryException(ex);
             }
         } catch (SizeLimitExceededException ex) {
-            Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.getMessage());
+            if (isPagingSupported()) {
+                maxQuerySize = entries.size() - 1;
+                entries = pagedSearch(filter, true);
+            } else {
+                // TODO: Evaluate if this should be a displayed error!
+                Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
+                        getMessage());
+            }
         } catch (NamingException ex) {
             throw new QueryException(ex);
         }
