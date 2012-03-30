@@ -635,7 +635,7 @@ public class BaseLdapServer {
             }
         } catch (SizeLimitExceededException ex) {
             if (isPagingSupported()) {
-                maxQuerySize = entries.size();
+                maxQuerySize = entries.size() - 1;
                 entries = getPagedTree(path, true);
             } else {
                 // TODO: Evaluate if this should be a displayed error!
