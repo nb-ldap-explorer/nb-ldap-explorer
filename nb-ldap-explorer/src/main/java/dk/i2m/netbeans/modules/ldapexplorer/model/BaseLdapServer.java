@@ -16,7 +16,6 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
-import dk.i2m.netbeans.modules.ldapexplorer.security.XTrustProvider;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -423,10 +422,6 @@ public class BaseLdapServer {
      */
     public void connect() throws ConnectionException {
         try {
-            if (isSecure()) {
-                XTrustProvider.install();
-            }
-
             this.pagingSupported = null;
             this.maxQuerySize = null;
 
