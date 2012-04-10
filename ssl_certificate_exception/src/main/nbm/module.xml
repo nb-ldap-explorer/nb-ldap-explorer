@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nbm>
+
+    <codeNameBase>com.google.code.nb_ldap_explorer.ssl_certificate_exception/1</codeNameBase>
+    <author>Matthias Bläsing</author>
+    <licenseName>Apache License, Version 2.0</licenseName>
+    <licenseFile>src/main/resources/license.txt</licenseFile>
+
+</nbm>

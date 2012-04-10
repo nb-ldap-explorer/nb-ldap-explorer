@@ -219,5 +219,6 @@
         <module>nb-ldap-explorer</module>
         <module>nb-ldif-editor</module>
         <module>nb-ldap-packaging</module>
+        <module>ssl_certificate_exception</module>
     </modules>
 </project>

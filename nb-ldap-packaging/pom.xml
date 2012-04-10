@@ -27,6 +27,11 @@
             <artifactId>nb-ldap-explorer</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.nb_ldap_explorer</groupId>
+            <artifactId>ssl_certificate_exception</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -107,6 +112,14 @@
                                 <upload>
                                     <file>target/netbeans_site/nb-ldif-editor-${project.version}.nbm</file>
                                     <summary>nb-ldif-editor ${project.version} plugin</summary>
+                                    <labels>
+                                        <label>Featured</label>
+                                        <label>Type-Archive</label>
+                                    </labels>
+                                </upload>
+                                <upload>
+                                    <file>target/netbeans_site/ssl_certificate_exception-${project.version}.nbm</file>
+                                    <summary>ssl_certificate_exception ${project.version} plugin</summary>
                                     <labels>
                                         <label>Featured</label>
                                         <label>Type-Archive</label>
