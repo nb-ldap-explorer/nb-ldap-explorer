@@ -1,8 +1,10 @@
 package com.google.code.nb_ldap_explorer.ssl_certificate_exception;
 
+import java.math.BigInteger;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.openide.util.Exceptions;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -22,7 +25,8 @@ public class HostnameCertificateStore {
     private KeyStore keystore;
     @XmlElement
     @XmlJavaTypeAdapter(HostnameEntryAdapter.class)
-    private Map<String, ArrayList<String>> knownHosts = new HashMap<String, ArrayList<String>>();
+    private Map<String, ArrayList<String>> knownHosts =
+            new HashMap<String, ArrayList<String>>();
 
     public HostnameCertificateStore() {
     }
@@ -38,21 +42,44 @@ public class HostnameCertificateStore {
     public void setTrusted(String hostname, Certificate cert) {
         try {
             String alias = keystore.getCertificateAlias(cert);
-            if (alias != null) {
-                ArrayList<String> knownAliases = knownHosts.get(hostname);
-                if (knownAliases == null) {
-                    knownAliases = new ArrayList<String>();
-                }
-                if (!knownAliases.contains(alias)) {
-                    knownAliases.add(alias);
-                    knownHosts.put(hostname, knownAliases);
-                }
-            } else {
-                // TODO: use intelligent handling ...
+            if (alias == null) {
+                alias = addCertToTrustStore(keystore, (X509Certificate) cert);
+            }
+            ArrayList<String> knownAliases = knownHosts.get(hostname);
+            if (knownAliases == null) {
+                knownAliases = new ArrayList<String>();
+            }
+            if (!knownAliases.contains(alias)) {
+                knownAliases.add(alias);
+                knownHosts.put(hostname, knownAliases);
             }
         } catch (KeyStoreException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private String addCertToTrustStore(KeyStore userkeystore,
+            X509Certificate... certs) {
+        if (userkeystore != null && certs != null && certs.length > 0) {
+            try {
+                X509Certificate lastCert = certs[certs.length - 1];
+                String dn = lastCert.getSubjectX500Principal().getName();
+                BigInteger serial = lastCert.getSerialNumber();
+                String proposedName = dn + "#" + serial.toString(16);
+                String realName = proposedName;
+                if (userkeystore.containsAlias(realName)) {
+                    Integer count = 0;
+                    while (userkeystore.containsAlias(realName)) {
+                        realName = proposedName + "#" + Integer.toString(count);
+                    }
+                }
+                userkeystore.setCertificateEntry(realName, lastCert);
+                return realName;
+            } catch (KeyStoreException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return null;
     }
 
     public boolean checkTrusted(String hostname, Certificate cert) {
@@ -71,14 +98,14 @@ public class HostnameCertificateStore {
     }
 }
 
-
 class HostnameEntryAdapter extends XmlAdapter<HostnameEntry[], Map<String, ArrayList<String>>> {
 
     @Override
-    public HostnameEntry[] marshal(Map<String, ArrayList<String>> v) throws Exception {
+    public HostnameEntry[] marshal(Map<String, ArrayList<String>> v) throws
+            Exception {
         HostnameEntry[] result = new HostnameEntry[v.size()];
         int index = 0;
-        for(Entry<String,ArrayList<String>> e: v.entrySet())  {
+        for (Entry<String, ArrayList<String>> e : v.entrySet()) {
             HostnameEntry he = new HostnameEntry();
             he.setHostname(e.getKey());
             he.setAliases(e.getValue());
@@ -89,18 +116,20 @@ class HostnameEntryAdapter extends XmlAdapter<HostnameEntry[], Map<String, Array
     }
 
     @Override
-    public Map<String, ArrayList<String>> unmarshal(HostnameEntry[] v) throws Exception {
-        Map<String, ArrayList<String>> result = new HashMap<String,ArrayList<String>>();
-        for(HostnameEntry he: v) {
+    public Map<String, ArrayList<String>> unmarshal(HostnameEntry[] v) throws
+            Exception {
+        Map<String, ArrayList<String>> result =
+                new HashMap<String, ArrayList<String>>();
+        for (HostnameEntry he : v) {
             result.put(he.getHostname(), he.getAliases());
         }
         return result;
     }
-    
 }
 
 @XmlRootElement
 class HostnameEntry {
+
     private String hostname;
     private ArrayList<String> aliases;
 
@@ -137,10 +166,12 @@ class HostnameEntry {
             return false;
         }
         final HostnameEntry other = (HostnameEntry) obj;
-        if ((this.hostname == null) ? (other.hostname != null) : !this.hostname.equals(other.hostname)) {
+        if ((this.hostname == null) ? (other.hostname != null) : !this.hostname.
+                equals(other.hostname)) {
             return false;
         }
-        if (this.aliases != other.aliases && (this.aliases == null || !this.aliases.equals(other.aliases))) {
+        if (this.aliases != other.aliases && (this.aliases == null
+                || !this.aliases.equals(other.aliases))) {
             return false;
         }
         return true;
@@ -149,7 +180,8 @@ class HostnameEntry {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (this.hostname != null ? this.hostname.hashCode() : 0);
+        hash = 97 * hash
+                + (this.hostname != null ? this.hostname.hashCode() : 0);
         hash = 97 * hash + (this.aliases != null ? this.aliases.hashCode() : 0);
         return hash;
     }
