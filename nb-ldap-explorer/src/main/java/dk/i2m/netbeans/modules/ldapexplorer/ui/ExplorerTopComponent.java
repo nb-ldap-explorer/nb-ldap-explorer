@@ -175,9 +175,9 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         if (val instanceof byte[]) {
             // Field is binary - convert it to hexadecimals
             model.addRow(
-                    new Object[]{attName, Hex.encodeHexString((byte[]) val)});
+                    new Object[]{attName, att, Hex.encodeHexString((byte[]) val)});
         } else {
-            model.addRow(new Object[]{attName, val});
+            model.addRow(new Object[]{attName, att, val});
         }
     }
 
@@ -227,20 +227,17 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         tblAttributes.setAutoCreateRowSorter(true);
         tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+
             },
             new String [] {
-                "Attribute", "Value"
+                "Attribute (name)", "Attribute (technical)", "Value"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class
+                java.lang.String.class, java.lang.String.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true
+                false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -251,7 +248,14 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                 return canEdit [columnIndex];
             }
         });
+        tblAttributes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         attributePane.setViewportView(tblAttributes);
+        tblAttributes.getColumnModel().getColumn(0).setPreferredWidth(70);
+        tblAttributes.getColumnModel().getColumn(0).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title0")); // NOI18N
+        tblAttributes.getColumnModel().getColumn(1).setPreferredWidth(70);
+        tblAttributes.getColumnModel().getColumn(1).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title2")); // NOI18N
+        tblAttributes.getColumnModel().getColumn(2).setPreferredWidth(200);
+        tblAttributes.getColumnModel().getColumn(2).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title1")); // NOI18N
 
         org.jdesktop.layout.GroupLayout pnlAttributesLayout = new org.jdesktop.layout.GroupLayout(pnlAttributes);
         pnlAttributes.setLayout(pnlAttributesLayout);
@@ -259,13 +263,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlAttributesLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlAttributesLayout.setVerticalGroup(
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlAttributesLayout.createSequentialGroup()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -281,12 +285,12 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(pnlLdifLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                .add(ldifPane)
                 .addContainerGap())
         );
         pnlLdifLayout.setVerticalGroup(
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+            .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
         );
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlLdif.TabConstraints.tabTitle"), pnlLdif); // NOI18N
@@ -322,7 +326,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
+                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnFilter)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -341,14 +345,14 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
+                .add(splitPane))
         );
     }// </editor-fold>//GEN-END:initComponents
 
