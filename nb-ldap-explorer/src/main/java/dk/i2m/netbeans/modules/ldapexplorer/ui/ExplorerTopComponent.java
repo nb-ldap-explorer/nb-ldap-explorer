@@ -26,12 +26,16 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.model.QueryException;
 import java.awt.Rectangle;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.codec.binary.Hex;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
@@ -45,19 +49,30 @@ import org.openide.windows.CloneableTopComponent;
  */
 public final class ExplorerTopComponent extends CloneableTopComponent implements
         ExplorerManager.Provider, LookupListener {
-
+    
     private ExplorerManager em = new ExplorerManager();
     private ResourceBundle bundle = NbBundle.getBundle(
             ExplorerTopComponent.class);
     private static final String PREFERRED_ID = "ExplorerTopComponent";
     private LdapServer server;
     private Lookup.Result result = null;
+    private boolean inQuery = false;
 
     /**
      * Creates a new instance of {@link ExplorerTopComponent}.
      */
     public ExplorerTopComponent() {
         initComponents();
+        this.addPropertyChangeListener("inQuery", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent pce) {
+                Boolean newValue = (Boolean) pce.getNewValue();
+                assert(newValue != null);
+                txtFilter.setEnabled(! newValue);
+                btnFilter.setEnabled(! newValue);
+                btnReset.setEnabled(! newValue);
+            }
+        });
     }
 
     @Override
@@ -256,16 +271,11 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         pnlAttributes.setLayout(pnlAttributesLayout);
         pnlAttributesLayout.setHorizontalGroup(
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, pnlAttributesLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
         );
         pnlAttributesLayout.setVerticalGroup(
             pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlAttributesLayout.createSequentialGroup()
-                .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
         );
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlAttributes.TabConstraints.tabTitle"), pnlAttributes); // NOI18N
@@ -278,10 +288,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         pnlLdif.setLayout(pnlLdifLayout);
         pnlLdifLayout.setHorizontalGroup(
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(pnlLdifLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(ldifPane)
-                .addContainerGap())
+            .add(ldifPane)
         );
         pnlLdifLayout.setVerticalGroup(
             pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -321,7 +328,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(txtFilter, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
+                .add(txtFilter)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(btnFilter)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
@@ -330,7 +337,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                .add(txtFilter, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(txtFilter, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(btnReset)
                 .add(btnFilter))
         );
@@ -352,13 +359,21 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     }// </editor-fold>//GEN-END:initComponents
 
     private void executeFilter() {
-        String filterText = txtFilter.getText().trim();
+        final String filterText = txtFilter.getText().trim();
         if (filterText.isEmpty()) {
             prepareBrowsing();
         } else {
+            final ProgressHandle ph = ProgressHandleFactory.createHandle(bundle.getString("ExecutingFilter"));
+            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(new Runnable() {
+                public void run() {
+                    setInQuery(true);
+                    ph.start();
+                    ph.switchToIndeterminate();
                     try {
-                List<LdapEntry> searchResults = server.search(filterText);
-                LdapSearchEntryChildren children = new LdapSearchEntryChildren(searchResults);
+                        List<LdapEntry> searchResults =
+                                server.search(filterText);
+                        LdapSearchEntryChildren children =
+                                new LdapSearchEntryChildren(searchResults);
                         children.setLdapServer(server);
                         em.setRootContext(new LdapSearchEntryNode(children));
 
@@ -366,7 +381,29 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                         JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
                 }
+            });
+            
+            t.addTaskListener(new TaskListener() {
+                @Override
+                public void taskFinished(Task task) {
+                    ph.finish();
+                    setInQuery(false);
+                }
+            });
+            
+            t.schedule(0);
         }
+    }
+
+    public boolean isInQuery() {
+        return inQuery;
+    }
+
+    public void setInQuery(boolean inQuery) {
+        boolean oldValue = this.inQuery;
+        this.inQuery = inQuery;
+        firePropertyChange("inQuery", oldValue, this.inQuery);
+    }
 
     private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
         executeFilter();

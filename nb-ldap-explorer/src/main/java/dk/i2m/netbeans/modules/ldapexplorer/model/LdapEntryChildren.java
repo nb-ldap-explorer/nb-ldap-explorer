@@ -16,9 +16,12 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
+import dk.i2m.netbeans.modules.ldapexplorer.ui.UIHelper;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.Exceptions;
+import org.openide.util.*;
 
 /**
  * LDAP entry {@link Children} for displaying nodes on the UI.
@@ -26,7 +29,6 @@ import org.openide.util.Exceptions;
  * @author Allan Lykke Christensen
  */
 public class LdapEntryChildren extends Children.Keys<LdapEntry> {
-
     private String parent = "";
     private LdapServer ldapServer = null;
 
@@ -49,11 +51,29 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
     @Override
     protected void addNotify() {
         if (ldapServer != null) {
-            try {
-                setKeys(ldapServer.getTree(parent));
-            } catch (QueryException ex) {
-                Exceptions.printStackTrace(ex);
-            }
+            final ProgressHandle ph = ProgressHandleFactory.createHandle(
+                    NbBundle.getMessage(LdapEntryChildren.class, "FetchingLDAPEntries"));
+            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(new Runnable() {
+
+                public void run() {
+                    ph.start();
+                    ph.switchToIndeterminate();
+                    try {
+                        setKeys(ldapServer.getTree(parent));
+                    } catch (QueryException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            });
+            
+            t.addTaskListener(new TaskListener() {
+                @Override
+                public void taskFinished(Task task) {
+                    ph.finish();
+                }
+            });
+            
+            t.schedule(0);
         }
     }
 
