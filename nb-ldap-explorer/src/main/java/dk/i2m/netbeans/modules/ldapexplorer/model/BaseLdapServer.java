@@ -444,6 +444,7 @@ public class BaseLdapServer {
             } catch (NamingException ex) {
                 throw new ConnectionException(ex);
             }
+            this.dirCtx = null;
         }
     }
 
