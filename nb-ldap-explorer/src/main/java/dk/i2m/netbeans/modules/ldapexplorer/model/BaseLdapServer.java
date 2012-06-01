@@ -392,6 +392,20 @@ public class BaseLdapServer {
         return sb.toString();
     }
 
+    private LdapContext getClonedContext() throws NamingException {
+        synchronized (dirCtx) {
+            return (LdapContext) dirCtx.lookup("");
+        }
+    }
+    
+    private void closeContext(LdapContext ctx) {
+        try {
+            ctx.close();
+        } catch (NamingException ex) {
+        } catch (NullPointerException ex) {
+        }
+    }
+
     /**
      * Generates a {@link Hashtable} with the environment for connecting to the {@link LdapServer}.
      *
@@ -422,11 +436,9 @@ public class BaseLdapServer {
      */
     public void connect() throws ConnectionException {
         try {
-            this.pagingSupported = null;
-            this.maxQuerySize = null;
-
-            this.dirCtx =
-                    new InitialLdapContext(getConnectionEnvironment(), null);
+            pagingSupported = null;
+            maxQuerySize = null;
+            dirCtx = new InitialLdapContext(getConnectionEnvironment(), null);
         } catch (NamingException ex) {
             throw new ConnectionException(ex);
         }
@@ -438,14 +450,8 @@ public class BaseLdapServer {
      * @throws ConnectionException If the connection could not be abrupted
      */
     public void disconnect() throws ConnectionException {
-        if (this.dirCtx != null) {
-            try {
-                this.dirCtx.close();
-            } catch (NamingException ex) {
-                throw new ConnectionException(ex);
-            }
-            this.dirCtx = null;
-        }
+        closeContext(dirCtx);
+        dirCtx = null;
     }
 
     /**
@@ -456,10 +462,10 @@ public class BaseLdapServer {
      * <code>false</code>
      */
     public boolean isConnected() {
-        return this.dirCtx != null;
+        return dirCtx != null;
     }
 
-    protected NamingEnumeration<SearchResult> getRootDSE() throws
+    private NamingEnumeration<SearchResult> getRootDSE() throws
             NamingException {
         NamingEnumeration<SearchResult> result = null;
         String base = "";
@@ -467,29 +473,31 @@ public class BaseLdapServer {
         SearchControls controls = new SearchControls();
         controls.setSearchScope(SearchControls.OBJECT_SCOPE);
         if (isConnected()) {
-            result = this.dirCtx.search(base, filter, controls);
+            result = dirCtx.search(base, filter, controls);
         }
         return result;
     }
 
-    protected boolean isPagingSupported() {
+    private boolean isPagingSupported() {
         if (pagingSupported == null) {
             pagingSupported = false;
             try {
-                NamingEnumeration<SearchResult> ne = getRootDSE();
+                synchronized (dirCtx) {
+                    NamingEnumeration<SearchResult> ne = getRootDSE();
 
-                OUTER:
-                while (ne != null && ne.hasMoreElements()) {
-                    SearchResult sr = ne.next();
-                    Attribute supportedControls = sr.getAttributes().get(
-                            "supportedControl");
-                    if (supportedControls != null) {
+                    OUTER:
+                    while (ne != null && ne.hasMoreElements()) {
+                        SearchResult sr = ne.next();
+                        Attribute supportedControls = sr.getAttributes().get(
+                                "supportedControl");
+                        if (supportedControls != null) {
                         NamingEnumeration attribute = supportedControls.getAll();
-                        while (attribute.hasMore()) {
-                            Object value = attribute.next();
-                            if (PagedResultsControl.OID.equals(value)) {
-                                pagingSupported = true;
-                                break OUTER;
+                            while (attribute.hasMore()) {
+                                Object value = attribute.next();
+                                if (PagedResultsControl.OID.equals(value)) {
+                                    pagingSupported = true;
+                                    break OUTER;
+                                }
                             }
                         }
                     }
@@ -522,8 +530,8 @@ public class BaseLdapServer {
         }
     }
 
-    private byte[] getPageContextCookie() throws NamingException {
-        Control[] controls = this.dirCtx.getResponseControls();
+    private byte[] getPageContextCookie(LdapContext ctx) throws NamingException {
+        Control[] controls = ctx.getResponseControls();
         if (controls != null) {
             for (int i = 0; i < controls.length; i++) {
                 if (controls[i] instanceof PagedResultsResponseControl) {
@@ -536,23 +544,31 @@ public class BaseLdapServer {
         return null;
     }
 
-    protected List<LdapEntry> getPagedTree(String path, boolean firstTry) throws
+    private List<LdapEntry> getPagedTree(String path, boolean firstTry) throws
             QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
         if (!isConnected()) {
             return entries;
         }
+
+        LdapContext cloneCtx = null;
+
         try {
+            cloneCtx = getClonedContext();
+
+            byte[] cookie = null;
             SearchControls searchControls = new SearchControls();
             searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-            dirCtx.setRequestControls(new Control[]{
-                        new PagedResultsControl(maxQuerySize, Control.CRITICAL)
-                    });
-
             while (true) {
-                NamingEnumeration<SearchResult> results = dirCtx.search(
+                NamingEnumeration<SearchResult> results;
+
+                cloneCtx.setRequestControls(new Control[]{
+                            new PagedResultsControl(maxQuerySize, cookie,
+                            Control.CRITICAL)
+                        });
+                results = cloneCtx.search(
                         path,
                         "objectClass=*",
                         searchControls);
@@ -565,17 +581,14 @@ public class BaseLdapServer {
                     entry.setDn(nc.getNameInNamespace());
                     entry.setLabel(nc.getName());
 
-                    addObjectClasses(entry);
+                    addObjectClasses(cloneCtx, entry);
                     entries.add(entry);
                 }
-                byte[] cookie = getPageContextCookie();
+
+                cookie = getPageContextCookie(cloneCtx);
                 if (cookie == null) {
                     break;
                 }
-                dirCtx.setRequestControls(new Control[]{
-                            new PagedResultsControl(maxQuerySize, cookie,
-                            Control.CRITICAL)
-                        });
             }
         } catch (CommunicationException ex) {
             // When the connection was closed by the server - try to connect again
@@ -595,11 +608,10 @@ public class BaseLdapServer {
             throw new QueryException(ex);
         } catch (IOException ex) {
             throw new QueryException(ex);
+        } catch (NullPointerException ex) {
+            throw new QueryException(ex);
         } finally {
-            try {
-                dirCtx.setRequestControls(null);
-            } catch (NamingException ex) {
-            }
+            closeContext(cloneCtx);
         }
 
         Collections.sort(entries, labelSorter);
@@ -607,7 +619,7 @@ public class BaseLdapServer {
         return entries;
     }
 
-    protected List<LdapEntry> getTree(String path, boolean firstTry) throws
+    private List<LdapEntry> getTree(String path, boolean firstTry) throws
             QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
@@ -615,8 +627,12 @@ public class BaseLdapServer {
             return entries;
         }
 
+        LdapContext cloneCtx = null;
+
         try {
-            NamingEnumeration<NameClassPair> results = this.dirCtx.list(path);
+            cloneCtx = getClonedContext();
+                
+            NamingEnumeration<NameClassPair> results = cloneCtx.list(path);
 
             while (results != null & results.hasMore()) {
                 NameClassPair nc = results.next();
@@ -626,7 +642,7 @@ public class BaseLdapServer {
                 entry.setDn(nc.getNameInNamespace());
                 entry.setLabel(nc.getName());
 
-                addObjectClasses(entry);
+                addObjectClasses(cloneCtx, entry);
                 entries.add(entry);
             }
         } catch (SizeLimitExceededException ex) {
@@ -654,6 +670,10 @@ public class BaseLdapServer {
             }
         } catch (NamingException ex) {
             throw new QueryException(ex);
+        } catch (NullPointerException ex) {
+            throw new QueryException(ex);
+        } finally {
+            closeContext(cloneCtx);
         }
 
         Collections.sort(entries, labelSorter);
@@ -676,7 +696,7 @@ public class BaseLdapServer {
         }
     }
 
-    protected List<LdapEntry> pagedSearch(String filter, boolean firstTry)
+    private List<LdapEntry> pagedSearch(String filter, boolean firstTry)
             throws QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
@@ -684,18 +704,24 @@ public class BaseLdapServer {
             return entries;
         }
 
+        LdapContext cloneCtx = null;
+
         try {
+            cloneCtx = getClonedContext();
+
+            byte[] cookie = null;
             SearchControls searchControls = new SearchControls();
             searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-            dirCtx.setRequestControls(new Control[]{
-                        new PagedResultsControl(maxQuerySize, Control.CRITICAL)
-                    });
-
             while (true) {
-                NamingEnumeration<SearchResult> results =
-                        dirCtx.search(getBaseDN(), filter,
+                cloneCtx.setRequestControls(new Control[]{
+                            new PagedResultsControl(maxQuerySize, cookie,
+                            Control.CRITICAL)
+                        });
+
+                NamingEnumeration<SearchResult> results = cloneCtx.search(getBaseDN(), filter,
                         searchControls);
+                cookie = getPageContextCookie(cloneCtx);
 
                 while (results != null & results.hasMore()) {
                     SearchResult sr = results.next();
@@ -704,18 +730,14 @@ public class BaseLdapServer {
 
                     entry.setDn(sr.getNameInNamespace());
                     entry.setLabel(sr.getName());
-                    addObjectClasses(entry);
+                    addObjectClasses(cloneCtx, entry);
 
                     entries.add(entry);
                 }
-                byte[] cookie = getPageContextCookie();
+
                 if (cookie == null) {
                     break;
                 }
-                dirCtx.setRequestControls(new Control[]{
-                            new PagedResultsControl(maxQuerySize, cookie,
-                            Control.CRITICAL)
-                        });
             }
 
         } catch (CommunicationException ex) {
@@ -736,6 +758,10 @@ public class BaseLdapServer {
             throw new QueryException(ex);
         } catch (IOException ex) {
             throw new QueryException(ex);
+        } catch (NullPointerException ex) {
+            throw new QueryException(ex);
+        } finally {
+            closeContext(cloneCtx);
         }
 
         Collections.sort(entries, labelSorter);
@@ -743,7 +769,7 @@ public class BaseLdapServer {
         return entries;
     }
 
-    protected List<LdapEntry> search(String filter, boolean firstTry) throws
+    private List<LdapEntry> search(String filter, boolean firstTry) throws
             QueryException {
         List<LdapEntry> entries = new ArrayList<LdapEntry>();
 
@@ -751,11 +777,14 @@ public class BaseLdapServer {
             return entries;
         }
 
+        LdapContext cloneCtx = null;
+
         try {
+            cloneCtx = getClonedContext();
+
             SearchControls controls = new SearchControls();
             controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration<SearchResult> results =
-                    this.dirCtx.search(getBaseDN(),
+            NamingEnumeration<SearchResult> results = cloneCtx.search(getBaseDN(),
                     filter, controls);
 
             while (results != null & results.hasMore()) {
@@ -765,7 +794,7 @@ public class BaseLdapServer {
 
                 entry.setDn(sr.getNameInNamespace());
                 entry.setLabel(sr.getName());
-                addObjectClasses(entry);
+                addObjectClasses(cloneCtx, entry);
 
                 entries.add(entry);
             }
@@ -794,6 +823,10 @@ public class BaseLdapServer {
             }
         } catch (NamingException ex) {
             throw new QueryException(ex);
+        } catch (NullPointerException ex) {
+            throw new QueryException(ex);
+        } finally {
+            closeContext(cloneCtx);
         }
 
         Collections.sort(entries, labelSorter);
@@ -807,9 +840,9 @@ public class BaseLdapServer {
      * @param entry
      *          {@link LdapEntry} for which to add object classes
      */
-    private void addObjectClasses(LdapEntry entry) {
+    private void addObjectClasses(LdapContext ctx, LdapEntry entry) {
         try {
-            Attributes attrs = this.dirCtx.getAttributes(entry.getDn(),
+            Attributes attrs = ctx.getAttributes(entry.getDn(),
                     new String[]{
                         "objectclass"});
 
@@ -848,32 +881,34 @@ public class BaseLdapServer {
             throw new QueryException("Not connected");
         }
 
-        try {
-            Attributes attrs = this.dirCtx.getAttributes(dn);
+        synchronized (dirCtx) {
+            try {
+                Attributes attrs = dirCtx.getAttributes(dn);
 
-            for (NamingEnumeration<? extends Attribute> ae = attrs.getAll(); ae.
-                    hasMore();) {
-                Attribute attr = ae.next();
+                for (NamingEnumeration<? extends Attribute> ae = attrs.getAll();
+                        ae.hasMore();) {
+                    Attribute attr = ae.next();
 
-                for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
-                    entry.setAttribute(attr.getID(), ne.next());
+                    for (NamingEnumeration ne = attr.getAll(); ne.hasMore();) {
+                        entry.setAttribute(attr.getID(), ne.next());
+                    }
                 }
-            }
-        } catch (CommunicationException ex) {
-            // When the connection was closed by the server - try to connect again
-            // (once) and return that result
-            if (firstTry) {
-                try {
-                    connect();
-                } catch (ConnectionException ex2) {
-                    throw new QueryException(ex2);
+            } catch (CommunicationException ex) {
+                // When the connection was closed by the server - try to connect again
+                // (once) and return that result
+                if (firstTry) {
+                    try {
+                        connect();
+                    } catch (ConnectionException ex2) {
+                        throw new QueryException(ex2);
+                    }
+                    return getEntry(dn, false);
+                } else {
+                    throw new QueryException(ex);
                 }
-                return getEntry(dn, false);
-            } else {
+            } catch (NamingException ex) {
                 throw new QueryException(ex);
             }
-        } catch (NamingException ex) {
-            throw new QueryException(ex);
         }
 
         return entry;
