@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.codec.binary.Hex;
 import org.netbeans.api.progress.ProgressHandle;
@@ -49,7 +50,7 @@ import org.openide.windows.CloneableTopComponent;
  */
 public final class ExplorerTopComponent extends CloneableTopComponent implements
         ExplorerManager.Provider, LookupListener {
-    
+
     private ExplorerManager em = new ExplorerManager();
     private ResourceBundle bundle = NbBundle.getBundle(
             ExplorerTopComponent.class);
@@ -67,10 +68,11 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             @Override
             public void propertyChange(PropertyChangeEvent pce) {
                 Boolean newValue = (Boolean) pce.getNewValue();
-                assert(newValue != null);
-                txtFilter.setEnabled(! newValue);
-                btnFilter.setEnabled(! newValue);
-                btnReset.setEnabled(! newValue);
+                assert (newValue != null);
+                txtFilter.setEnabled(!newValue);
+                btnFilter.setEnabled(!newValue);
+                btnReset.setEnabled(!newValue);
+                treePane.setEnabled(!newValue);
             }
         });
     }
@@ -142,19 +144,19 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         DefaultTableModel model =
                 (DefaultTableModel) tblAttributes.getModel();
         model.setRowCount(0);
-        
+
         txtLdif.setText("");
 
         if (!c.isEmpty()) {
             LdapEntryNode e = (LdapEntryNode) c.iterator().next();
 
             try {
-                // Get the LdapEntry associated with this node
-                LdapEntry entry = e.getLookup().lookup(LdapEntry.class);
+            // Get the LdapEntry associated with this node
+            LdapEntry entry = e.getLookup().lookup(LdapEntry.class);
 
-                // Show LdapEntry if it was found for this node
-                // Note: On the root node there is no LdapEntry, hence the check
-                if (entry != null) {
+            // Show LdapEntry if it was found for this node
+            // Note: On the root node there is no LdapEntry, hence the check
+            if (entry != null) {
                     entry = server.getEntry(entry.getDn());
                     ldifPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
                     txtLdif.setText(entry.toLDIF());
@@ -167,13 +169,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                             addRow(model, att, val);
                         }
                     }
-                } else {
-                    txtLdif.setText("");
-                }
+            } else {
+                txtLdif.setText("");
+            }
             } catch (QueryException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
         }
+    }
     }
 
     private void addRow(DefaultTableModel model, String att, Object val) {
@@ -363,26 +365,34 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         if (filterText.isEmpty()) {
             prepareBrowsing();
         } else {
-            final ProgressHandle ph = ProgressHandleFactory.createHandle(bundle.getString("ExecutingFilter"));
+            final ProgressHandle ph = ProgressHandleFactory.createHandle(bundle.
+                    getString("ExecutingFilter"));
             RequestProcessor.Task t = UIHelper.getRequestProcessor().create(new Runnable() {
+
                 public void run() {
                     setInQuery(true);
-                    ph.start();
+                    
                     ph.switchToIndeterminate();
                     try {
-                        List<LdapEntry> searchResults =
+                        final List<LdapEntry> searchResults =
                                 server.search(filterText);
-                        LdapSearchEntryChildren children =
-                                new LdapSearchEntryChildren(searchResults);
-                        children.setLdapServer(server);
-                        em.setRootContext(new LdapSearchEntryNode(children));
+                        SwingUtilities.invokeLater(new Runnable() {
 
+                            public void run() {
+                                LdapSearchEntryChildren children =
+                                        new LdapSearchEntryChildren(
+                                        searchResults);
+                                children.setLdapServer(server);
+
+                                em.setRootContext(new LdapSearchEntryNode(children));
+                            }
+                        });
                     } catch (QueryException ex) {
                         JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
                 }
             });
-            
+
             t.addTaskListener(new TaskListener() {
                 @Override
                 public void taskFinished(Task task) {
@@ -390,6 +400,8 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                     setInQuery(false);
                 }
             });
+
+            ph.start();
             
             t.schedule(0);
         }
