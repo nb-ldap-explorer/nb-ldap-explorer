@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <artifactId>nb-ldap-bundle</artifactId>
         <groupId>dk.i2m.netbeans.modules</groupId>
-        <version>0.7-SNAPSHOT</version>
+        <version>0.7</version>
     </parent>
 
     <groupId>com.google.code.nb_ldap_explorer</groupId>
@@ -58,7 +57,7 @@
         </plugins>
     </build>
     <properties>
-        <netbeans.run.params.ide/>
+        <netbeans.run.params.ide />
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
     </properties>
     <description>Handle invalid certificates in SSL connections. This module is needed if connections with SSL endpoints providing self-signed/invalid certificates.</description>
