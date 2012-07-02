@@ -128,10 +128,14 @@
                                 <upload>
                                     <file>target/netbeans_site/updates.xml</file>
                                     <summary>Update Center XML for Netbeans</summary>
+                                    <labels>
+                                    </labels>
                                 </upload>
                                 <upload>
                                     <file>target/netbeans_site/updates.xml.gz</file>
                                     <summary>Update Center XML (compressed) for Netbeans</summary>
+                                    <labels>
+                                    </labels>
                                 </upload>
                             </uploads>
                         </configuration>
