@@ -35,7 +35,8 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.WeakListeners;
 import org.openide.util.actions.SystemAction;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  * Node representing a single registered {@link LdapServer}.
@@ -50,7 +51,14 @@ public class LdapServerNode extends AbstractNode implements
             LdapServerNode.class);
 
     public LdapServerNode(LdapServer server) {
-        super(Children.LEAF, Lookups.singleton(server));
+        this(server, new InstanceContent());
+    }
+    
+    @SuppressWarnings("LeakingThisInConstructor")
+    private LdapServerNode(LdapServer server, InstanceContent content) {
+        super(Children.LEAF, new AbstractLookup(content));
+        content.add(this);
+        content.add(server);
         this.server = server;
         setIconBaseWithExtension(bundle.getString("ICON_LdapServerNode"));
         if (server.isLabelSet()) {
