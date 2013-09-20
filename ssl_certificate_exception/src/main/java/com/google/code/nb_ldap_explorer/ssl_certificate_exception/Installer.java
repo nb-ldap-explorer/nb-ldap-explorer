@@ -46,7 +46,9 @@ public class Installer extends ModuleInstall {
             }
             if (hostnameAliasMap == null) {
                 if (hostnameAliasMapFile.getSize() > 0) {
-                    JAXBContext jc = JAXBContext.newInstance(HostnameCertificateStore.class);
+                    JAXBContext jc = JAXBContext.newInstance(
+                            "com.google.code.nb_ldap_explorer.ssl_certificate_exception",
+                            Installer.class.getClassLoader());
                     Unmarshaller m = jc.createUnmarshaller();
                     InputStream is = hostnameAliasMapFile.getInputStream();
                     hostnameAliasMap = (HostnameCertificateStore) m.unmarshal(is);
@@ -80,7 +82,9 @@ public class Installer extends ModuleInstall {
                 os.close();
             }
             if (hostnameAliasMap != null && hostnameAliasMapFile != null) {
-                JAXBContext jc = JAXBContext.newInstance(HostnameCertificateStore.class);
+                JAXBContext jc = JAXBContext.newInstance(
+                        "com.google.code.nb_ldap_explorer.ssl_certificate_exception",
+                        Installer.class.getClassLoader());
                 Marshaller m = jc.createMarshaller();
                 m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 OutputStream os = hostnameAliasMapFile.getOutputStream();
