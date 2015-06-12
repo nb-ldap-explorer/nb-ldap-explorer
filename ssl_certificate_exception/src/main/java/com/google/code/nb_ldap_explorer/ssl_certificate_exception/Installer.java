@@ -11,6 +11,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -20,6 +22,8 @@ import org.openide.filesystems.FileUtil;
 import org.openide.modules.ModuleInstall;
 
 public class Installer extends ModuleInstall {
+
+    private static final Logger LOG = Logger.getLogger(Installer.class.getName());
 
     private static FileObject configBase = null;
     private static FileObject keystoreFile = null;
@@ -36,13 +40,24 @@ public class Installer extends ModuleInstall {
             hostnameAliasMapFile = FileUtil.createData(configBase, "hostnameAliasMap.xml");
             if (userkeystore == null) {
                 userkeystore = KeyStore.getInstance("JKS");
+            }
+            try {
                 if (keystoreFile.getSize() > 0) {
-                    InputStream is = keystoreFile.getInputStream();
-                    userkeystore.load(is, "".toCharArray());
-                    is.close();
+                    try (InputStream is = keystoreFile.getInputStream()) {
+                        userkeystore.load(is, "".toCharArray());
+                    } catch (CertificateException | NoSuchAlgorithmException | IOException ex) {
+                        LOG.log(Level.INFO,
+                                "Failed to load certificate store - going on with empty store",
+                                ex);
+                        userkeystore.load(null, "".toCharArray());
+                    }
                 } else {
                     userkeystore.load(null, "".toCharArray());
                 }
+
+            } catch (CertificateException | NoSuchAlgorithmException | IOException ex) {
+                LOG.log(Level.WARNING, "Failed to initialize certificate store",
+                        ex);
             }
             if (hostnameAliasMap == null) {
                 if (hostnameAliasMapFile.getSize() > 0) {
@@ -50,9 +65,14 @@ public class Installer extends ModuleInstall {
                             "com.google.code.nb_ldap_explorer.ssl_certificate_exception",
                             Installer.class.getClassLoader());
                     Unmarshaller m = jc.createUnmarshaller();
-                    InputStream is = hostnameAliasMapFile.getInputStream();
-                    hostnameAliasMap = (HostnameCertificateStore) m.unmarshal(is);
-                    is.close();
+                    try (InputStream is = hostnameAliasMapFile.getInputStream()) {
+                        hostnameAliasMap = (HostnameCertificateStore) m.unmarshal(is);
+                    } catch (JAXBException ex) {
+                        LOG.
+                                log(Level.INFO, "Failed to host alias map - going on with empty map",
+                                        ex);
+                        hostnameAliasMap = new HostnameCertificateStore();
+                    }
                 } else {
                     hostnameAliasMap = new HostnameCertificateStore();
                 }
@@ -62,47 +82,43 @@ public class Installer extends ModuleInstall {
             TrustProviderImpl.install(userkeystore);
             HostnameVerifierImpl.install(hostnameAliasMap);
         } catch (JAXBException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException(ex);
-        } catch (CertificateException ex) {
-            throw new RuntimeException(ex);
+            LOG.log(Level.WARNING,
+                    "Failed to create XML Unmarshaller - please open a bug report, this should not happen",
+                    ex);
         } catch (KeyStoreException ex) {
-            throw new RuntimeException(ex);
+            LOG.log(Level.WARNING, "Failed to create keystore for certificates (type: JKS)", ex);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            LOG.log(Level.WARNING,
+                    "Failed to create config files - please check, that the userdir is writeable, if it is please open a bug report, this should not happen.",
+                    ex);
         }
     }
 
     private void saveState() {
-        try {
-            if (userkeystore != null && keystoreFile != null) {
-                OutputStream os = keystoreFile.getOutputStream();
+        if (userkeystore != null && keystoreFile != null) {
+            try (OutputStream os = keystoreFile.getOutputStream()) {
                 userkeystore.store(os, "".toCharArray());
-                os.close();
+            } catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | IOException ex) {
+                LOG.log(Level.INFO, "Failed to save hostname map", ex);
             }
+        }
+        try {
             if (hostnameAliasMap != null && hostnameAliasMapFile != null) {
                 JAXBContext jc = JAXBContext.newInstance(
                         "com.google.code.nb_ldap_explorer.ssl_certificate_exception",
                         Installer.class.getClassLoader());
                 Marshaller m = jc.createMarshaller();
                 m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                OutputStream os = hostnameAliasMapFile.getOutputStream();
-                m.marshal(hostnameAliasMap, os);
-                os.close();
+                try (OutputStream os = hostnameAliasMapFile.getOutputStream()) {
+                    m.marshal(hostnameAliasMap, os);
+                }
             }
             hostnameAliasMap = null;
             userkeystore = null;
-        } catch (JAXBException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException(ex);
-        } catch (CertificateException ex) {
-            throw new RuntimeException(ex);
-        } catch (KeyStoreException ex) {
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (JAXBException | IOException ex) {
+            LOG.log(Level.WARNING,
+                    "Failed to create marshal hostname alias map",
+                    ex);
         }
     }
 
