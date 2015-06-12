@@ -5,12 +5,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.io.FileInputStream;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -185,18 +181,6 @@ public class CertificateDisplay extends JPanel {
         d.height += additionalPaddingX + 10;
         d.width += additionalPaddingY + 10;
         return d;
-    }
-
-    public static void main(String[] argv) throws Exception {
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        Collection<? extends Certificate> certCol = cf.generateCertificates(new FileInputStream("/home/mblaesing/banking.postbank.de"));
-        X509Certificate[] certs = certCol.toArray(new X509Certificate[0]);
-        CertificateDisplay cd = new CertificateDisplay();
-        cd.setCertificate(certs[certs.length - 1]);
-        JFrame f = new JFrame();
-        f.add(cd);
-        f.setSize(cd.getPreferredSize());
-        f.setVisible(true);
     }
 
     private JTextField selectableLabel(String displayValue, Font font) {

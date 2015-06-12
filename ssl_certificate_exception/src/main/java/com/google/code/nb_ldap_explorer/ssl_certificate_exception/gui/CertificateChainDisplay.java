@@ -37,11 +37,17 @@ public class CertificateChainDisplay extends javax.swing.JPanel {
         this.certificateChain = certificatesChain;
         DefaultListModel dlm = new DefaultListModel();
         if (certificatesChain != null) {
-            for (X509Certificate cert : certificatesChain) {
-                dlm.addElement(cert.getSubjectX500Principal().toString());
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < certificatesChain.length; i++) {
+                sb.setLength(0);
+                X509Certificate cert = certificatesChain[i];
+                for (int j = 0; j < i; j++) {
+                    sb.append("  ");
+                }
+                sb.append(cert.getSubjectX500Principal().toString());
+                dlm.addElement(sb.toString());
             }
         }
-
         cd.setCertificate(certificatesChain[certificateChain.length - 1]);
 
         certificateChainDNs.setModel(dlm);
