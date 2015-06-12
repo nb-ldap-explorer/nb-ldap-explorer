@@ -13,10 +13,10 @@ import java.util.Map;
 public class Utilities {
 
     public static List<Map.Entry<String, String>> parseX500Name(String stringForm) {
-        List<Map.Entry<String, String>> result = new ArrayList<Map.Entry<String, String>>();
+        List<Map.Entry<String, String>> result = new ArrayList<>();
         for (String s : stringForm.split("(?<!\\\\),")) {
             String[] part = s.split("=", 2);
-            AbstractMap.SimpleImmutableEntry<String, String> entry = new AbstractMap.SimpleImmutableEntry<String, String>(
+            AbstractMap.SimpleImmutableEntry<String, String> entry = new AbstractMap.SimpleImmutableEntry<>(
                     part[0].replaceAll("\\\\(.)", "$1"),
                     part[1].replaceAll("\\\\(.)", "$1"));
             result.add(entry);
@@ -31,9 +31,7 @@ public class Utilities {
             md.update(der);
             byte[] digest = md.digest();
             return digest;
-        } catch (CertificateEncodingException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (CertificateEncodingException | NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -64,9 +62,10 @@ public class Utilities {
         if(! input.getClass().isArray()) {
             throw new IllegalArgumentException("Only arrays are supported");
         }
-        E result = (E) Array.newInstance(input.getClass().getComponentType(), Array.getLength(input));
-        for(int i = 0; i < Array.getLength(input); i++) {
-            Array.set(result, i, Array.get(input, i));
+        int length = Array.getLength(input);
+        E result = (E) Array.newInstance(input.getClass().getComponentType(), length);
+        for(int i = 0; i < length; i++) {
+            Array.set(result, i, Array.get(input, length - i - 1));
         }
         return result;
     }
