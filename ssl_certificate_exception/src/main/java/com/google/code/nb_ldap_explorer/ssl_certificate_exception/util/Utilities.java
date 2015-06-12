@@ -24,14 +24,14 @@ public class Utilities {
         return result;
     }
 
-    public static byte[] fingerprint(X509Certificate cert, String digestAlg) {
+    public static byte[] fingerprint(X509Certificate cert, String digestAlg) throws NoSuchAlgorithmException {
         try {
             MessageDigest md = MessageDigest.getInstance(digestAlg);
             byte[] der = cert.getEncoded();
             md.update(der);
             byte[] digest = md.digest();
             return digest;
-        } catch (CertificateEncodingException | NoSuchAlgorithmException ex) {
+        } catch (CertificateEncodingException ex) {
             throw new RuntimeException(ex);
         }
 

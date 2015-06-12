@@ -15,10 +15,18 @@ import javax.swing.*;
 import static com.google.code.nb_ldap_explorer.ssl_certificate_exception.util.Utilities.parseX500Name;
 import static com.google.code.nb_ldap_explorer.ssl_certificate_exception.util.Utilities.fingerprint;
 import static com.google.code.nb_ldap_explorer.ssl_certificate_exception.util.Utilities.asHexString;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CertificateDisplay extends JPanel {
-
-    private static final Map<String, String> relevantNames = new HashMap<String, String>();
+    private static final Logger LOG = Logger.getLogger(CertificateDisplay.class.getName());
+    private static final Set<String> warnedMissingAlgorithms = Collections.synchronizedSet(new HashSet<String>());
+    private static final String[] fingerprintingAlgorithms = new String[]{"SHA-256", "SHA-1", "MD5"};
+    private static final Map<String, String> relevantNames = new HashMap<>();
     private Integer additionalPaddingX = 0;
     private Integer additionalPaddingY = 0;
     private final DateFormat mediumDate = DateFormat.getDateInstance(DateFormat.MEDIUM);
@@ -86,7 +94,7 @@ public class CertificateDisplay extends JPanel {
         label = new JLabel("Serial: ");
         label.setFont(normalFont);
         add(label, labelGbc);
-        add(selectableLabel(lastCert.getSerialNumber().toString(), normalFont), valueGbc);
+        add(selectableLabel(asHexString(lastCert.getSerialNumber().toByteArray()), normalFont), valueGbc);
         row++;
 
         headGbc.gridy = row++;
@@ -136,20 +144,23 @@ public class CertificateDisplay extends JPanel {
         label.setFont(headerFont);
         add(label, headGbc);
 
-        labelGbc.gridy = row;
-        valueGbc.gridy = row;
-        label = new JLabel("SHA1-Fingerprint: ");
-        label.setFont(normalFont);
-        add(label, labelGbc);
-        add(selectableLabel(asHexString(fingerprint(lastCert, "SHA-1")), normalFont), valueGbc);
-        row++;
-        labelGbc.gridy = row;
-        valueGbc.gridy = row;
-        label = new JLabel("MD5-Fingerprint: ");
-        label.setFont(normalFont);
-        add(label, valueGbc);
-        add(selectableLabel(asHexString(fingerprint(lastCert, "MD5")), normalFont), valueGbc);
-        row++;
+        for (String fingerprintingAlgorithm : fingerprintingAlgorithms) {
+            try {
+                String fingerprint = asHexString(fingerprint(lastCert, fingerprintingAlgorithm));
+                labelGbc.gridy = row;
+                valueGbc.gridy = row;
+                label = new JLabel(String.format("%s-Fingerprint: ", fingerprintingAlgorithm));
+                label.setFont(normalFont);
+                add(label, labelGbc);
+                add(selectableLabel(fingerprint, normalFont), valueGbc);
+                row++;
+            } catch (NoSuchAlgorithmException ex) {
+                if(! warnedMissingAlgorithms.contains(fingerprintingAlgorithm)) {
+                    LOG.log(Level.INFO, "Digest Algorithm " + fingerprintingAlgorithm + " could not be found", ex);
+                    warnedMissingAlgorithms.add(fingerprintingAlgorithm);
+                }
+            }
+        }
 
         Box.Filler filler = new Box.Filler(
                 new Dimension(0, 0),
