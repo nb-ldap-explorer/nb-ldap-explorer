@@ -14,8 +14,8 @@ import org.openide.util.Exceptions;
 
 public class TrustManagerImpl implements X509TrustManager {
 
-    private X509TrustManager parentTrustmanager;
-    private KeyStore userkeystore;
+    private final X509TrustManager parentTrustmanager;
+    private final KeyStore userkeystore;
 
     public TrustManagerImpl(X509TrustManager parentTrustmanager, KeyStore userkeystore) {
         this.parentTrustmanager = parentTrustmanager;
@@ -48,7 +48,7 @@ public class TrustManagerImpl implements X509TrustManager {
             }
             final AtomicInteger resultRef = new AtomicInteger();
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
+                Runnable edtUpdate = new Runnable() {
 
                     @Override
                     public void run() {
@@ -56,10 +56,13 @@ public class TrustManagerImpl implements X509TrustManager {
                         ccd.setVisible(true);
                         resultRef.set(ccd.getResult());
                     }
-                });
-            } catch (InterruptedException ex1) {
-                Exceptions.printStackTrace(ex1);
-            } catch (InvocationTargetException ex1) {
+                };
+                if(SwingUtilities.isEventDispatchThread()) {
+                    edtUpdate.run();
+                } else {
+                    SwingUtilities.invokeAndWait(edtUpdate);
+                }
+            } catch (InterruptedException | InvocationTargetException ex1) {
                 Exceptions.printStackTrace(ex1);
             }
             int result = resultRef.get();

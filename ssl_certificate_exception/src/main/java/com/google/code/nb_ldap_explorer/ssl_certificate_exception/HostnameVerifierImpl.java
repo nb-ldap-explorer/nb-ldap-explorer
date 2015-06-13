@@ -43,7 +43,7 @@ public class HostnameVerifierImpl implements HostnameVerifier {
 
             final AtomicInteger resultRef = new AtomicInteger();
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
+                Runnable edtUpdate = new Runnable() {
 
                     @Override
                     public void run() {
@@ -53,10 +53,13 @@ public class HostnameVerifierImpl implements HostnameVerifier {
                         ccd.setVisible(true);
                         resultRef.set(ccd.getResult());
                     }
-                });
-            } catch (InterruptedException ex1) {
-                Exceptions.printStackTrace(ex1);
-            } catch (InvocationTargetException ex1) {
+                };
+                if(SwingUtilities.isEventDispatchThread()) {
+                    edtUpdate.run();
+                } else {
+                    SwingUtilities.invokeAndWait(edtUpdate);
+                }
+            } catch (InterruptedException | InvocationTargetException ex1) {
                 Exceptions.printStackTrace(ex1);
             }
             int result = resultRef.get();
