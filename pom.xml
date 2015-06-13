@@ -35,9 +35,9 @@
     </developers>
 
     <scm>
-        <connection>scm:hg:https://nb-ldap-explorer.googlecode.com/hg/</connection>
-        <developerConnection>scm:hg:https://nb-ldap-explorer.googlecode.com/hg/</developerConnection>
-        <url>http://nb-ldap-explorer.googlecode.com/hg/</url>
+        <connection>scm:git:https://github.com/nb-ldap-explorer/nb-ldap-explorer.git</connection>
+        <developerConnection>scm:git:git@github.com:nb-ldap-explorer/nb-ldap-explorer.git</developerConnection>
+        <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
     </scm>
 
     <repositories>
