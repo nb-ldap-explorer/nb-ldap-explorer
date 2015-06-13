@@ -4,7 +4,7 @@
     <parent>
         <artifactId>nb-ldap-bundle</artifactId>
         <groupId>dk.i2m.netbeans.modules</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <version>0.10</version>
     </parent>
 
     <groupId>com.google.code.nb_ldap_explorer</groupId>
@@ -55,6 +55,6 @@
             </plugin>
         </plugins>
     </build>
-    <properties></properties>
+    <properties />
     <description>Handle invalid certificates in SSL connections. This module is needed if connections with SSL endpoints providing self-signed/invalid certificates.</description>
 </project>
