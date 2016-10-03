@@ -99,7 +99,7 @@ public class HostnameNotMatching extends JDialog {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(2, 2, 2, 2);
-        JLabel heading = new JLabel("Target hostname does not match certificate");
+        JLabel heading = new JLabel("Target hostname does not match certificate: " + hostname);
         heading.setFont(labelFont);
         p.add(heading, gbc);
         gbc.gridy = 1;
