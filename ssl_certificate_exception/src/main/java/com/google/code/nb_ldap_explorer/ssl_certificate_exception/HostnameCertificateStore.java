@@ -14,9 +14,11 @@
  *  limitations under the License.
  *  under the License.
  */
-
 package com.google.code.nb_ldap_explorer.ssl_certificate_exception;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -27,23 +29,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.openide.util.Exceptions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.NONE)
 public class HostnameCertificateStore {
 
     private KeyStore keystore;
-    @XmlElement
-    @XmlJavaTypeAdapter(HostnameEntryAdapter.class)
-    private Map<String, ArrayList<String>> knownHosts =
-            new HashMap<String, ArrayList<String>>();
+    private Map<String, ArrayList<String>> knownHosts = new HashMap<String, ArrayList<String>>();
 
     public HostnameCertificateStore() {
     }
@@ -65,10 +66,10 @@ public class HostnameCertificateStore {
             ArrayList<String> knownAliases = knownHosts.get(hostname);
             if (knownAliases == null) {
                 knownAliases = new ArrayList<String>();
+                knownHosts.put(hostname, knownAliases);
             }
             if (!knownAliases.contains(alias)) {
                 knownAliases.add(alias);
-                knownHosts.put(hostname, knownAliases);
             }
         } catch (KeyStoreException ex) {
             throw new RuntimeException(ex);
@@ -113,93 +114,59 @@ public class HostnameCertificateStore {
         }
         return false;
     }
-}
 
-class HostnameEntryAdapter extends XmlAdapter<HostnameEntry[], Map<String, ArrayList<String>>> {
-
-    @Override
-    public HostnameEntry[] marshal(Map<String, ArrayList<String>> v) throws
-            Exception {
-        HostnameEntry[] result = new HostnameEntry[v.size()];
-        int index = 0;
-        for (Entry<String, ArrayList<String>> e : v.entrySet()) {
-            HostnameEntry he = new HostnameEntry();
-            he.setHostname(e.getKey());
-            he.setAliases(e.getValue());
-            result[index] = he;
-            index++;
+    public void readFromInputStream(InputStream is) throws IOException {
+        this.knownHosts.clear();
+        if (is == null) {
+            return;
         }
-        return result;
-    }
-
-    @Override
-    public Map<String, ArrayList<String>> unmarshal(HostnameEntry[] v) throws
-            Exception {
-        Map<String, ArrayList<String>> result =
-                new HashMap<String, ArrayList<String>>();
-        for (HostnameEntry he : v) {
-            result.put(he.getHostname(), he.getAliases());
+        try {
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+            NodeList knownHosts = doc.getElementsByTagName("knownHosts");
+            for(int i = 0; i < knownHosts.getLength(); i++) {
+                Element knownHost = (Element) knownHosts.item(i);
+                NodeList items = knownHost.getElementsByTagName("item");
+                for(int j = 0; j < items.getLength(); j++) {
+                    Element item = (Element) items.item(j);
+                    NodeList aliases = item.getElementsByTagName("aliases");
+                    NodeList hostnames = item.getElementsByTagName("hostname");
+                    if(aliases.getLength() > 0 && hostnames.getLength() == 1) {
+                        ArrayList<String> aliasStrings = new ArrayList<>();
+                        for(int k = 0; k < aliases.getLength(); k++) {
+                            aliasStrings.add(aliases.item(k).getTextContent());
+                        }
+                        this.knownHosts.put(((Element) hostnames.item(0)).getTextContent(), aliasStrings);
+                    }
+                }
+            }
+        } catch (ParserConfigurationException | SAXException ex) {
+            throw new IOException(ex);
         }
-        return result;
-    }
-}
-
-@XmlRootElement
-class HostnameEntry {
-
-    private String hostname;
-    private ArrayList<String> aliases;
-
-    public HostnameEntry() {
     }
 
-    public HostnameEntry(String hostname, ArrayList<String> aliases) {
-        this.hostname = hostname;
-        this.aliases = aliases;
-    }
-
-    public ArrayList<String> getAliases() {
-        return aliases;
-    }
-
-    public void setAliases(ArrayList<String> aliases) {
-        this.aliases = aliases;
-    }
-
-    public String getHostname() {
-        return hostname;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
+    public void writeToOutputStream(OutputStream os) throws IOException {
+        try {
+            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            doc.setXmlStandalone(true);
+            Element rootElement = doc.createElement("hostnameCertificateStore");
+            Element knownHostsElement = doc.createElement("knownHosts");
+            doc.appendChild(rootElement);
+            rootElement.appendChild(knownHostsElement);
+            for (Entry<String, ArrayList<String>> e : this.knownHosts.entrySet()) {
+                Element item = doc.createElement("item");
+                for (String alias : e.getValue()) {
+                    Element aliases = doc.createElement("aliases");
+                    aliases.setTextContent(alias);
+                    item.appendChild(aliases);
+                }
+                Element hostname = doc.createElement("hostname");
+                hostname.setTextContent(e.getKey());
+                item.appendChild(hostname);
+                knownHostsElement.appendChild(item);
+            }
+            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(os));
+        } catch (ParserConfigurationException | TransformerException ex) {
+            throw new IOException(ex);
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final HostnameEntry other = (HostnameEntry) obj;
-        if ((this.hostname == null) ? (other.hostname != null) : !this.hostname.
-                equals(other.hostname)) {
-            return false;
-        }
-        if (this.aliases != other.aliases && (this.aliases == null
-                || !this.aliases.equals(other.aliases))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash
-                + (this.hostname != null ? this.hostname.hashCode() : 0);
-        hash = 97 * hash + (this.aliases != null ? this.aliases.hashCode() : 0);
-        return hash;
     }
 }

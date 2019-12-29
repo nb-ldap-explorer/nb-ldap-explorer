@@ -26,10 +26,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.modules.ModuleInstall;
@@ -74,17 +70,11 @@ public class Installer extends ModuleInstall {
             }
             if (hostnameAliasMap == null) {
                 if (hostnameAliasMapFile.getSize() > 0) {
-                    JAXBContext jc = JAXBContext.newInstance(
-                            "com.google.code.nb_ldap_explorer.ssl_certificate_exception",
-                            Installer.class.getClassLoader());
-                    Unmarshaller m = jc.createUnmarshaller();
+                    hostnameAliasMap = new HostnameCertificateStore();
                     try (InputStream is = hostnameAliasMapFile.getInputStream()) {
-                        hostnameAliasMap = (HostnameCertificateStore) m.unmarshal(is);
-                    } catch (JAXBException ex) {
-                        LOG.
-                                log(Level.INFO, "Failed to host alias map - going on with empty map",
-                                        ex);
-                        hostnameAliasMap = new HostnameCertificateStore();
+                        hostnameAliasMap.readFromInputStream(is);
+                    } catch (IOException ex) {
+                        LOG.log(Level.INFO, "Failed to host alias map - going on with empty map", ex);
                     }
                 } else {
                     hostnameAliasMap = new HostnameCertificateStore();
@@ -94,10 +84,6 @@ public class Installer extends ModuleInstall {
 
             TrustProviderImpl.install(userkeystore);
             HostnameVerifierImpl.install(hostnameAliasMap);
-        } catch (JAXBException ex) {
-            LOG.log(Level.WARNING,
-                    "Failed to create XML Unmarshaller - please open a bug report, this should not happen",
-                    ex);
         } catch (KeyStoreException ex) {
             LOG.log(Level.WARNING, "Failed to create keystore for certificates (type: JKS)", ex);
         } catch (IOException ex) {
@@ -117,18 +103,13 @@ public class Installer extends ModuleInstall {
         }
         try {
             if (hostnameAliasMap != null && hostnameAliasMapFile != null) {
-                JAXBContext jc = JAXBContext.newInstance(
-                        "com.google.code.nb_ldap_explorer.ssl_certificate_exception",
-                        Installer.class.getClassLoader());
-                Marshaller m = jc.createMarshaller();
-                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 try (OutputStream os = hostnameAliasMapFile.getOutputStream()) {
-                    m.marshal(hostnameAliasMap, os);
+                    hostnameAliasMap.writeToOutputStream(os);
                 }
             }
             hostnameAliasMap = null;
             userkeystore = null;
-        } catch (JAXBException | IOException ex) {
+        } catch (IOException ex) {
             LOG.log(Level.WARNING,
                     "Failed to create marshal hostname alias map",
                     ex);
