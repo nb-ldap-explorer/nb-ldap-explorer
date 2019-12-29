@@ -91,7 +91,7 @@ public class HostnameCertificateStore {
                     }
                 }
                 userkeystore.setCertificateEntry(realName, lastCert);
-                return realName;
+                return userkeystore.getCertificateAlias(lastCert);
             } catch (KeyStoreException ex) {
                 Exceptions.printStackTrace(ex);
             }
