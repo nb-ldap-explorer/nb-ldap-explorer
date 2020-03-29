@@ -33,6 +33,7 @@ public class CertificateCheckDialog extends JDialog {
     public final static int DECLINE = 2;
     private int result = DECLINE;
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public CertificateCheckDialog(X509Certificate[] certificateChain, CertificateException ex) {
         setModal(true);
         setTitle("Invalid Certificate");

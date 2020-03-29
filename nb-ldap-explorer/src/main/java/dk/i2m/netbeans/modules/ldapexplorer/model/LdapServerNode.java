@@ -100,26 +100,26 @@ public class LdapServerNode extends AbstractNode implements
         if (srv != null) {
 
             try {
-                Property labelProp = new PropertySupport.Reflection<String>(srv,
+                Property labelProp = new PropertySupport.Reflection<>(srv,
                         String.class, "label");
                 labelProp.setName(bundle.getString("PROP_NAME_Label"));
                 labelProp.setShortDescription(
                         bundle.getString("PROP_DESC_Label"));
                 connectionDetails.put(labelProp);
 
-                Property host = new PropertySupport.Reflection<String>(srv,
+                Property host = new PropertySupport.Reflection<>(srv,
                         String.class, "host");
                 host.setName(bundle.getString("PROP_NAME_Hostname"));
                 host.setShortDescription(bundle.getString("PROP_DESC_Hostname"));
                 connectionDetails.put(host);
 
-                Property portProp = new PropertySupport.Reflection<Integer>(srv,
+                Property portProp = new PropertySupport.Reflection<>(srv,
                         Integer.class, "port");
                 portProp.setName(bundle.getString("PROP_NAME_Port"));
                 portProp.setShortDescription(bundle.getString("PROP_DESC_Port"));
                 connectionDetails.put(portProp);
 
-                Property timeoutProp = new PropertySupport.Reflection<Integer>(
+                Property timeoutProp = new PropertySupport.Reflection<>(
                         srv,
                         Integer.class, "timeout");
                 timeoutProp.setName(bundle.getString("PROP_NAME_Timeout"));
@@ -127,62 +127,62 @@ public class LdapServerNode extends AbstractNode implements
                         bundle.getString("PROP_DESC_Timeout"));
                 connectionDetails.put(timeoutProp);
 
-                Property baseDnProp = new PropertySupport.Reflection<String>(srv,
+                Property baseDnProp = new PropertySupport.Reflection<>(srv,
                         String.class, "baseDN");
                 baseDnProp.setName(bundle.getString("PROP_NAME_BaseDN"));
                 baseDnProp.setShortDescription(bundle.getString(
                         "PROP_DESC_BaseDN"));
                 connectionDetails.put(baseDnProp);
 
-                Property sslProp = new PropertySupport.Reflection<Boolean>(
+                Property sslProp = new PropertySupport.Reflection<>(
                         srv, Boolean.class, "secure");
                 sslProp.setName(bundle.getString("PROP_NAME_SSL"));
                 sslProp.setShortDescription(bundle.getString("PROP_DESC_SSL"));
                 securityDetails.put(sslProp);
 
-                Property authProp = new PropertySupport.Reflection<Authentication>(
+                Property authProp = new PropertySupport.Reflection<>(
                         srv, Authentication.class, "authentication");
                 authProp.setName(bundle.getString("PROP_NAME_Authentication"));
                 authProp.setShortDescription(bundle.getString(
                         "PROP_DESC_Authentication"));
                 securityDetails.put(authProp);
 
-                Property bindProp = new PropertySupport.Reflection<String>(srv,
+                Property bindProp = new PropertySupport.Reflection<>(srv,
                         String.class, "binding");
                 bindProp.setName(bundle.getString("PROP_NAME_Bind"));
                 bindProp.setShortDescription(bundle.getString("PROP_DESC_Bind"));
                 securityDetails.put(bindProp);
 
-                Property passwordProp = new PropertySupport.Reflection<String>(srv,
+                Property passwordProp = new PropertySupport.Reflection<>(srv,
                         String.class, "password");
                 passwordProp.setName(bundle.getString("PROP_NAME_Password"));
                 passwordProp.setShortDescription(bundle.getString("PROP_DESC_Password"));
                 securityDetails.put(passwordProp);
 
-                Property loginConfProp = new PropertySupport.Reflection<Krb5LoginConf>(srv,
+                Property loginConfProp = new PropertySupport.Reflection<>(srv,
                         Krb5LoginConf.class, "krb5LoginConf");
                 loginConfProp.setName(bundle.getString("PROP_NAME_loginConf"));
                 loginConfProp.setShortDescription(bundle.getString("PROP_DESC_loginConf"));
                 krb5securityDetails.put(loginConfProp);
 
-                Property krb5usernameProp = new PropertySupport.Reflection<String>(srv,
+                Property krb5usernameProp = new PropertySupport.Reflection<>(srv,
                         String.class, "krb5username");
                 krb5usernameProp.setName(bundle.getString("PROP_NAME_krb5username"));
                 krb5usernameProp.setShortDescription(bundle.getString("PROP_DESC_krb5username"));
                 krb5securityDetails.put(krb5usernameProp);
 
-                Property krb5passwordProp = new PropertySupport.Reflection<String>(srv,
+                Property krb5passwordProp = new PropertySupport.Reflection<>(srv,
                         String.class, "krb5password");
                 krb5passwordProp.setName(bundle.getString("PROP_NAME_krb5password"));
                 krb5passwordProp.setShortDescription(bundle.getString("PROP_DESC_krb5password"));
                 krb5securityDetails.put(krb5passwordProp);
 
-                Property krb5keytabProp = new PropertySupport.Reflection<File>(srv,
+                Property krb5keytabProp = new PropertySupport.Reflection<>(srv,
                         File.class, "krb5keytab");
                 krb5keytabProp.setName(bundle.getString("PROP_NAME_krb5keytab"));
                 krb5keytabProp.setShortDescription(bundle.getString("PROP_DESC_krb5keytab"));
                 krb5securityDetails.put(krb5keytabProp);
-            } catch (Exception ex) {
+            } catch (RuntimeException | NoSuchMethodException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }
@@ -208,11 +208,6 @@ public class LdapServerNode extends AbstractNode implements
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-    }
-
-    @Override
     public boolean canDestroy() {
         return true;
     }
@@ -223,6 +218,7 @@ public class LdapServerNode extends AbstractNode implements
         LdapServersNotifier.changed();
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         LdapServer srv = getLookup().lookup(LdapServer.class);
         if (srv.isLabelSet()) {

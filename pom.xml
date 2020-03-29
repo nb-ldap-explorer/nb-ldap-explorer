@@ -73,9 +73,9 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
+                    <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>3.14</version>
+                    <version>4.5</version>
                     <extensions>true</extensions>
                     <configuration>
                         <cluster>nb-ldap-bundle</cluster>
@@ -97,11 +97,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -132,6 +127,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <netbeans.platform>RELEASE67</netbeans.platform>
         <!--
             License to include in the header of the file when filesa are created
@@ -176,7 +173,7 @@
     <modules>
         <module>nb-ldap-explorer</module>
         <module>nb-ldif-editor</module>
-        <module>nb-ldap-packaging</module>
         <module>ssl_certificate_exception</module>
+        <module>nb-ldap-packaging</module>
     </modules>
 </project>

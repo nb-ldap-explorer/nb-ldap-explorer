@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.openide.util.Exceptions;
-import org.openide.util.NbBundle;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -31,14 +29,12 @@ import org.apache.commons.codec.binary.Base64;
  * @author Allan Lykke Christensen
  */
 public class LdapEntry {
-
+    private final List<String> objectClasses = new ArrayList<>();
+    private final Base64 encoder = new Base64(76, (System.getProperty("line.separator") + " ").getBytes());
     private String label;
     private String dn;
-    private Map<String, ArrayList<Object>> attributes =
-            new HashMap<String, ArrayList<Object>>();
-    private List<String> objectClasses = new ArrayList<String>();
+    private Map<String, ArrayList<Object>> attributes = new HashMap<>();
     // Ensure that the base64 encoding string is not foled
-    private Base64 encoder = new Base64(76, (System.getProperty("line.separator") + " ").getBytes());
 
     /**
      * Creates a new instance of {@link LdapEntry}.
@@ -193,7 +189,7 @@ public class LdapEntry {
             List<Object> objs = attributes.get(attribute);
             objs.add(value);
         } else {
-            ArrayList<Object> objs = new ArrayList<Object>();
+            ArrayList<Object> objs = new ArrayList<>();
             objs.add(value);
             attributes.put(attribute, objs);
         }

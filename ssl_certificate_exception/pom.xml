@@ -65,9 +65,15 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <codeNameBase>com.google.code.nb_ldap_explorer.ssl_certificate_exception/1</codeNameBase>
+                    <licenseName>Apache License, Version 2.0</licenseName>
+                    <licenseFile>src/main/resources/license.txt</licenseFile>
+                    <author>Matthias Bläsing</author>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

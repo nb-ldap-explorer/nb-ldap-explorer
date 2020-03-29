@@ -127,6 +127,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         }
     }
 
+    @Override
     public ExplorerManager getExplorerManager() {
         return em;
     }
@@ -136,6 +137,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
      *
      * @param ev Event that invoked the handler
      */
+    @Override
     public void resultChanged(LookupEvent ev) {
 
         Collection c = result.allInstances();
@@ -367,29 +369,26 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         } else {
             final ProgressHandle ph = ProgressHandleFactory.createHandle(bundle.
                     getString("ExecutingFilter"));
-            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(new Runnable() {
+            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(() -> {
+                setInQuery(true);
 
-                public void run() {
-                    setInQuery(true);
-                    
-                    ph.switchToIndeterminate();
-                    try {
-                        final List<LdapEntry> searchResults =
-                                server.search(filterText);
-                        SwingUtilities.invokeLater(new Runnable() {
+                ph.switchToIndeterminate();
+                try {
+                    final List<LdapEntry> searchResults =
+                            server.search(filterText);
+                    SwingUtilities.invokeLater(new Runnable() {
 
-                            public void run() {
-                                LdapSearchEntryChildren children =
-                                        new LdapSearchEntryChildren(
-                                        searchResults);
-                                children.setLdapServer(server);
+                        public void run() {
+                            LdapSearchEntryChildren children =
+                                    new LdapSearchEntryChildren(
+                                    searchResults);
+                            children.setLdapServer(server);
 
-                                em.setRootContext(new LdapSearchEntryNode(children));
-                            }
-                        });
-                    } catch (QueryException ex) {
-                        JOptionPane.showMessageDialog(null, ex.getMessage());
-                    }
+                            em.setRootContext(new LdapSearchEntryNode(children));
+                        }
+                    });
+                } catch (QueryException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
                 }
             });
 

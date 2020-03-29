@@ -36,6 +36,7 @@ public class ExplorerAction extends AbstractAction {
     private static ResourceBundle bundle = NbBundle.getBundle(
             ExplorerAction.class);
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public ExplorerAction() {
         super(bundle.getString("CTL_ExplorerAction"));
         putValue(SMALL_ICON, ImageUtilities.loadImageIcon(bundle.getString(
@@ -49,6 +50,7 @@ public class ExplorerAction extends AbstractAction {
      * @param evt
      *          Event that invoked the handler
      */
+    @Override
     public void actionPerformed(ActionEvent evt) {
 
         // Fetch currently selected LdapServerNode

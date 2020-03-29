@@ -87,7 +87,7 @@ public class LDIFLanguageHierarchy extends LanguageHierarchy<LDIFTokenId>{
           new LDIFTokenId("DN64_VALUE", "value", DN64_VALUE),
           new LDIFTokenId("UNKNOWN", "unknown", DN64_VALUE+1),
         });
-        idToToken = new HashMap<Integer, LDIFTokenId>();
+        idToToken = new HashMap<>();
         for(LDIFTokenId token: tokens) {
             idToToken.put(token.ordinal(), token);
         }

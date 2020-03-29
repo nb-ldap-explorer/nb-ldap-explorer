@@ -54,6 +54,7 @@ public class CertificateDisplay extends JPanel {
         relevantNames.put("CN", "Common Name");
     }
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public CertificateDisplay() {
         setLayout(new GridBagLayout());
     }

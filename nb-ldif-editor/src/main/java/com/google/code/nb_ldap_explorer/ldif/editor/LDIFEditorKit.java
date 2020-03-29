@@ -25,6 +25,7 @@ public class LDIFEditorKit extends NbEditorKit {
         super();
     }
 
+    @Override
     public String getContentType() {
         return "text/ldif";
     }

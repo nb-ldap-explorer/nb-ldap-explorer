@@ -47,6 +47,7 @@ public class HostnameNotMatching extends JDialog {
     public final static int DECLINE = 2;
     private int result = DECLINE;
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public HostnameNotMatching(X509Certificate[] certificateChain, String hostname) {
         setModal(true);
         setTitle("Certificate does not match hostname");
@@ -74,29 +75,17 @@ public class HostnameNotMatching extends JDialog {
         buttons.add(declineButton);
         buttons.add(acceptButton);
         buttons.add(acceptForeverButton);
-        acceptButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                result = ACCEPT;
-                setVisible(false);
-            }
+        acceptButton.addActionListener((ActionEvent e) -> {
+            result = ACCEPT;
+            setVisible(false);
         });
-        acceptForeverButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                result = PERMANENT;
-                setVisible(false);
-            }
+        acceptForeverButton.addActionListener((ActionEvent e) -> {
+            result = PERMANENT;
+            setVisible(false);
         });
-        declineButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                result = DECLINE;
-                setVisible(false);
-            }
+        declineButton.addActionListener((ActionEvent e) -> {
+            result = DECLINE;
+            setVisible(false);
         });
         add(buttons, BorderLayout.SOUTH);
         setSize(getPreferredSize());
@@ -161,7 +150,7 @@ public class HostnameNotMatching extends JDialog {
                         sb.append(":\t");
                         if (value instanceof byte[]) {
                             sb.append(asHexString((byte[]) value));
-                        } else {
+                        } else if (value != null) {
                             sb.append(value.toString());
                         }
                         sb.append("\n");

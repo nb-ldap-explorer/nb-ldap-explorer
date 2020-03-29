@@ -45,12 +45,12 @@ public class LDIFLexer implements Lexer<LDIFTokenId>{
         // We are in the error state => stop tokenizing, as we consumed the
         // stream completely
         if(state < 0) {
-            while(li.read() != LexerInput.EOF) {};
+            while(li.read() != LexerInput.EOF) {}
             return null;
         }
 
         ldiftokenmanager.SwitchTo(state);
-        Token token = null;
+        Token token;
         try {
             token = ldiftokenmanager.getNextToken();
         } catch (TokenMgrError error) {
@@ -63,7 +63,7 @@ public class LDIFLexer implements Lexer<LDIFTokenId>{
             } catch (TokenMgrError error2) {
                 // No we got an unrecoverable error => Error State!
                 state = -1;
-                while(li.read() != LexerInput.EOF) {};
+                while(li.read() != LexerInput.EOF) {}
                 return lri.tokenFactory().createToken(LDIFLanguageHierarchy.getToken(LDIF_ParserTokenManager.DN64_VALUE+1));
             }
         }

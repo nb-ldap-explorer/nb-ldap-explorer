@@ -33,9 +33,10 @@ public enum Authentication {
     /** Kerberos 5  **/
     KERBEROS5
     ;
-    private static ResourceBundle bundle = NbBundle.getBundle(
+    private static final ResourceBundle bundle = NbBundle.getBundle(
             Authentication.class);
 
+    @Override
     public String toString() {
         return this.name();
     }

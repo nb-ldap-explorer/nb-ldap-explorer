@@ -35,24 +35,21 @@ import javax.net.ssl.X509TrustManager;
 
 public final class TrustProviderImpl extends java.security.Provider {
 
-    private static Logger LOG = Logger.getLogger(TrustProviderImpl.class.getName());
+    private static final Logger LOG = Logger.getLogger(TrustProviderImpl.class.getName());
+    private static final String NAME = "XTrustJSSE";
+    private static final String INFO =
+            "XTrust JSSE Provider (implements trust factory with truststore validation disabled)";
+    private static final double VERSION = 1.0D;
     private static TrustManagerFactory originalTrustManagerFactory;
     private static String originalAlgorithm;
     private static KeyStore userKeyStore;
-    private final static String NAME = "XTrustJSSE";
-    private final static String INFO =
-            "XTrust JSSE Provider (implements trust factory with truststore validation disabled)";
-    private final static double VERSION = 1.0D;
 
     public TrustProviderImpl() {
         super(NAME, VERSION, INFO);
 
-        AccessController.doPrivileged(new PrivilegedAction() {
-
-            public Object run() {
-                put("TrustManagerFactory." + TrustManagerFactoryImpl.getAlgorithm(), TrustManagerFactoryImpl.class.getName());
-                return null;
-            }
+        AccessController.doPrivileged((PrivilegedAction) () -> {
+            put("TrustManagerFactory." + TrustManagerFactoryImpl.getAlgorithm(), TrustManagerFactoryImpl.class.getName());
+            return null;
         });
     }
 
@@ -100,6 +97,7 @@ public final class TrustProviderImpl extends java.security.Provider {
             originalTrustManagerFactory.init(mgrparams);
         }
 
+        @Override
         protected TrustManager[] engineGetTrustManagers() {
             X509TrustManager originalTrustManager = null;
 

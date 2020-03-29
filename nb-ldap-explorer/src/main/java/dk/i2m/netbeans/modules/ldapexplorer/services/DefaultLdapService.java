@@ -66,7 +66,7 @@ public class DefaultLdapService extends LdapService {
     /** {@inheritDoc} */
     @Override
     public List<LdapServer> getRegisteredServers() {
-        List<LdapServer> servers = new ArrayList<LdapServer>();
+        List<LdapServer> servers = new ArrayList<>();
 
         FileObject cfg = FileUtil.getConfigRoot();
         FileObject fobs = cfg.getFileObject(LdapService.SERVER_FOLDER);
@@ -81,6 +81,7 @@ public class DefaultLdapService extends LdapService {
     }
 
     /** {@inheritDoc } */
+    @Override
     public LdapServer save(LdapServer ldapServer) throws IOException {
         FileObject servers = FileUtil.getConfigRoot().
                 getFileObject(LdapService.SERVER_FOLDER);
@@ -150,9 +151,7 @@ public class DefaultLdapService extends LdapService {
         try {
             String krb5LoginConfString = (String) fo.getAttribute(FO_ATTR_LOGINCONF);
             loginConfig = Krb5LoginConf.valueOf(krb5LoginConfString);
-        } catch (NullPointerException ex) {
-        } catch (IllegalArgumentException ex) {
-        } catch (ClassCastException ex) {
+        } catch (NullPointerException | IllegalArgumentException | ClassCastException ex) {
         }
         String krb5username = getAttributeAsString(fo, FO_ATTR_KRB5USERNAME, "");
         String krb5password = getAttributeAsString(fo, FO_ATTR_KRB5PASSWORD, "");

@@ -31,6 +31,7 @@ import org.openide.text.DataEditorSupport;
 
 public class LdifDataObject extends MultiDataObject {
 
+    @SuppressWarnings("LeakingThisInConstructor")
     public LdifDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(pf, loader);
         CookieSet cookies = getCookieSet();

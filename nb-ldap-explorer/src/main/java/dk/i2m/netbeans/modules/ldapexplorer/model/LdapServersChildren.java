@@ -18,7 +18,6 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import java.util.Collections;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -41,12 +40,8 @@ public class LdapServersChildren extends Children.Keys<LdapServer> {
     @Override
     protected void addNotify() {
         refreshList();
-        LdapServersNotifier.addChangeListener(listener = new ChangeListener() {
-
-            public void stateChanged(ChangeEvent ev) {
-                refreshList();
-            }
-        });
+        listener = (ev) -> refreshList();
+        LdapServersNotifier.addChangeListener(listener);
     }
 
     @Override

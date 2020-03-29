@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
  */
 public class LdapServersNotifier {
 
-    private static Set<ChangeListener> listeners = new HashSet<ChangeListener>();
+    private static final Set<ChangeListener> listeners = new HashSet<>();
 
     /**
      * Adds a {@link ChangeListener} to the notifier.

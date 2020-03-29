@@ -28,7 +28,7 @@ import org.openide.nodes.Node;
  */
 public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
 
-    private List<LdapEntry> entries = new ArrayList<LdapEntry>();
+    private List<LdapEntry> entries = new ArrayList<>();
     private LdapServer ldapServer = null;
 
     public LdapSearchEntryChildren(List<LdapEntry> entries) {

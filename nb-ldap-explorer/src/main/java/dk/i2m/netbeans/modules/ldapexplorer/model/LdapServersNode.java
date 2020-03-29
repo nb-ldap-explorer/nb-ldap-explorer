@@ -30,7 +30,7 @@ import org.openide.util.actions.SystemAction;
  */
 public class LdapServersNode extends AbstractNode {
 
-    private static ResourceBundle bundle = NbBundle.getBundle(
+    private static final ResourceBundle bundle = NbBundle.getBundle(
             LdapServersNode.class);
 
     /**

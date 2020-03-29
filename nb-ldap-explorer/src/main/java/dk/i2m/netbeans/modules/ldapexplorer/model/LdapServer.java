@@ -17,7 +17,6 @@
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.List;
@@ -26,8 +25,6 @@ import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.callback.NameCallback;
@@ -39,7 +36,7 @@ import javax.security.auth.callback.PasswordCallback;
  * @author Allan Lykke Christensen
  */
 public class LdapServer extends BaseLdapServer {
-    private static Logger l = Logger.getLogger(LdapServer.class.getName());
+    private static final Logger LOG = Logger.getLogger(LdapServer.class.getName());
 
     private String krb5username = "";
     private String krb5password = "";
@@ -68,13 +65,15 @@ public class LdapServer extends BaseLdapServer {
         super(host, port, baseDN);
     }
 
+    @Override
+    @SuppressWarnings("UseOfObsoleteCollectionType")
     protected Hashtable<String, String> getConnectionEnvironment() {
         Hashtable<String, String> env = super.getConnectionEnvironment();
         env.put(Context.REFERRAL, "follow");
         if(this.getAuthentication() == Authentication.KERBEROS5) {
             env.put(Context.SECURITY_AUTHENTICATION, "GSSAPI");
         }
-        l.info(env.toString());
+        LOG.info(env.toString());
         return env;
     }
 
@@ -120,7 +119,7 @@ public class LdapServer extends BaseLdapServer {
                 javax.security.auth.Subject.doAs(
                         getIdentity(),
                         new PrivilegedAction<Void>() {
-
+                            @Override
                             public Void run() {
                                 try {
                                     LdapServer.super.connect();
@@ -151,6 +150,7 @@ public class LdapServer extends BaseLdapServer {
                 return javax.security.auth.Subject.doAs(
                         getIdentity(),
                         new PrivilegedAction<List<LdapEntry>>() {
+                            @Override
                             public List<LdapEntry> run() {
                                 try {
                                     return LdapServer.super.getTree(path);
@@ -180,6 +180,7 @@ public class LdapServer extends BaseLdapServer {
                 return javax.security.auth.Subject.doAs(
                         getIdentity(),
                         new PrivilegedAction<List<LdapEntry>>() {
+                            @Override
                             public List<LdapEntry> run() {
                                 try {
                                     return LdapServer.super.search(filter);
@@ -209,6 +210,7 @@ public class LdapServer extends BaseLdapServer {
                 return javax.security.auth.Subject.doAs(
                         getIdentity(),
                         new PrivilegedAction<LdapEntry>() {
+                            @Override
                             public LdapEntry run() {
                                 try {
                                     return LdapServer.super.getEntry( dn );
@@ -248,7 +250,7 @@ public class LdapServer extends BaseLdapServer {
     private Subject getIdentity() throws LoginException {
         // Benutze zunächst bestehenden Login Context
         if(this.identity != null) {
-            l.info("Service existing identity: " + this.identity.toString());
+            LOG.log(Level.INFO, "Service existing identity: {0}", this.identity.toString());
             return identity;
         }
         if ( ! this.getAuthentication().equals( Authentication.KERBEROS5 ) ) {
@@ -256,25 +258,22 @@ public class LdapServer extends BaseLdapServer {
                     "LoginContext only allowed + used for Kerberos5!");
         }
 
-        LoginContext lc = new LoginContext("generated", null, new CallbackHandler() {
-            public void handle(Callback[] callbacks) throws IOException,
-                    UnsupportedCallbackException {
-                String username = getKrb5username().trim();
-                String password = getKrb5password().trim();
-                l.info("Password/Username Callbackhandler called");
-                for (Callback callback : callbacks) {
-                    if (callback instanceof NameCallback) {
-                        ((NameCallback) callback).setName(username);
-                    } else if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword(password.toCharArray());
-                    }
+        LoginContext lc = new LoginContext("generated", null, (Callback[] callbacks) -> {
+            String username = getKrb5username().trim();
+            String password = getKrb5password().trim();
+            LOG.info("Password/Username Callbackhandler called");
+            for (Callback callback : callbacks) {
+                if (callback instanceof NameCallback) {
+                    ((NameCallback) callback).setName(username);
+                } else if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword(password.toCharArray());
                 }
             }
         }, krb5loginConf.getLoginConfiguration(getKrb5username(), getKrb5keytab()));
-        l.info("Logging in");
+        LOG.info("Logging in");
         lc.login();
-        l.info("Logged in");
-        l.log(Level.INFO, "Subject: %s", new Object[]{lc.getSubject().toString()});
+        LOG.info("Logged in");
+        LOG.log(Level.INFO, "Subject: %s", new Object[]{lc.getSubject().toString()});
         this.identity = lc.getSubject();
         return lc.getSubject();
     }

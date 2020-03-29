@@ -51,11 +51,8 @@ import org.openide.filesystems.FileObject;
  */
 public class BaseLdapServer {
 
-    private Comparator<LdapEntry> labelSorter = new Comparator<LdapEntry>() {
-
-        public int compare(LdapEntry t, LdapEntry t1) {
+    private static final Comparator<LdapEntry> labelSorter = (t, t1) -> {
             return t.getLabel().compareTo(t1.getLabel());
-        }
     };
     private String identifier = null;
     private String host;
@@ -189,7 +186,7 @@ public class BaseLdapServer {
      * @param port Port of the LDAP service
      */
     public void setPort(Integer port) {
-        Integer oldPort = Integer.valueOf(this.port);
+        Integer oldPort = this.port;
         this.port = port;
         fire("port", oldPort, port);
     }
@@ -401,8 +398,7 @@ public class BaseLdapServer {
     private void closeContext(LdapContext ctx) {
         try {
             ctx.close();
-        } catch (NamingException ex) {
-        } catch (NullPointerException ex) {
+        } catch (NamingException | NullPointerException ex) {
         }
     }
 
@@ -411,8 +407,9 @@ public class BaseLdapServer {
      *
      * @return {@link Hashtable} containing a configured LDAP environment
      */
+    @SuppressWarnings("UseOfObsoleteCollectionType")
     protected Hashtable<String, String> getConnectionEnvironment() {
-        Hashtable<String, String> env = new Hashtable<String, String>();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, toString());
@@ -546,7 +543,7 @@ public class BaseLdapServer {
 
     private List<LdapEntry> getPagedTree(String path, boolean firstTry) throws
             QueryException {
-        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+        List<LdapEntry> entries = new ArrayList<>();
 
         if (!isConnected()) {
             return entries;
@@ -604,11 +601,7 @@ public class BaseLdapServer {
             } else {
                 throw new QueryException(ex);
             }
-        } catch (NamingException ex) {
-            throw new QueryException(ex);
-        } catch (IOException ex) {
-            throw new QueryException(ex);
-        } catch (NullPointerException ex) {
+        } catch (NamingException | IOException | NullPointerException ex) {
             throw new QueryException(ex);
         } finally {
             closeContext(cloneCtx);
@@ -621,7 +614,7 @@ public class BaseLdapServer {
 
     private List<LdapEntry> getTree(String path, boolean firstTry) throws
             QueryException {
-        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+        List<LdapEntry> entries = new ArrayList<>();
 
         if (!isConnected()) {
             return entries;
@@ -668,9 +661,7 @@ public class BaseLdapServer {
             } else {
                 throw new QueryException(ex);
             }
-        } catch (NamingException ex) {
-            throw new QueryException(ex);
-        } catch (NullPointerException ex) {
+        } catch (NamingException | NullPointerException ex) {
             throw new QueryException(ex);
         } finally {
             closeContext(cloneCtx);
@@ -698,7 +689,7 @@ public class BaseLdapServer {
 
     private List<LdapEntry> pagedSearch(String filter, boolean firstTry)
             throws QueryException {
-        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+        List<LdapEntry> entries = new ArrayList<>();
 
         if (!isConnected()) {
             return entries;
@@ -754,11 +745,7 @@ public class BaseLdapServer {
             } else {
                 throw new QueryException(ex);
             }
-        } catch (NamingException ex) {
-            throw new QueryException(ex);
-        } catch (IOException ex) {
-            throw new QueryException(ex);
-        } catch (NullPointerException ex) {
+        } catch (NamingException | IOException | NullPointerException ex) {
             throw new QueryException(ex);
         } finally {
             closeContext(cloneCtx);
@@ -771,7 +758,7 @@ public class BaseLdapServer {
 
     private List<LdapEntry> search(String filter, boolean firstTry) throws
             QueryException {
-        List<LdapEntry> entries = new ArrayList<LdapEntry>();
+        List<LdapEntry> entries = new ArrayList<>();
 
         if (!isConnected()) {
             return entries;
@@ -821,9 +808,7 @@ public class BaseLdapServer {
                 Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
                         getMessage());
             }
-        } catch (NamingException ex) {
-            throw new QueryException(ex);
-        } catch (NullPointerException ex) {
+        } catch (NamingException | NullPointerException ex) {
             throw new QueryException(ex);
         } finally {
             closeContext(cloneCtx);
@@ -855,7 +840,7 @@ public class BaseLdapServer {
                     entry.addObjectClass(objClass);
                 }
             }
-        } catch (Exception ex) {
+        } catch (RuntimeException | NamingException ex) {
             Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
                     getMessage());
         }
@@ -913,8 +898,9 @@ public class BaseLdapServer {
 
         return entry;
     }
-    private List<PropertyChangeListener> listeners = Collections.
-            synchronizedList(new LinkedList<PropertyChangeListener>());
+
+    private final List<PropertyChangeListener> listeners = Collections.
+            synchronizedList(new LinkedList<>());
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         listeners.add(pcl);

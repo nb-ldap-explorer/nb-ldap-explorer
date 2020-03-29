@@ -18,8 +18,6 @@ package dk.i2m.netbeans.modules.ldapexplorer.ui.actions;
 
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServersNotifier;
 import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
-import dk.i2m.netbeans.modules.ldapexplorer.model.Authentication;
-import dk.i2m.netbeans.modules.ldapexplorer.model.Krb5LoginConf;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServerPanel;
 import java.awt.event.ActionEvent;
@@ -36,12 +34,14 @@ public final class NewLdapServer extends CallableSystemAction {
 
     LdapServerPanel panel;
 
+    @Override
     public void performAction() {
         panel = new LdapServerPanel();
         panel.setTimeout(Integer.valueOf(NbBundle.getMessage(
                 NewLdapServer.class, "txtTimeoutDefault")));
         ActionListener listener = new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == DialogDescriptor.CANCEL_OPTION) {
                     return;
@@ -77,6 +77,7 @@ public final class NewLdapServer extends CallableSystemAction {
         DialogDisplayer.getDefault().notifyLater(d);
     }
 
+    @Override
     public String getName() {
         return NbBundle.getMessage(NewLdapServer.class, "CTL_NewLdapServer");
     }
@@ -86,6 +87,7 @@ public final class NewLdapServer extends CallableSystemAction {
         return NbBundle.getMessage(NewLdapServer.class, "ICON_NewLdapServer");
     }
 
+    @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
     }

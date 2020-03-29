@@ -53,26 +53,18 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
         if (ldapServer != null) {
             final ProgressHandle ph = ProgressHandleFactory.createHandle(
                     NbBundle.getMessage(LdapEntryChildren.class, "FetchingLDAPEntries"));
-            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(new Runnable() {
+            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(() -> {
+                ph.start();
+                ph.switchToIndeterminate();
+                try {
+                    setKeys(ldapServer.getTree(parent));
+                } catch (QueryException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            });
 
-                public void run() {
-                    ph.start();
-                    ph.switchToIndeterminate();
-                    try {
-                        setKeys(ldapServer.getTree(parent));
-                    } catch (QueryException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }
-            });
-            
-            t.addTaskListener(new TaskListener() {
-                @Override
-                public void taskFinished(Task task) {
-                    ph.finish();
-                }
-            });
-            
+            t.addTaskListener( (Task task) -> ph.finish());
+
             t.schedule(0);
         }
     }
