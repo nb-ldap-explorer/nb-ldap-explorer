@@ -73,7 +73,6 @@ public class LdapServer extends BaseLdapServer {
         if(this.getAuthentication() == Authentication.KERBEROS5) {
             env.put(Context.SECURITY_AUTHENTICATION, "GSSAPI");
         }
-        LOG.info(env.toString());
         return env;
     }
 
