@@ -216,6 +216,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         splitPane = new javax.swing.JSplitPane();
         tabbedDetails = new javax.swing.JTabbedPane();
@@ -231,8 +232,12 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         btnFilter = new javax.swing.JButton();
         btnReset = new javax.swing.JButton();
 
+        setLayout(new java.awt.BorderLayout());
+
         splitPane.setDividerLocation(170);
         splitPane.setDividerSize(5);
+
+        pnlAttributes.setLayout(new java.awt.BorderLayout());
 
         tblAttributes.setAutoCreateRowSorter(true);
         tblAttributes.setModel(new javax.swing.table.DefaultTableModel(
@@ -260,45 +265,35 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         });
         tblAttributes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         attributePane.setViewportView(tblAttributes);
-        tblAttributes.getColumnModel().getColumn(0).setPreferredWidth(70);
-        tblAttributes.getColumnModel().getColumn(0).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title0")); // NOI18N
-        tblAttributes.getColumnModel().getColumn(1).setPreferredWidth(70);
-        tblAttributes.getColumnModel().getColumn(1).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title2")); // NOI18N
-        tblAttributes.getColumnModel().getColumn(2).setPreferredWidth(200);
-        tblAttributes.getColumnModel().getColumn(2).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title1")); // NOI18N
+        if (tblAttributes.getColumnModel().getColumnCount() > 0) {
+            tblAttributes.getColumnModel().getColumn(0).setPreferredWidth(70);
+            tblAttributes.getColumnModel().getColumn(0).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title0")); // NOI18N
+            tblAttributes.getColumnModel().getColumn(1).setPreferredWidth(70);
+            tblAttributes.getColumnModel().getColumn(1).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title2")); // NOI18N
+            tblAttributes.getColumnModel().getColumn(2).setPreferredWidth(200);
+            tblAttributes.getColumnModel().getColumn(2).setHeaderValue(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.tblAttributes.columnModel.title1")); // NOI18N
+        }
 
-        org.jdesktop.layout.GroupLayout pnlAttributesLayout = new org.jdesktop.layout.GroupLayout(pnlAttributes);
-        pnlAttributes.setLayout(pnlAttributesLayout);
-        pnlAttributesLayout.setHorizontalGroup(
-            pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
-        );
-        pnlAttributesLayout.setVerticalGroup(
-            pnlAttributesLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(attributePane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
-        );
+        pnlAttributes.add(attributePane, java.awt.BorderLayout.CENTER);
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlAttributes.TabConstraints.tabTitle"), pnlAttributes); // NOI18N
+
+        pnlLdif.setLayout(new java.awt.BorderLayout());
 
         txtLdif.setEditable(false);
         txtLdif.setEditorKit(CloneableEditorSupport.getEditorKit("text/ldif"));
         ldifPane.setViewportView(txtLdif);
 
-        org.jdesktop.layout.GroupLayout pnlLdifLayout = new org.jdesktop.layout.GroupLayout(pnlLdif);
-        pnlLdif.setLayout(pnlLdifLayout);
-        pnlLdifLayout.setHorizontalGroup(
-            pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(ldifPane)
-        );
-        pnlLdifLayout.setVerticalGroup(
-            pnlLdifLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(ldifPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
-        );
+        pnlLdif.add(ldifPane, java.awt.BorderLayout.CENTER);
 
         tabbedDetails.addTab(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.pnlLdif.TabConstraints.tabTitle"), pnlLdif); // NOI18N
 
         splitPane.setRightComponent(tabbedDetails);
         splitPane.setLeftComponent(treePane);
+
+        add(splitPane, java.awt.BorderLayout.CENTER);
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
 
         txtFilter.setText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtFilter.text")); // NOI18N
         txtFilter.setToolTipText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.txtFilter.toolTipText")); // NOI18N
@@ -307,6 +302,14 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                 txtFilterActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        jPanel1.add(txtFilter, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(btnFilter, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnFilter.text")); // NOI18N
         btnFilter.addActionListener(new java.awt.event.ActionListener() {
@@ -314,6 +317,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                 btnFilterActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        jPanel1.add(btnFilter, gridBagConstraints);
 
         org.openide.awt.Mnemonics.setLocalizedText(btnReset, org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnReset.text")); // NOI18N
         btnReset.setToolTipText(org.openide.util.NbBundle.getMessage(ExplorerTopComponent.class, "ExplorerTopComponent.btnReset.toolTipText")); // NOI18N
@@ -322,40 +332,15 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
                 btnResetActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.BASELINE_LEADING;
+        gridBagConstraints.insets = new java.awt.Insets(1, 1, 1, 1);
+        jPanel1.add(btnReset, gridBagConstraints);
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(txtFilter)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(btnFilter)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnReset))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                .add(txtFilter, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(btnReset)
-                .add(btnFilter))
-        );
-
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, splitPane, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(splitPane))
-        );
+        add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
     private void executeFilter() {
