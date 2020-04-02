@@ -16,10 +16,17 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
+import dk.i2m.netbeans.modules.ldapexplorer.ui.UIHelper;
 import java.util.ArrayList;
 import java.util.List;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
+import org.openide.util.RequestProcessor;
+import org.openide.util.Task;
 
 /**
  * LDAP entry {@link Children} for displaying search result nodes on the UI.
@@ -28,17 +35,10 @@ import org.openide.nodes.Node;
  */
 public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
 
-    private List<LdapEntry> entries = new ArrayList<>();
     private LdapServer ldapServer = null;
+    private String search;
+    private TreeLoader tl;
 
-    public LdapSearchEntryChildren(List<LdapEntry> entries) {
-        this.entries = entries;
-    }
-
-    public void setEntries(List<LdapEntry> entries) {
-        this.entries = entries;
-    }
-    
     public LdapServer getLdapServer() {
         return ldapServer;
     }
@@ -47,9 +47,44 @@ public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
         this.ldapServer = ldapServer;
     }
 
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
+
     @Override
     protected void addNotify() {
-        setKeys(entries);
+       if (ldapServer != null) {
+            tl = new TreeLoader();
+            final ProgressHandle ph = ProgressHandleFactory.createHandle(
+                    NbBundle.getMessage(LdapEntryChildren.class, "FetchingLDAPEntries"), tl);
+            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(() -> {
+                ph.start();
+                ph.switchToIndeterminate();
+                try {
+                    ldapServer.search(search, tl);
+                } catch (QueryException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+
+                tl = null;
+            });
+
+            t.addTaskListener( (Task task) -> ph.finish());
+
+            t.schedule(0);
+        }
+    }
+
+    @Override
+    protected void removeNotify() {
+        if(tl != null) {
+            tl.cancel();
+            tl = null;
+        }
     }
 
     @Override
@@ -60,5 +95,26 @@ public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
         LdapEntryNode node = new LdapEntryNode(children, key);
         node.setDisplayName(key.getLabel());
         return new Node[]{node};
+    }
+
+    class TreeLoader extends LdapResultProcessor {
+        private final ArrayList<LdapEntry> entries = new ArrayList<>();
+
+        @Override
+        public void addEntry(LdapEntry entry) {
+            synchronized (entries) {
+                entries.add(entry);
+                setKeys(entries);
+            }
+        }
+
+        @Override
+        public void reset() {
+            synchronized (entries) {
+                entries.clear();
+                setKeys(entries);
+            }
+        }
+
     }
 }

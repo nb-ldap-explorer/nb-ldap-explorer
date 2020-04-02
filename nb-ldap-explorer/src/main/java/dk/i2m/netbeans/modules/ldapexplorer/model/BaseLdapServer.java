@@ -519,11 +519,11 @@ public class BaseLdapServer {
      * @throws QueryException If the path is invalid or the server could not be
      * queried
      */
-    public List<LdapEntry> getTree(String path) throws QueryException {
+    public void getTree(String path, LdapResultProcessor lrp) throws QueryException {
         if (isPagingSupported() && maxQuerySize != null) {
-            return getPagedTree(path, true);
+            getPagedTree(path, lrp, true);
         } else {
-            return getTree(path, true);
+            getTree(path, lrp, true);
         }
     }
 
@@ -541,12 +541,10 @@ public class BaseLdapServer {
         return null;
     }
 
-    private List<LdapEntry> getPagedTree(String path, boolean firstTry) throws
+    private void getPagedTree(String path, LdapResultProcessor lrp, boolean firstTry) throws
             QueryException {
-        List<LdapEntry> entries = new ArrayList<>();
-
-        if (!isConnected()) {
-            return entries;
+        if (!isConnected() || lrp.isCanceled()) {
+            return;
         }
 
         LdapContext cloneCtx = null;
@@ -579,7 +577,11 @@ public class BaseLdapServer {
                     entry.setLabel(nc.getName());
 
                     addObjectClasses(cloneCtx, entry);
-                    entries.add(entry);
+                    lrp.addEntry(entry);
+
+                    if(lrp.isCanceled()) {
+                        return;
+                    }
                 }
 
                 cookie = getPageContextCookie(cloneCtx);
@@ -596,8 +598,8 @@ public class BaseLdapServer {
                 } catch (ConnectionException ex2) {
                     throw new QueryException(ex2);
                 }
-                entries.clear();
-                entries = getPagedTree(path, false);
+                lrp.reset();
+                getPagedTree(path, lrp, false);
             } else {
                 throw new QueryException(ex);
             }
@@ -606,22 +608,18 @@ public class BaseLdapServer {
         } finally {
             closeContext(cloneCtx);
         }
-
-        Collections.sort(entries, labelSorter);
-
-        return entries;
     }
 
-    private List<LdapEntry> getTree(String path, boolean firstTry) throws
+    private void getTree(String path, LdapResultProcessor lrp, boolean firstTry) throws
             QueryException {
-        List<LdapEntry> entries = new ArrayList<>();
 
-        if (!isConnected()) {
-            return entries;
+        if (!isConnected() || lrp.isCanceled()) {
+            return;
         }
 
         LdapContext cloneCtx = null;
 
+        int fetchedElements = 0;
         try {
             cloneCtx = getClonedContext();
                 
@@ -636,12 +634,18 @@ public class BaseLdapServer {
                 entry.setLabel(nc.getName());
 
                 addObjectClasses(cloneCtx, entry);
-                entries.add(entry);
+                lrp.addEntry(entry);
+                fetchedElements++;
+
+                if(lrp.isCanceled()) {
+                    return;
+                }
             }
         } catch (SizeLimitExceededException ex) {
             if (isPagingSupported()) {
-                maxQuerySize = entries.size() - 1;
-                entries = getPagedTree(path, true);
+                maxQuerySize = fetchedElements - 1;
+                lrp.reset();
+                getPagedTree(path, lrp, true);
             } else {
                 // TODO: Evaluate if this should be a displayed error!
                 Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
@@ -656,8 +660,8 @@ public class BaseLdapServer {
                 } catch (ConnectionException ex2) {
                     throw new QueryException(ex2);
                 }
-                entries.clear();
-                entries = getTree(path, false);
+                lrp.reset();
+                getTree(path, lrp, false);
             } else {
                 throw new QueryException(ex);
             }
@@ -666,10 +670,6 @@ public class BaseLdapServer {
         } finally {
             closeContext(cloneCtx);
         }
-
-        Collections.sort(entries, labelSorter);
-
-        return entries;
     }
 
     /**
@@ -679,20 +679,18 @@ public class BaseLdapServer {
      * @return {@link List} of {@link LdapEntry} objects matching the filter
      * @throws QueryException If the search failed
      */
-    public List<LdapEntry> search(String filter) throws QueryException {
+    public void search(String filter, LdapResultProcessor lpr) throws QueryException {
         if (isPagingSupported() && maxQuerySize != null) {
-            return this.pagedSearch(filter, true);
+            this.pagedSearch(filter, lpr, true);
         } else {
-            return this.search(filter, true);
+            this.search(filter, lpr, true);
         }
     }
 
-    private List<LdapEntry> pagedSearch(String filter, boolean firstTry)
+    private void pagedSearch(String filter, LdapResultProcessor lpr, boolean firstTry)
             throws QueryException {
-        List<LdapEntry> entries = new ArrayList<>();
-
-        if (!isConnected()) {
-            return entries;
+        if (!isConnected() || lpr.isCanceled()) {
+            return;
         }
 
         LdapContext cloneCtx = null;
@@ -723,7 +721,11 @@ public class BaseLdapServer {
                     entry.setLabel(sr.getName());
                     addObjectClasses(cloneCtx, entry);
 
-                    entries.add(entry);
+                    lpr.addEntry(entry);
+
+                    if(lpr.isCanceled()) {
+                        return;
+                    }
                 }
 
                 if (cookie == null) {
@@ -740,8 +742,8 @@ public class BaseLdapServer {
                 } catch (ConnectionException ex2) {
                     throw new QueryException(ex2);
                 }
-                entries.clear();
-                entries = pagedSearch(filter, false);
+                lpr.reset();
+                pagedSearch(filter, lpr, false);
             } else {
                 throw new QueryException(ex);
             }
@@ -750,22 +752,18 @@ public class BaseLdapServer {
         } finally {
             closeContext(cloneCtx);
         }
-
-        Collections.sort(entries, labelSorter);
-
-        return entries;
     }
 
-    private List<LdapEntry> search(String filter, boolean firstTry) throws
+    private void search(String filter, LdapResultProcessor lpr, boolean firstTry) throws
             QueryException {
-        List<LdapEntry> entries = new ArrayList<>();
 
-        if (!isConnected()) {
-            return entries;
+        if (!isConnected() || lpr.isCanceled()) {
+            return;
         }
 
         LdapContext cloneCtx = null;
 
+        int fetchedElements = 0;
         try {
             cloneCtx = getClonedContext();
 
@@ -783,7 +781,12 @@ public class BaseLdapServer {
                 entry.setLabel(sr.getName());
                 addObjectClasses(cloneCtx, entry);
 
-                entries.add(entry);
+                lpr.addEntry(entry);
+                fetchedElements++;
+
+                if(lpr.isCanceled()) {
+                    return;
+                }
             }
         } catch (CommunicationException ex) {
             // When the connection was closed by the server - try to connect again
@@ -794,15 +797,15 @@ public class BaseLdapServer {
                 } catch (ConnectionException ex2) {
                     throw new QueryException(ex2);
                 }
-                entries.clear();
-                entries = search(filter, false);
+                lpr.reset();
+                search(filter, lpr, false);
             } else {
                 throw new QueryException(ex);
             }
         } catch (SizeLimitExceededException ex) {
             if (isPagingSupported()) {
-                maxQuerySize = entries.size() - 1;
-                entries = pagedSearch(filter, true);
+                maxQuerySize = fetchedElements - 1;
+                pagedSearch(filter, lpr, true);
             } else {
                 // TODO: Evaluate if this should be a displayed error!
                 Logger.getLogger(BaseLdapServer.class.getName()).warning(ex.
@@ -813,10 +816,6 @@ public class BaseLdapServer {
         } finally {
             closeContext(cloneCtx);
         }
-
-        Collections.sort(entries, labelSorter);
-
-        return entries;
     }
 
     /**

@@ -143,21 +143,22 @@ public class LdapServer extends BaseLdapServer {
     }
 
     @Override
-    public List<LdapEntry> getTree(final String path)  throws QueryException {
+    public void getTree(final String path, LdapResultProcessor lpr)  throws QueryException {
         if (this.getAuthentication() == Authentication.KERBEROS5) {
             try {
-                return javax.security.auth.Subject.doAs(
+                javax.security.auth.Subject.doAs(
                         getIdentity(),
-                        new PrivilegedAction<List<LdapEntry>>() {
-                            @Override
-                            public List<LdapEntry> run() {
-                                try {
-                                    return LdapServer.super.getTree(path);
-                                } catch (QueryException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                            }
-                        });
+                        new PrivilegedAction<Void>() {
+                    @Override
+                    public Void run() {
+                        try {
+                            LdapServer.super.getTree(path, lpr);
+                            return null;
+                        } catch (QueryException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
             } catch (LoginException ex) {
                 throw new QueryException(ex);
             } catch (RuntimeException ex) {
@@ -168,26 +169,27 @@ public class LdapServer extends BaseLdapServer {
                 }
             }
         } else {
-            return LdapServer.super.getTree(path);
+            LdapServer.super.getTree(path, lpr);
         }
     }
 
     @Override
-    public List<LdapEntry> search(final String filter)  throws QueryException {
+    public void search(final String filter, LdapResultProcessor lpr)  throws QueryException {
         if (this.getAuthentication() == Authentication.KERBEROS5) {
             try {
-                return javax.security.auth.Subject.doAs(
+                javax.security.auth.Subject.doAs(
                         getIdentity(),
-                        new PrivilegedAction<List<LdapEntry>>() {
-                            @Override
-                            public List<LdapEntry> run() {
-                                try {
-                                    return LdapServer.super.search(filter);
-                                } catch (QueryException ex) {
-                                    throw new RuntimeException(ex);
-                                }
-                            }
-                        });
+                        new PrivilegedAction<Void>() {
+                    @Override
+                    public Void run() {
+                        try {
+                            LdapServer.super.search(filter, lpr);
+                            return null;
+                        } catch (QueryException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
             } catch (LoginException ex) {
                 throw new QueryException(ex);
             } catch (RuntimeException ex) {
@@ -198,7 +200,7 @@ public class LdapServer extends BaseLdapServer {
                 }
             }
         } else {
-            return LdapServer.super.search(filter);
+            LdapServer.super.search(filter, lpr);
         }
     }
 

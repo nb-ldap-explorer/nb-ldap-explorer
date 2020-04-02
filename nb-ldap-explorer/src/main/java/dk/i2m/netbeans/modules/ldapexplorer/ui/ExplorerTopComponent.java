@@ -29,14 +29,10 @@ import java.awt.Rectangle;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
-import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.codec.binary.Hex;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
@@ -367,42 +363,10 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         if (filterText.isEmpty()) {
             prepareBrowsing();
         } else {
-            final ProgressHandle ph = ProgressHandleFactory.createHandle(bundle.
-                    getString("ExecutingFilter"));
-            RequestProcessor.Task t = UIHelper.getRequestProcessor().create(() -> {
-                setInQuery(true);
-
-                ph.switchToIndeterminate();
-                try {
-                    final List<LdapEntry> searchResults =
-                            server.search(filterText);
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        public void run() {
-                            LdapSearchEntryChildren children =
-                                    new LdapSearchEntryChildren(
-                                    searchResults);
-                            children.setLdapServer(server);
-
-                            em.setRootContext(new LdapSearchEntryNode(children));
-                        }
-                    });
-                } catch (QueryException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
-            });
-
-            t.addTaskListener(new TaskListener() {
-                @Override
-                public void taskFinished(Task task) {
-                    ph.finish();
-                    setInQuery(false);
-                }
-            });
-
-            ph.start();
-            
-            t.schedule(0);
+            LdapSearchEntryChildren children = new LdapSearchEntryChildren();
+            children.setLdapServer(server);
+            children.setSearch(filterText);
+            em.setRootContext(new LdapSearchEntryNode(children));
         }
     }
 

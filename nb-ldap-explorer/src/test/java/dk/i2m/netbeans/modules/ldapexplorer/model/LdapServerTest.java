@@ -16,6 +16,7 @@
  */
 package dk.i2m.netbeans.modules.ldapexplorer.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Ignore;
 import static org.junit.Assert.*;
@@ -64,7 +65,22 @@ public class LdapServerTest {
             System.out.println("Connect");
             server.connect();
             System.out.println("Get Tree");
-            List<LdapEntry> entries = server.getTree("");
+            List<LdapEntry> entries = new ArrayList<>();
+            server.getTree("", new LdapResultProcessor() {
+                @Override
+                public void addEntry(LdapEntry entry) {
+                    synchronized (entries) {
+                        entries.add(entry);
+                    }
+                }
+
+                @Override
+                public void reset() {
+                    synchronized (entries) {
+                        entries.clear();
+                    }
+                }
+            });
             for (LdapEntry entry : entries) {
                 System.out.println(entry.getDn());
             }
