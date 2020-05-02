@@ -8,13 +8,13 @@
     <parent>
         <artifactId>nb-ldap-explorer-parent</artifactId>
         <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-        <version>0.12</version>
+        <version>0.13-SNAPSHOT</version>
     </parent>
 
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
     <artifactId>nb-ldap-explorer</artifactId>
     <packaging>nbm</packaging>
-    <version>0.12</version>
+    <version>0.13-SNAPSHOT</version>
 
     <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
     <name>NetBeans LDAP Explorer</name>
