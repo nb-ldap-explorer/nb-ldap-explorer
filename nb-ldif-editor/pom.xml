@@ -17,13 +17,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>nb-ldap-bundle</artifactId>
-        <groupId>dk.i2m.netbeans.modules</groupId>
+        <artifactId>nb-ldap-explorer-parent</artifactId>
+        <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
         <version>0.12-SNAPSHOT</version>
     </parent>
-    <groupId>dk.i2m.netbeans.modules</groupId>
+
+    <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
     <artifactId>nb-ldif-editor</artifactId>
     <packaging>nbm</packaging>
+    <version>0.12-SNAPSHOT</version>
+
+    <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
     <name>Netbeans LDIF Editor</name>
     <description>Syntax Highlighting for LDIF-Files (intended as a companion to the ldap explorer)</description>
 
@@ -38,42 +42,47 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-loaders</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-nodes</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-editor</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-parsing-api</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-text</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-lexer</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
-            <version>RELEASE68</version>
+            <version>${netbeans.platform}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>${netbeans.platform}</version>
         </dependency>
     </dependencies>
 

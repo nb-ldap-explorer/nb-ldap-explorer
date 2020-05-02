@@ -1,18 +1,23 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>nb-ldap-bundle</artifactId>
-        <groupId>dk.i2m.netbeans.modules</groupId>
-        <version>0.12-SNAPSHOT</version>
-    </parent>
-    <groupId>dk.i2m.netbeans.modules</groupId>
-    <artifactId>nb-ldap-explorer</artifactId>
-    <packaging>nbm</packaging>
-    <name>NetBeans LDAP Explorer</name>
     <prerequisites>
         <maven>2.0</maven>
     </prerequisites>
+
+    <parent>
+        <artifactId>nb-ldap-explorer-parent</artifactId>
+        <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
+        <version>0.12-SNAPSHOT</version>
+    </parent>
+
+    <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
+    <artifactId>nb-ldap-explorer</artifactId>
+    <packaging>nbm</packaging>
+    <version>0.12-SNAPSHOT</version>
+
+    <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
+    <name>NetBeans LDAP Explorer</name>
     <inceptionYear>2010</inceptionYear>
     <description>NetBeans module for exploring LDAP services from within NetBeans. This modules does not replace a professional LDAP client, rather it provides a simple and quick interface for basic interaction with LDAP services.</description>
 
@@ -109,8 +114,12 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-progress</artifactId>
-            <version>RELEASE67</version>
-            <type>nbm</type>
+            <version>${netbeans.platform}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress-nb</artifactId>
+            <version>${netbeans.platform}</version>
         </dependency>
     </dependencies>
 
