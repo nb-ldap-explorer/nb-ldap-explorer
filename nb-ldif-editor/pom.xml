@@ -19,13 +19,13 @@
     <parent>
         <artifactId>nb-ldap-explorer-parent</artifactId>
         <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-        <version>0.14</version>
+        <version>0.15-SNAPSHOT</version>
     </parent>
 
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
     <artifactId>nb-ldif-editor</artifactId>
     <packaging>nbm</packaging>
-    <version>0.14</version>
+    <version>0.15-SNAPSHOT</version>
 
     <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
     <name>Netbeans LDIF Editor</name>
