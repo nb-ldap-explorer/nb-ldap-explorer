@@ -20,6 +20,12 @@
     <inceptionYear>2010</inceptionYear>
     <description>Packaging of netbeans ldap explorer packages</description>
 
+    <scm>
+        <connection>${scminfo.connection}</connection>
+        <developerConnection>${scminfo.developerConnection}</developerConnection>
+        <url>${scminfo.url}</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>

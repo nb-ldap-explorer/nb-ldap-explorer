@@ -43,11 +43,11 @@
     </developers>
 
     <scm>
-        <connection>scm:git:https://github.com/nb-ldap-explorer/nb-ldap-explorer.git</connection>
-        <developerConnection>scm:git:git@github.com:nb-ldap-explorer/nb-ldap-explorer.git</developerConnection>
-        <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
-      <tag>HEAD</tag>
-  </scm>
+        <connection>${scminfo.connection}</connection>
+        <developerConnection>${scminfo.developerConnection}</developerConnection>
+        <url>${scminfo.url}</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
@@ -136,6 +136,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <netbeans.platform>RELEASE90</netbeans.platform>
+        <scminfo.url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</scminfo.url>
+        <scminfo.developerConnection>scm:git:ssh://git@github.com:nb-ldap-explorer/nb-ldap-explorer.git</scminfo.developerConnection>
+        <scminfo.connection>scm:git:https://github.com/nb-ldap-explorer/nb-ldap-explorer.git</scminfo.connection>
         <!--
             License to include in the header of the file when filesa are created
             through the NetBeans IDE.
