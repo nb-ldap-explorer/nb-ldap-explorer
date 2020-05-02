@@ -16,6 +16,13 @@ connection should be established.
 
 News
 ----
+ * *02. May 2020: Version 0.12 released*
+    * [Bugfix] Remove jdesktop dependency
+    * [Bugfix] Don't log enviroment to not reveal password
+    * [Bugfix] Drop JAXB usage, as module was removed from JDK after java 9
+    * [Bugfix] Alias casing between keystore and trust settings was inconsistent and could lead to host names not cleared
+    * [Feature] Make queries cancelable and show incremental results
+
  * *03. October 2016: Version 0.11 released*
     * [Bugfix] In case of a a hostname mismatch between target hostname and hostname in certificate, the target hostname will be displayed
 
