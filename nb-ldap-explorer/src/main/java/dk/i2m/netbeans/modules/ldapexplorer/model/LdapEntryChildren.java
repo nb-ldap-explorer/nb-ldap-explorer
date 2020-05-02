@@ -18,6 +18,7 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.ui.UIHelper;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.nodes.Children;
@@ -33,6 +34,16 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
     private String parent = "";
     private LdapServer ldapServer = null;
     private TreeLoader tl;
+    private SearchContext ctx;
+    private Consumer<SearchContext> cancelHandler = (sc) -> this.cancelLoading();
+
+    public SearchContext getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(SearchContext ctx) {
+        this.ctx = ctx;
+    }
 
     public String getParent() {
         return parent;
@@ -54,6 +65,9 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
     protected void addNotify() {
         if (ldapServer != null) {
             tl = new TreeLoader();
+            if(ctx != null) {
+                ctx.registerCancelListener(cancelHandler);
+            }
             final ProgressHandle ph = ProgressHandleFactory.createHandle(
                     NbBundle.getMessage(LdapEntryChildren.class, "FetchingLDAPEntries"), tl);
             RequestProcessor.Task t = UIHelper.getRequestProcessor().create(() -> {
@@ -75,9 +89,17 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
 
     @Override
     protected void removeNotify() {
-        if(tl != null) {
+        cancelLoading();
+    }
+
+    private void cancelLoading() {
+        TreeLoader wtl = tl;
+        tl = null;
+        if(wtl != null) {
             tl.cancel();
-            tl = null;
+        }
+        if(ctx != null) {
+            ctx.removeCancelListener(cancelHandler);
         }
     }
 
@@ -87,6 +109,7 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
         LdapEntryChildren children = new LdapEntryChildren();
         children.setParent(key.getDn());
         children.setLdapServer(ldapServer);
+        children.setCtx(ctx);
 
         LdapEntryNode node = new LdapEntryNode(children, key);
         node.setDisplayName(key.getLabel());

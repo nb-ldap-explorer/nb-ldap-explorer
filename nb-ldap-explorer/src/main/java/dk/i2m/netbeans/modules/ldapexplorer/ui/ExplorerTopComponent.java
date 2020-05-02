@@ -25,6 +25,7 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryChildren;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapSearchEntryNode;
 import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.model.QueryException;
+import dk.i2m.netbeans.modules.ldapexplorer.model.SearchContext;
 import java.awt.Rectangle;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -54,6 +55,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     private LdapServer server;
     private Lookup.Result result = null;
     private boolean inQuery = false;
+    private SearchContext searchContext = new SearchContext();
 
     /**
      * Creates a new instance of {@link ExplorerTopComponent}.
@@ -88,7 +90,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         // Let the ExplorerManager dynamically put nodes in the lookup upon
         // selection
         associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
-        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
+        prepareBrowsing();
 
         setName(bundle.getString("CTL_ExplorerTopComponent"));
         setIcon(ImageUtilities.loadImage(bundle.getString(
@@ -201,9 +203,12 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             setDisplayName(this.server.toString());
         }
 
+        this.searchContext.cancel();
+        this.searchContext = new SearchContext();
         LdapEntryChildren children = new LdapEntryChildren();
         children.setLdapServer(server);
         children.setParent(this.server.getBaseDN());
+        children.setCtx(searchContext);
         em.setRootContext(new LdapEntryNode(children));
         em.getRootContext().setDisplayName(this.server.getBaseDN());
     }
@@ -348,9 +353,12 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         if (filterText.isEmpty()) {
             prepareBrowsing();
         } else {
+            this.searchContext.cancel();
+            this.searchContext = new SearchContext();
             LdapSearchEntryChildren children = new LdapSearchEntryChildren();
             children.setLdapServer(server);
             children.setSearch(filterText);
+            children.setCtx(searchContext);
             em.setRootContext(new LdapSearchEntryNode(children));
         }
     }
