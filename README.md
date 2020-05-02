@@ -1,17 +1,33 @@
 About
 =====
 
-Maven-based NetBeans module for exploring LDAP services from within NetBeans. This modules does not replace a professional LDAP client, rather it provides a simple and quick interface for basic interaction with LDAP services.
+LDAP Explorer / LDIF Editor
+---------------------------
 
-Installation
-------------
+Maven-based NetBeans module for exploring LDAP services from within NetBeans. This modules does not replace a
+professional LDAP client, rather it provides a simple and quick interface for basic interaction with LDAP services.
 
-You can install the module by downloading the NBM file or through the this update center: http://nb-ldap-explorer.googlecode.com/files/updates.xml.gz
+SSL Certificate Exception
+-------------------------
 
-_Note: From version 0.3 an update center was automatically created upon installation. To upgrade simply go to Tools - Plugins - Updates and click "Reload Catalog" followed by selecting the new version and clicking "Upgrade"_  
+This module hooks into the TLS/SSL infrastructure to allow connecting to LDAP servers with invalid/self-signed
+certificates. It will not allow random connections, but let the user decide on a case-by-case basis whether or not a
+connection should be established.
 
 News
 ----
+ * *03. October 2016: Version 0.11 released*
+    * [Bugfix] In case of a a hostname mismatch between target hostname and hostname in certificate, the target hostname will be displayed
+
+ * *13. June 2015: Version 0.10 released*
+    * [Bugfix] Handle defect certificate stores and XML structures more gracefully (#3, https://netbeans.org/bugzilla/show_bug.cgi?id=252846)
+    * [Bugfix] Correct ordering of certificate chain
+    * [Bugfix] Show/use correct certificate as the target certificate
+    * [Bugfix] Fix calling from Swing EDT
+    * [Feature] Indent certificate chain
+    * [Feature] Tune certificate display: add SHA-256 fingerprint, display certificate serial as hexString
+
+
  * *15. October 2013: Version 0.9 released*
     * Correct XML Handling (solve problem with conflicting JAXB Classloaders)
 
