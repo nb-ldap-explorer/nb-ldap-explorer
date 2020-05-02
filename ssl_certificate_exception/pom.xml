@@ -20,13 +20,13 @@
     <parent>
         <artifactId>nb-ldap-explorer-parent</artifactId>
         <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-        <version>0.14-SNAPSHOT</version>
+        <version>0.14</version>
     </parent>
 
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
     <artifactId>ssl_certificate_exception</artifactId>
     <packaging>nbm</packaging>
-    <version>0.14-SNAPSHOT</version>
+    <version>0.14</version>
 
     <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
     <name>SSL Certificate Exception</name>

@@ -4,7 +4,7 @@
 
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
     <artifactId>nb-ldap-explorer-parent</artifactId>
-    <version>0.14-SNAPSHOT</version>
+    <version>0.14</version>
     <packaging>pom</packaging>
 
     <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
@@ -46,7 +46,7 @@
         <connection>${scminfo.connection}</connection>
         <developerConnection>${scminfo.developerConnection}</developerConnection>
         <url>${scminfo.url}</url>
-        <tag>HEAD</tag>
+        <tag>nb-ldap-bundle-0.14</tag>
     </scm>
 
     <distributionManagement>
