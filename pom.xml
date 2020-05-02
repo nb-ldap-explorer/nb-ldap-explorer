@@ -107,28 +107,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-versions</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[1.8,9)</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
 
     <properties>
@@ -137,7 +115,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <netbeans.platform>RELEASE90</netbeans.platform>
         <scminfo.url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</scminfo.url>
-        <scminfo.developerConnection>scm:git:ssh://git@github.com:nb-ldap-explorer/nb-ldap-explorer.git</scminfo.developerConnection>
+        <scminfo.developerConnection>scm:git:ssh://git@github.com/nb-ldap-explorer/nb-ldap-explorer.git</scminfo.developerConnection>
         <scminfo.connection>scm:git:https://github.com/nb-ldap-explorer/nb-ldap-explorer.git</scminfo.connection>
         <!--
             License to include in the header of the file when filesa are created
@@ -185,4 +163,56 @@
         <module>ssl_certificate_exception</module>
         <module>nb-ldap-packaging</module>
     </modules>
+
+     <profiles>
+        <profile>
+            <id>release-profile</id>
+
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>3.0.0-M2</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-versions</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireJavaVersion>
+                                            <version>[1.8,9)</version>
+                                        </requireJavaVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

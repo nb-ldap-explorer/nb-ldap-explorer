@@ -16,7 +16,7 @@ connection should be established.
 
 News
 ----
- * *02. May 2020: Version 0.12 released*
+ * *02. May 2020: Version 0.12 released (0.13 + 0.14 released to fix release issues)*
     * [Bugfix] Remove jdesktop dependency
     * [Bugfix] Don't log enviroment to not reveal password
     * [Bugfix] Drop JAXB usage, as module was removed from JDK after java 9
