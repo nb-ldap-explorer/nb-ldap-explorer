@@ -8,7 +8,7 @@
     <parent>
         <artifactId>nb-ldap-explorer-parent</artifactId>
         <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-        <version>0.13</version>
+        <version>0.14-SNAPSHOT</version>
     </parent>
 
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
