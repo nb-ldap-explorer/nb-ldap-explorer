@@ -514,8 +514,7 @@ public class BaseLdapServer {
      * path.
      *
      * @param path Path for which to obtain the {@link LdapEntry} objects
-     * @return {@link List} of {@link LdapEntry} objects residing in
-     * <code>path</code>
+     * @param lrp {@link LdapResultProcessor} processor to receive the query result
      * @throws QueryException If the path is invalid or the server could not be
      * queried
      */
@@ -676,7 +675,7 @@ public class BaseLdapServer {
      * Searches the subtree for LDAP entries matching the given {@code filter}.
      *
      * @param filter LDAP filter
-     * @return {@link List} of {@link LdapEntry} objects matching the filter
+     * @param lpr {@link LdapResultProcessor} to process the search result
      * @throws QueryException If the search failed
      */
     public void search(String filter, LdapResultProcessor lpr) throws QueryException {

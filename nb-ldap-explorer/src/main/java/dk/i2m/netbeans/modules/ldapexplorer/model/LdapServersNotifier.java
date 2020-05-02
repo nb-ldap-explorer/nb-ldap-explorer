@@ -52,7 +52,7 @@ public class LdapServersNotifier {
 
     /**
      * Notifies all the subscribed {@link ChangeListener}s that a change has
-     * occured to the collection of {@link MailServer}s.
+     * occured to the collection of {@link LdapServer}s.
      */
     public static void changed() {
         ChangeEvent ev = new ChangeEvent(LdapServersNotifier.class);
