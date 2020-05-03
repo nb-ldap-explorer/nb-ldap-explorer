@@ -16,6 +16,9 @@ connection should be established.
 
 News
 ----
+ * *03. May 2020: Version 0.15 released*
+    * [Bugfix] Fix NullPointerException introduced by cancelable queries
+
  * *02. May 2020: Version 0.12 released (0.13 + 0.14 released to fix release issues)*
     * [Bugfix] Remove jdesktop dependency
     * [Bugfix] Don't log enviroment to not reveal password
