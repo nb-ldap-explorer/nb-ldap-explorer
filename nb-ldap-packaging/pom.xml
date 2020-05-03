@@ -8,7 +8,7 @@
     <parent>
         <artifactId>nb-ldap-explorer-parent</artifactId>
         <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-        <version>0.15</version>
+        <version>0.16-SNAPSHOT</version>
     </parent>
 
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
@@ -24,7 +24,7 @@
         <connection>${scminfo.connection}</connection>
         <developerConnection>${scminfo.developerConnection}</developerConnection>
         <url>${scminfo.url}</url>
-      <tag>nb-ldap-bundle-0.15</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencies>
