@@ -96,7 +96,7 @@ public class LdapEntryChildren extends Children.Keys<LdapEntry> {
         TreeLoader wtl = tl;
         tl = null;
         if(wtl != null) {
-            tl.cancel();
+            wtl.cancel();
         }
         if(ctx != null) {
             ctx.removeCancelListener(cancelHandler);

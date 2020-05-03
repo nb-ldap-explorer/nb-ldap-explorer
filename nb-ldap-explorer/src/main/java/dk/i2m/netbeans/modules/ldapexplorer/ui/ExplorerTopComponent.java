@@ -90,7 +90,7 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         // Let the ExplorerManager dynamically put nodes in the lookup upon
         // selection
         associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
-        prepareBrowsing();
+        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
 
         setName(bundle.getString("CTL_ExplorerTopComponent"));
         setIcon(ImageUtilities.loadImage(bundle.getString(

@@ -18,7 +18,6 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.ui.UIHelper;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
@@ -102,7 +101,7 @@ public class LdapSearchEntryChildren extends Children.Keys<LdapEntry> {
         TreeLoader wtl = tl;
         tl = null;
         if(wtl != null) {
-            tl.cancel();
+            wtl.cancel();
         }
         if(ctx != null) {
             ctx.removeCancelListener(cancelHandler);
