@@ -22,10 +22,15 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
+import org.netbeans.api.keyring.Keyring;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.util.Exceptions;
+import org.openide.util.RequestProcessor;
 
 /**
  * Default implementation of the {@link LdapService}.
@@ -33,6 +38,8 @@ import org.openide.filesystems.FileUtil;
  * @author Allan Lykke Christensen
  */
 public class DefaultLdapService extends LdapService {
+
+    private static final Logger LOG = Logger.getLogger(DefaultLdapService.class.getName());
 
     /** FileObject attribute containing the hostname of the LdapServer. */
     public static final String FO_ATTR_HOST = "host";
@@ -60,12 +67,12 @@ public class DefaultLdapService extends LdapService {
     public static final String FO_ATTR_KRB5PASSWORD = "krb5password";
     /** FileObject attribute containing the Kerberos 5 Keytab for the LdapServer */
     public static final String FO_ATTR_KRB5KEYTAB = "krb5keytab";
-    /** Prefix of FileObjects containing LdapServers. */
-    public static final String FO_PREFIX = "i2m-ldapserver-";
 
     /** {@inheritDoc} */
     @Override
     public List<LdapServer> getRegisteredServers() {
+        assert (! SwingUtilities.isEventDispatchThread());
+
         List<LdapServer> servers = new ArrayList<>();
 
         FileObject cfg = FileUtil.getConfigRoot();
@@ -83,16 +90,13 @@ public class DefaultLdapService extends LdapService {
     /** {@inheritDoc } */
     @Override
     public LdapServer save(LdapServer ldapServer) throws IOException {
+        assert (! SwingUtilities.isEventDispatchThread());
+
         FileObject servers = FileUtil.getConfigRoot().
                 getFileObject(LdapService.SERVER_FOLDER);
-        FileObject server;
-        if (ldapServer.isNew()) {
-            String filename = FO_PREFIX + Calendar.getInstance().
-                    getTimeInMillis();
-            server = servers.createData(filename);
-            ldapServer.setIdentifier(filename);
-        } else {
-            server = servers.getFileObject(ldapServer.getIdentifier());
+        FileObject server = servers.getFileObject(ldapServer.getIdentifier());
+        if (server == null) {
+            server = servers.createData(ldapServer.getIdentifier());
         }
 
         server.setAttribute(FO_ATTR_LABEL, ldapServer.getLabel());
@@ -103,14 +107,31 @@ public class DefaultLdapService extends LdapService {
         server.setAttribute(FO_ATTR_AUTHENTICATION, ldapServer.getAuthentication().
                 name());
         server.setAttribute(FO_ATTR_BIND, ldapServer.getBinding());
-        server.setAttribute(FO_ATTR_PASSWORD, ldapServer.getPassword());
         server.setAttribute(FO_ATTR_SSL, ldapServer.isSecure());
         server.setAttribute(FO_ATTR_LOGINCONF, Krb5LoginConf.values()[ldapServer.getKrb5LoginConf().ordinal()]);
         server.setAttribute(FO_ATTR_KRB5USERNAME, ldapServer.getKrb5username());
-        server.setAttribute(FO_ATTR_KRB5PASSWORD, ldapServer.getKrb5password());
         if(ldapServer.getKrb5keytab() != null) {
             server.setAttribute(FO_ATTR_KRB5KEYTAB, ldapServer.getKrb5keytab().toString());
         }
+
+        if(ldapServer.getPassword() != null && (! ldapServer.getPassword().isBlank())) {
+            Keyring.save(
+                    "dk.i2m.netbeans.modules.ldapexplorer." + ldapServer.getIdentifier() + ".password",
+                    ldapServer.getPassword().toCharArray(),
+                    "NetBeans LDAP Explorer " + ldapServer.getHost() + " / " + ldapServer.getBaseDN() + " (Password)");
+        } else {
+            Keyring.delete("dk.i2m.netbeans.modules.ldapexplorer." + ldapServer.getIdentifier() + ".password");
+        }
+
+        if(ldapServer.getKrb5password()!= null && (! ldapServer.getKrb5password().isBlank())) {
+            Keyring.save(
+                    "dk.i2m.netbeans.modules.ldapexplorer." + ldapServer.getIdentifier() + ".krb5password",
+                    ldapServer.getKrb5password().toCharArray(),
+                    "NetBeans LDAP Explorer " + ldapServer.getHost() + " / " + ldapServer.getBaseDN() + " (Kerberos Password)");
+        } else {
+            Keyring.delete("dk.i2m.netbeans.modules.ldapexplorer." + ldapServer.getIdentifier() + ".krb5password");
+        }
+
         return ldapServer;
     }
 
@@ -144,6 +165,17 @@ public class DefaultLdapService extends LdapService {
                 name());
         String bind = getAttributeAsString(fo, FO_ATTR_BIND, "");
         String password = getAttributeAsString(fo, FO_ATTR_PASSWORD, "");
+        if(! password.isEmpty()) {
+            Keyring.save(
+                    "dk.i2m.netbeans.modules.ldapexplorer." + fo.getName() + ".password",
+                    password.toCharArray(),
+                    "NetBeans LDAP Explorer " + host + " / " + baseDn + " (Password)");
+            try {
+                fo.setAttribute(FO_ATTR_PASSWORD, null);
+            } catch (IOException ex) {
+                LOG.log(Level.WARNING, null, ex);
+            }
+        }
         Boolean secure = getAttributeAsBoolean(fo, FO_ATTR_SSL, false);
         Krb5LoginConf loginConfig = Krb5LoginConf.SYSTEM_ACCOUNT;
         // Wenn die Config Daten nicht vorhanden sind oder nicht auflösbar sind,
@@ -155,6 +187,17 @@ public class DefaultLdapService extends LdapService {
         }
         String krb5username = getAttributeAsString(fo, FO_ATTR_KRB5USERNAME, "");
         String krb5password = getAttributeAsString(fo, FO_ATTR_KRB5PASSWORD, "");
+        if(! krb5password.isEmpty()) {
+            Keyring.save(
+                    "dk.i2m.netbeans.modules.ldapexplorer." + fo.getName() + ".krb5password",
+                    password.toCharArray(),
+                    "NetBeans LDAP Explorer " + host + " / " + baseDn + " (Kerberos Password)");
+            try {
+                fo.setAttribute(FO_ATTR_PASSWORD, null);
+            } catch (IOException ex) {
+                LOG.log(Level.WARNING, null, ex);
+            }
+        }
         File krb5keytab = new File(getAttributeAsString(fo, FO_ATTR_KRB5KEYTAB, ""));
 
         LdapServer server = new LdapServer(host, port, baseDn);
@@ -169,6 +212,17 @@ public class DefaultLdapService extends LdapService {
         server.setKrb5username(krb5username);
         server.setKrb5password(krb5password);
         server.setKrb5keytab(krb5keytab);
+
+        char[] keyringPass = Keyring.read("dk.i2m.netbeans.modules.ldapexplorer." + fo.getName() + ".password");
+        char[] keyringKrb5Pass = Keyring.read("dk.i2m.netbeans.modules.ldapexplorer." + fo.getName() + ".krb5password");
+
+        if(keyringPass != null) {
+            server.setPassword(new String(keyringPass));
+        }
+        if(keyringKrb5Pass != null) {
+            server.setKrb5password(new String(keyringKrb5Pass));
+        }
+
         return server;
     }
 

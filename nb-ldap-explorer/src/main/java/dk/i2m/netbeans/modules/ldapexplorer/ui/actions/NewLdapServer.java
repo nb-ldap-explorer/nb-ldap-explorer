@@ -22,8 +22,11 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServer;
 import dk.i2m.netbeans.modules.ldapexplorer.ui.LdapServerPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.util.HelpCtx;
@@ -31,6 +34,8 @@ import org.openide.util.NbBundle;
 import org.openide.util.actions.CallableSystemAction;
 
 public final class NewLdapServer extends CallableSystemAction {
+
+    private static final Logger LOG = Logger.getLogger(NewLdapServer.class.getName());
 
     LdapServerPanel panel;
 
@@ -62,12 +67,25 @@ public final class NewLdapServer extends CallableSystemAction {
                 ldapServer.setKrb5username(panel.getKrb5Username());
                 ldapServer.setKrb5password(panel.getKrb5Password());
 
+                new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        LdapService.getDefault().save(ldapServer);
+                        return null;
+                    }
 
-                try {
-                    LdapService.getDefault().save(ldapServer);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage());
-                }
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                        } catch (ExecutionException ex) {
+                            LOG.log(Level.WARNING, null, ex);
+                            JOptionPane.showMessageDialog(null, ex.getCause().getMessage());
+                        } catch (InterruptedException ex) {
+                            LOG.log(Level.WARNING, null, ex);
+                        }
+                    }
+                }.execute();
                 LdapServersNotifier.changed();
             }
         };

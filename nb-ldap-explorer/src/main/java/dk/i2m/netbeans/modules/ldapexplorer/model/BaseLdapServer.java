@@ -19,7 +19,7 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -54,6 +54,10 @@ public class BaseLdapServer {
     private static final Comparator<LdapEntry> labelSorter = (t, t1) -> {
             return t.getLabel().compareTo(t1.getLabel());
     };
+
+    /** Prefix of FileObjects containing LdapServers. */
+    public static final String FO_PREFIX = "i2m-ldapserver-";
+
     private String identifier = null;
     private String host;
     private int port;
@@ -86,6 +90,7 @@ public class BaseLdapServer {
         this.host = host;
         this.port = port;
         this.baseDN = baseDN;
+        this.identifier = FO_PREFIX + Calendar.getInstance().getTimeInMillis();
     }
 
     /**
@@ -303,22 +308,6 @@ public class BaseLdapServer {
     }
 
     /**
-     * Determines if the {@link LdapServer} is new. The {@link LdapServer} is
-     * new if the {@link LdapServer#identifier} has not been set.
-     *
-     * @return
-     * <code>true</code> if the {@link LdapServer} is new, otherwise
-     * <code>false</code>
-     */
-    public boolean isNew() {
-        if (this.identifier == null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Determines if the label has been set for the server.
      *
      * @return
@@ -420,7 +409,7 @@ public class BaseLdapServer {
             env.put(Context.SECURITY_AUTHENTICATION, this.authentication.name().
                     toLowerCase());
             env.put(Context.SECURITY_PRINCIPAL, this.binding);
-            env.put(Context.SECURITY_CREDENTIALS, this.password);
+            env.put(Context.SECURITY_CREDENTIALS, getPassword());
         }
 
         return env;

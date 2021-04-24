@@ -22,9 +22,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import org.openide.actions.DeleteAction;
 import org.openide.actions.PropertiesAction;
 import org.openide.nodes.AbstractNode;
@@ -46,6 +51,8 @@ import org.openide.util.lookup.InstanceContent;
 public class LdapServerNode extends AbstractNode implements
         PropertyChangeListener {
 
+    private static final Logger LOG = Logger.getLogger(LdapServerNode.class.getName());
+
     private LdapServer server = null;
     private static ResourceBundle bundle = NbBundle.getBundle(
             LdapServerNode.class);
@@ -53,7 +60,7 @@ public class LdapServerNode extends AbstractNode implements
     public LdapServerNode(LdapServer server) {
         this(server, new InstanceContent());
     }
-    
+
     @SuppressWarnings("LeakingThisInConstructor")
     private LdapServerNode(LdapServer server, InstanceContent content) {
         super(Children.LEAF, new AbstractLookup(content));
@@ -153,8 +160,14 @@ public class LdapServerNode extends AbstractNode implements
                 bindProp.setShortDescription(bundle.getString("PROP_DESC_Bind"));
                 securityDetails.put(bindProp);
 
-                Property passwordProp = new PropertySupport.Reflection<>(srv,
-                        String.class, "password");
+                Property passwordProp = new PropertySupport.Reflection<String>(
+                        srv, String.class, "password") {
+                    @Override
+                    public String getValue() throws IllegalAccessException,
+                            IllegalArgumentException, InvocationTargetException {
+                        return super.getValue().replaceAll(".", "*");
+                    }
+                };
                 passwordProp.setName(bundle.getString("PROP_NAME_Password"));
                 passwordProp.setShortDescription(bundle.getString("PROP_DESC_Password"));
                 securityDetails.put(passwordProp);
@@ -171,8 +184,14 @@ public class LdapServerNode extends AbstractNode implements
                 krb5usernameProp.setShortDescription(bundle.getString("PROP_DESC_krb5username"));
                 krb5securityDetails.put(krb5usernameProp);
 
-                Property krb5passwordProp = new PropertySupport.Reflection<>(srv,
-                        String.class, "krb5password");
+                Property krb5passwordProp = new PropertySupport.Reflection<String>(
+                        srv, String.class, "krb5password") {
+                    @Override
+                    public String getValue() throws IllegalAccessException,
+                            IllegalArgumentException, InvocationTargetException {
+                        return super.getValue().replaceAll(".", "*");
+                    }
+                };
                 krb5passwordProp.setName(bundle.getString("PROP_NAME_krb5password"));
                 krb5passwordProp.setShortDescription(bundle.getString("PROP_DESC_krb5password"));
                 krb5securityDetails.put(krb5passwordProp);
@@ -226,11 +245,25 @@ public class LdapServerNode extends AbstractNode implements
         } else {
             setDisplayName(srv.toString());
         }
-        try {
-            LdapService.getDefault().save(srv);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                LdapService.getDefault().save(srv);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                } catch (ExecutionException ex) {
+                    LOG.log(Level.WARNING, null, ex);
+                    JOptionPane.showMessageDialog(null, ex.getCause().getMessage());
+                } catch (InterruptedException ex) {
+                    LOG.log(Level.WARNING, null, ex);
+                }
+            }
+        }.execute();
     }
 
     @Override

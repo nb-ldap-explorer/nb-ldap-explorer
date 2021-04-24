@@ -121,6 +121,11 @@
             <artifactId>org-netbeans-api-progress-nb</artifactId>
             <version>${netbeans.platform}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-keyring</artifactId>
+            <version>${netbeans.platform}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -18,6 +18,7 @@ package dk.i2m.netbeans.modules.ldapexplorer.model;
 
 import dk.i2m.netbeans.modules.ldapexplorer.services.LdapService;
 import java.util.Collections;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeListener;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -39,9 +40,20 @@ public class LdapServersChildren extends Children.Keys<LdapServer> {
 
     @Override
     protected void addNotify() {
-        refreshList();
-        listener = (ev) -> refreshList();
-        LdapServersNotifier.addChangeListener(listener);
+        SwingWorker sw = new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                refreshList();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                listener = (ev) -> refreshList();
+                LdapServersNotifier.addChangeListener(listener);
+            }
+        };
+        sw.execute();
     }
 
     @Override
