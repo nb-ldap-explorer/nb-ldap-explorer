@@ -3,3 +3,7 @@
 /nb-ldap-packaging/target/
 /nb-ldif-editor/target/
 /ssl_certificate_exception/target/
+/nb-ldap-explorer/nb-configuration.xml
+/nb-ldap-packaging/nb-configuration.xml
+/nb-ldif-editor/nb-configuration.xml
+/ssl_certificate_exception/nb-configuration.xml
