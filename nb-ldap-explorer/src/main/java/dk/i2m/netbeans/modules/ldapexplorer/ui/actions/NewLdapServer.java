@@ -84,9 +84,9 @@ public final class NewLdapServer extends CallableSystemAction {
                         } catch (InterruptedException ex) {
                             LOG.log(Level.WARNING, null, ex);
                         }
+                        LdapServersNotifier.changed();
                     }
                 }.execute();
-                LdapServersNotifier.changed();
             }
         };
 

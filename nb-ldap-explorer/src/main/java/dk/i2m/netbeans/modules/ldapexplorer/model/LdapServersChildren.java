@@ -30,7 +30,7 @@ import org.openide.nodes.Node;
  */
 public class LdapServersChildren extends Children.Keys<LdapServer> {
 
-    private ChangeListener listener;
+    private ChangeListener listener = (ev) -> refreshList();
 
     /**
      * Creates a new instance of {@link LdapServersChildren}.
@@ -40,20 +40,8 @@ public class LdapServersChildren extends Children.Keys<LdapServer> {
 
     @Override
     protected void addNotify() {
-        SwingWorker sw = new SwingWorker() {
-            @Override
-            protected Object doInBackground() throws Exception {
-                refreshList();
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                listener = (ev) -> refreshList();
-                LdapServersNotifier.addChangeListener(listener);
-            }
-        };
-        sw.execute();
+        refreshList();
+        LdapServersNotifier.addChangeListener(listener);
     }
 
     @Override
@@ -69,7 +57,13 @@ public class LdapServersChildren extends Children.Keys<LdapServer> {
      * Refreshes the list of available {@link LdapServer}s.
      */
     private void refreshList() {
-        setKeys(LdapService.getDefault().getRegisteredServers());
+        new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                setKeys(LdapService.getDefault().getRegisteredServers());
+                return null;
+            }
+        }.execute();
     }
 
     @Override
