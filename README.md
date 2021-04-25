@@ -16,6 +16,12 @@ connection should be established.
 
 News
 ----
+ * *Open: Version 0.16*
+    * [Feature] Use keyring API to store the password and kerberos password instead of serializing it into the
+                server properties.
+    * [Feature] Remove cluster definition, so that plugin is installed to users personal plugin directory and not a
+                writeable programm installation.
+
  * *03. May 2020: Version 0.15 released*
     * [Bugfix] Fix NullPointerException introduced by cancelable queries
 
