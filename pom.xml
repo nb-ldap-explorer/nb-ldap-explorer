@@ -69,7 +69,6 @@
                     <version>4.5</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <cluster>nb-ldap-bundle</cluster>
                         <keystore>${maven.nbm.sign.keystore}</keystore>
                         <keystorealias>${maven.nbm.sign.alias}</keystorealias>
                         <keystorepassword>${maven.nbm.sign.storepass}</keystorepassword>
