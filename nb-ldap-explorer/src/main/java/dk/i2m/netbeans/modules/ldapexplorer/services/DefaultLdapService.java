@@ -112,7 +112,7 @@ public class DefaultLdapService extends LdapService {
             server.setAttribute(FO_ATTR_KRB5KEYTAB, ldapServer.getKrb5keytab().toString());
         }
 
-        if(ldapServer.getPassword() != null && (! ldapServer.getPassword().isBlank())) {
+        if(ldapServer.getPassword() != null && (! ldapServer.getPassword().trim().isEmpty())) {
             Keyring.save(
                     passwordKey(ldapServer.getIdentifier()),
                     ldapServer.getPassword().toCharArray(),
@@ -122,7 +122,7 @@ public class DefaultLdapService extends LdapService {
             Keyring.delete(passwordKey(ldapServer.getIdentifier()));
         }
 
-        if(ldapServer.getKrb5password()!= null && (! ldapServer.getKrb5password().isBlank())) {
+        if(ldapServer.getKrb5password()!= null && (! ldapServer.getKrb5password().trim().isEmpty())) {
             Keyring.save(
                     krb5passwordKey(ldapServer.getIdentifier()),
                     ldapServer.getKrb5password().toCharArray(),
