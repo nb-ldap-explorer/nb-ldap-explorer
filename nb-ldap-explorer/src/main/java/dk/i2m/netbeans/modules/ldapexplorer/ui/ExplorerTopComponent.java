@@ -61,6 +61,14 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
      * Creates a new instance of {@link ExplorerTopComponent}.
      */
     public ExplorerTopComponent() {
+        // Let the ExplorerManager dynamically put nodes in the lookup upon
+        // selection
+        associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
+        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
+        setName(bundle.getString("CTL_ExplorerTopComponent"));
+        setIcon(ImageUtilities.loadImage(bundle.getString(
+                "ICON_ExplorerTopComponent"), true));
+
         initComponents();
         this.addPropertyChangeListener("inQuery", new PropertyChangeListener() {
             @Override
@@ -87,15 +95,6 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
 
     @Override
     public void componentOpened() {
-        // Let the ExplorerManager dynamically put nodes in the lookup upon
-        // selection
-        associateLookup(ExplorerUtils.createLookup(em, getActionMap()));
-        em.setRootContext(new LdapEntryNode(new LdapEntryChildren()));
-
-        setName(bundle.getString("CTL_ExplorerTopComponent"));
-        setIcon(ImageUtilities.loadImage(bundle.getString(
-                "ICON_ExplorerTopComponent"), true));
-
         // Listen for changes in the selection of LdapEntryNodes
         Lookup.Template tpl = new Lookup.Template(LdapEntryNode.class);
         result = getLookup().lookup(tpl);
