@@ -31,6 +31,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.codec.binary.Hex;
@@ -47,6 +49,9 @@ import org.openide.windows.CloneableTopComponent;
  */
 public final class ExplorerTopComponent extends CloneableTopComponent implements
         ExplorerManager.Provider, LookupListener {
+
+    private static final Logger LOG
+            = Logger.getLogger(ExplorerTopComponent.class.getName());
 
     private ExplorerManager em = new ExplorerManager();
     private ResourceBundle bundle = NbBundle.getBundle(
@@ -114,6 +119,13 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
+        if (this.searchContext != null) {
+            try {
+                this.searchContext.cancel();
+            } catch (RuntimeException ex) {
+                LOG.log(Level.WARNING, "Failed to cancel search", ex);
+            }
+        }
         if (this.server != null) {
             try {
                 this.server.disconnect();
