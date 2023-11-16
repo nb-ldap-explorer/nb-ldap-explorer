@@ -21,6 +21,8 @@ import dk.i2m.netbeans.modules.ldapexplorer.model.LdapServerNode;
 import dk.i2m.netbeans.modules.ldapexplorer.ui.ExplorerTopComponent;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import org.openide.util.ImageUtilities;
@@ -32,6 +34,9 @@ import org.openide.windows.TopComponent;
  * Action which shows Explorer component.
  */
 public class ExplorerAction extends AbstractAction {
+
+    private static final Logger LOG
+            = Logger.getLogger(ExplorerAction.class.getName());
 
     private static ResourceBundle bundle = NbBundle.getBundle(
             ExplorerAction.class);
@@ -69,6 +74,7 @@ public class ExplorerAction extends AbstractAction {
                 win.open();
                 win.requestActive();
             } catch (ConnectionException ex) {
+                LOG.log(Level.INFO, "Failed to establish connection", ex);
                 JOptionPane.showMessageDialog(null, ex.getMessage(),
                         "Could not connect", JOptionPane.ERROR_MESSAGE);
             }
