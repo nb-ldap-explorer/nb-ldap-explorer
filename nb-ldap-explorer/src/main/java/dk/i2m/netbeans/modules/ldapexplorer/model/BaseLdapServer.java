@@ -451,39 +451,24 @@ public class BaseLdapServer {
         return dirCtx != null;
     }
 
-    private NamingEnumeration<SearchResult> getRootDSE() throws
-            NamingException {
-        NamingEnumeration<SearchResult> result = null;
-        String base = "";
-        String filter = "(objectclass=*)";
-        SearchControls controls = new SearchControls();
-        controls.setSearchScope(SearchControls.OBJECT_SCOPE);
-        if (isConnected()) {
-            result = dirCtx.search(base, filter, controls);
-        }
-        return result;
-    }
-
     private boolean isPagingSupported() {
         if (pagingSupported == null) {
             pagingSupported = false;
             try {
                 synchronized (dirCtx) {
-                    NamingEnumeration<SearchResult> ne = getRootDSE();
-
-                    OUTER:
-                    while (ne != null && ne.hasMoreElements()) {
-                        SearchResult sr = ne.next();
-                        Attribute supportedControls = sr.getAttributes().get(
-                                "supportedControl");
-                        if (supportedControls != null) {
+                    Attribute supportedControls = dirCtx
+                            .getAttributes(
+                                    "",
+                                    new String[]{"supportedControl"}
+                            )
+                            .get("supportedControl");
+                    if (supportedControls != null) {
                         NamingEnumeration attribute = supportedControls.getAll();
-                            while (attribute.hasMore()) {
-                                Object value = attribute.next();
-                                if (PagedResultsControl.OID.equals(value)) {
-                                    pagingSupported = true;
-                                    break OUTER;
-                                }
+                        while (attribute.hasMore()) {
+                            Object value = attribute.next();
+                            if (PagedResultsControl.OID.equals(value)) {
+                                pagingSupported = true;
+                                break;
                             }
                         }
                     }
