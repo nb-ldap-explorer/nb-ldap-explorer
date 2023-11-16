@@ -62,6 +62,7 @@ public final class NewLdapServer extends CallableSystemAction {
                 ldapServer.setBinding(panel.getBind());
                 ldapServer.setPassword(panel.getPassword());
                 ldapServer.setSecure(panel.isSecureSocketLayerEnabled());
+                ldapServer.setIgnoreTlsErrors(panel.isIgnoreTlsErrors());
                 ldapServer.setKrb5LoginConf(panel.getKrb5LoginConf());
                 ldapServer.setKrb5keytab(panel.getKrb5Keytab());
                 ldapServer.setKrb5username(panel.getKrb5Username());

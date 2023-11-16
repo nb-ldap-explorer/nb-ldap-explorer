@@ -65,6 +65,8 @@ public class DefaultLdapService extends LdapService {
     public static final String FO_ATTR_KRB5PASSWORD = "krb5password";
     /** FileObject attribute containing the Kerberos 5 Keytab for the LdapServer */
     public static final String FO_ATTR_KRB5KEYTAB = "krb5keytab";
+    /** FileObject attribute containing the Kerberos 5 Keytab for the LdapServer */
+    public static final String FO_ATTR_IGNORE_TLS_ERRORS = "ignoreTlsErrors";
 
     /** {@inheritDoc} */
     @Override
@@ -106,6 +108,7 @@ public class DefaultLdapService extends LdapService {
                 name());
         server.setAttribute(FO_ATTR_BIND, ldapServer.getBinding());
         server.setAttribute(FO_ATTR_SSL, ldapServer.isSecure());
+        server.setAttribute(FO_ATTR_IGNORE_TLS_ERRORS, ldapServer.isIgnoreTlsErrors());
         server.setAttribute(FO_ATTR_LOGINCONF, Krb5LoginConf.values()[ldapServer.getKrb5LoginConf().ordinal()]);
         server.setAttribute(FO_ATTR_KRB5USERNAME, ldapServer.getKrb5username());
         if(ldapServer.getKrb5keytab() != null) {
@@ -182,6 +185,7 @@ public class DefaultLdapService extends LdapService {
             }
         }
         Boolean secure = getAttributeAsBoolean(fo, FO_ATTR_SSL, false);
+        Boolean ignoreTlsErrors = getAttributeAsBoolean(fo, FO_ATTR_IGNORE_TLS_ERRORS, false);
         Krb5LoginConf loginConfig = Krb5LoginConf.SYSTEM_ACCOUNT;
         // Wenn die Config Daten nicht vorhanden sind oder nicht auflösbar sind,
         // ersetzen wir durch einen Standard-Wert
@@ -214,6 +218,7 @@ public class DefaultLdapService extends LdapService {
         server.setBinding(bind);
         server.setPassword(password);
         server.setSecure(secure);
+        server.setIgnoreTlsErrors(ignoreTlsErrors);
         server.setKrb5LoginConf(loginConfig);
         server.setKrb5username(krb5username);
         server.setKrb5password(krb5password);

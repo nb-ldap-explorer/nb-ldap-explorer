@@ -62,6 +62,7 @@ public class BaseLdapServer {
     private String host;
     private int port;
     private boolean secure = false;
+    private boolean ignoreTlsErrors = false;
     private int timeout = 5000;
     private String baseDN;
     private Authentication authentication = Authentication.NONE;
@@ -221,6 +222,14 @@ public class BaseLdapServer {
         Boolean oldSecure = this.secure;
         this.secure = secure;
         fire("secure", oldSecure, secure);
+    }
+
+    public boolean isIgnoreTlsErrors() {
+        return ignoreTlsErrors;
+    }
+
+    public void setIgnoreTlsErrors(boolean ignoreTlsErrors) {
+        this.ignoreTlsErrors = ignoreTlsErrors;
     }
 
     /**
@@ -404,6 +413,13 @@ public class BaseLdapServer {
         env.put(Context.PROVIDER_URL, toString());
         env.put("com.sun.jndi.ldap.connect.timeout",
                 String.valueOf(this.timeout));
+
+        if (isIgnoreTlsErrors()) {
+            env.put(
+                    "java.naming.ldap.factory.socket",
+                    TLSUncheckedSocketFactory.class.getName()
+            );
+        }
 
         if (this.authentication.equals(Authentication.SIMPLE)) {
             env.put(Context.SECURITY_AUTHENTICATION, this.authentication.name().

@@ -36,7 +36,6 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.util.WeakListeners;
 import org.openide.util.actions.SystemAction;
@@ -147,6 +146,12 @@ public class LdapServerNode extends AbstractNode implements
                 sslProp.setShortDescription(bundle.getString("PROP_DESC_SSL"));
                 securityDetails.put(sslProp);
 
+                Property ignoreTlsErrors = new PropertySupport.Reflection<>(
+                        srv, boolean.class, "ignoreTlsErrors");
+                ignoreTlsErrors.setName(bundle.getString("PROP_NAME_IgnoreTlsErrors"));
+                ignoreTlsErrors.setShortDescription(bundle.getString("PROP_DESC_IgnoreTlsErrors"));
+                securityDetails.put(ignoreTlsErrors);
+
                 Property authProp = new PropertySupport.Reflection<>(
                         srv, Authentication.class, "authentication");
                 authProp.setName(bundle.getString("PROP_NAME_Authentication"));
@@ -202,7 +207,7 @@ public class LdapServerNode extends AbstractNode implements
                 krb5keytabProp.setShortDescription(bundle.getString("PROP_DESC_krb5keytab"));
                 krb5securityDetails.put(krb5keytabProp);
             } catch (RuntimeException | NoSuchMethodException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage());
+                LOG.log(Level.WARNING, "Failed to create property sheet for server", ex);
             }
         }
 

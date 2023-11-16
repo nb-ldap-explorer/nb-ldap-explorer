@@ -170,6 +170,14 @@ public class LdapServerPanel extends javax.swing.JPanel {
         this.cbSecure.setSelected(enableSsl);
     }
 
+    public boolean isIgnoreTlsErrors() {
+        return this.cbIgnoreTlsErrors.isSelected();
+    }
+
+    public void setIgnoreTlsErrors(boolean ignoreTlsErrors) {
+        this.cbIgnoreTlsErrors.setSelected(ignoreTlsErrors);
+    }
+
     /**
      * This method is called from within the constructor to
      * initialize the form.
@@ -197,6 +205,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
         lblTimeout = new javax.swing.JLabel();
         txtTimeout = new javax.swing.JTextField();
         cbSecure = new javax.swing.JCheckBox();
+        cbIgnoreTlsErrors = new javax.swing.JCheckBox();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         pnlSecuritySimple = new javax.swing.JPanel();
         lblBind = new javax.swing.JLabel();
@@ -255,14 +264,14 @@ public class LdapServerPanel extends javax.swing.JPanel {
         lblBaseDn.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblBaseDn.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         pnlConnection.add(lblBaseDn, gridBagConstraints);
 
         txtBaseDn.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtBaseDn.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         pnlConnection.add(txtBaseDn, gridBagConstraints);
@@ -270,7 +279,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
         lblAuthentication.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblAuthentication.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         pnlConnection.add(lblAuthentication, gridBagConstraints);
 
@@ -284,7 +293,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
         cbAuthentication.setModel(cbAuthenticationModel);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         pnlConnection.add(cbAuthentication, gridBagConstraints);
@@ -307,14 +316,14 @@ public class LdapServerPanel extends javax.swing.JPanel {
         lblTimeout.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.lblTimeout.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         pnlConnection.add(lblTimeout, gridBagConstraints);
 
         txtTimeout.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.txtTimeout.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         pnlConnection.add(txtTimeout, gridBagConstraints);
@@ -325,9 +334,16 @@ public class LdapServerPanel extends javax.swing.JPanel {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         pnlConnection.add(cbSecure, gridBagConstraints);
+
+        cbIgnoreTlsErrors.setText(org.openide.util.NbBundle.getMessage(LdapServerPanel.class, "LdapServerPanel.cbIgnoreTlsErrors.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        pnlConnection.add(cbIgnoreTlsErrors, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -522,6 +538,7 @@ public class LdapServerPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnKrb5Keytab;
     private javax.swing.JComboBox cbAuthentication;
+    private javax.swing.JCheckBox cbIgnoreTlsErrors;
     private javax.swing.JComboBox cbKrb5LoginConf;
     private javax.swing.JCheckBox cbSecure;
     private javax.swing.Box.Filler filler1;
