@@ -159,7 +159,6 @@
     <modules>
         <module>nb-ldap-explorer</module>
         <module>nb-ldif-editor</module>
-        <module>ssl_certificate_exception</module>
         <module>nb-ldap-packaging</module>
     </modules>
 

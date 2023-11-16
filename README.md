@@ -7,13 +7,6 @@ LDAP Explorer / LDIF Editor
 Maven-based NetBeans module for exploring LDAP services from within NetBeans. This modules does not replace a
 professional LDAP client, rather it provides a simple and quick interface for basic interaction with LDAP services.
 
-SSL Certificate Exception
--------------------------
-
-This module hooks into the TLS/SSL infrastructure to allow connecting to LDAP servers with invalid/self-signed
-certificates. It will not allow random connections, but let the user decide on a case-by-case basis whether or not a
-connection should be established.
-
 News
 ----
  * *Open: Version 0.16*

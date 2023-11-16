@@ -40,12 +40,6 @@
             <version>${project.version}</version>
             <type>nbm</type>
         </dependency>
-        <dependency>
-            <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-            <artifactId>ssl_certificate_exception</artifactId>
-            <version>${project.version}</version>
-            <type>nbm</type>
-        </dependency>
     </dependencies>
 
     <build>
