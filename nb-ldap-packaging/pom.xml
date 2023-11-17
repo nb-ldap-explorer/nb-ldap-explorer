@@ -30,12 +30,6 @@
     <dependencies>
         <dependency>
             <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
-            <artifactId>nb-ldif-editor</artifactId>
-            <version>${project.version}</version>
-            <type>nbm</type>
-        </dependency>
-        <dependency>
-            <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
             <artifactId>nb-ldap-explorer</artifactId>
             <version>${project.version}</version>
             <type>nbm</type>
