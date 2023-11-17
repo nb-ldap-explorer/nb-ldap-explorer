@@ -158,7 +158,6 @@
 
     <modules>
         <module>nb-ldap-explorer</module>
-        <module>nb-ldap-packaging</module>
     </modules>
 
      <profiles>
