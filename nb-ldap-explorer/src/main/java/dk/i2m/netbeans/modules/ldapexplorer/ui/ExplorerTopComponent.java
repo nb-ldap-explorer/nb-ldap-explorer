@@ -251,7 +251,6 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
         setLayout(new java.awt.BorderLayout());
 
         splitPane.setDividerLocation(170);
-        splitPane.setDividerSize(5);
 
         pnlAttributes.setLayout(new java.awt.BorderLayout());
 
@@ -280,6 +279,9 @@ public final class ExplorerTopComponent extends CloneableTopComponent implements
             }
         });
         tblAttributes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        tblAttributes.setShowGrid(true);
+        tblAttributes.setShowHorizontalLines(true);
+        tblAttributes.setShowVerticalLines(true);
         attributePane.setViewportView(tblAttributes);
         if (tblAttributes.getColumnModel().getColumnCount() > 0) {
             tblAttributes.getColumnModel().getColumn(0).setPreferredWidth(70);
