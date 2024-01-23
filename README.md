@@ -9,7 +9,22 @@ professional LDAP client, rather it provides a simple and quick interface for ba
 
 News
 ----
- * *Open: Version 0.16*
+ * *Open: Version 0.18*
+
+    **Important: Remove "SSL Certificate Exception" and "LDIF Editor" plugins before update!**
+
+    * [Feature] Simplify packaging of module (only a single module now)
+    * [Feature] Drop separte LDIF plugin and integrate functions into main module
+    * [Feature] Show gridlines in LDAP entry display
+    * [Bugfix] Removed dysfunctional "SSL Certiticate Exception" plugin
+    * [Bugfix] Reimplement option to ignore TLS errors
+    * [Bugfix] Log cause when connection to server can't be established
+    * [Bugfix] Cancel LDAP entry fetching when associated TopComponent is closed
+
+ * *05. May 2021: Version 0.17*
+    * [Bugfix] Fix race condition in lookup association code
+
+ * *03. May 2021: Version 0.16*
     * [Feature] Use keyring API to store the password and kerberos password instead of serializing it into the
                 server properties.
     * [Feature] Remove cluster definition, so that plugin is installed to users personal plugin directory and not a
