@@ -5,7 +5,7 @@
     <groupId>eu.doppel-helix.netbeans.plugin.nb-ldap-explorer</groupId>
     <artifactId>nb-ldap-explorer</artifactId>
     <packaging>nbm</packaging>
-    <version>0.18</version>
+    <version>0.19-SNAPSHOT</version>
 
     <url>https://github.com/nb-ldap-explorer/nb-ldap-explorer</url>
     <name>NetBeans LDAP Explorer</name>
@@ -47,7 +47,7 @@
         <connection>${scminfo.connection}</connection>
         <developerConnection>${scminfo.developerConnection}</developerConnection>
         <url>${scminfo.url}</url>
-        <tag>nb-ldap-bundle-0.18</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
