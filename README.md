@@ -9,6 +9,12 @@ professional LDAP client, rather it provides a simple and quick interface for ba
 
 News
 ----
+ * *25. January 2024: Version 0.19*
+
+    **Important: Remove "SSL Certificate Exception" and "LDIF Editor" plugins before update!**
+
+    Rerelease of 0.18 (missing signature, wrong description text)
+
  * *25. January 2024: Version 0.18*
 
     **Important: Remove "SSL Certificate Exception" and "LDIF Editor" plugins before update!**
