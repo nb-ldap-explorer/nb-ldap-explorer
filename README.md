@@ -9,7 +9,7 @@ professional LDAP client, rather it provides a simple and quick interface for ba
 
 News
 ----
- * *Open: Version 0.18*
+ * *25. January 2024: Version 0.18*
 
     **Important: Remove "SSL Certificate Exception" and "LDIF Editor" plugins before update!**
 
