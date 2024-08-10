@@ -88,7 +88,7 @@
                 </folder>
                 <folder name="Factories">
                     <file name="LdifDataLoader.instance">
-                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/com/google/code/nb_ldap_explorer/ldif/text_x_ldif16.png"/>
+                        <attr name="SystemFileSystem.icon" urlvalue="nbresloc:/dk/i2m/netbeans/modules/ldapexplorer/text_x_ldif16.png"/>
                         <attr name="dataObjectClass" stringvalue="com.google.code.nb_ldap_explorer.ldif.LdifDataObject"/>
                         <attr name="instanceCreate" methodvalue="org.openide.loaders.DataLoaderPool.factory"/>
                         <attr name="mimeType" stringvalue="text/ldif"/>
